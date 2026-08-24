@@ -12,14 +12,15 @@
 <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
+<a class="skip" href="#main">본문 바로가기</a>
 <div class="app">
-  <div class="top">
+  <div class="top" role="banner">
     <div style="display:flex;align-items:center;gap:8px">
       <span style="width:20px;height:20px;border-radius:6px;background:#13BD7E;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#043528" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 7 13l7.5-8"/></svg></span>
       <span style="font-size:14.5px;font-weight:700;letter-spacing:-0.024em;color:#fff">맬리 케어센터</span>
     </div>
     <span style="width:1px;height:20px;background:rgba(255,255,255,.16)"></span>
-    <button class="mb" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<span class="mt" style="font-size:12.5px;color:#98A2B3">3기 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
+    <button class="mb" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<span class="mt" style="font-size:12.5px;color:#A9B2C0">3기 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">도움말</button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px">3</span></button>
@@ -29,14 +30,14 @@
 
   <div class="mid">
     <aside class="side">
-      <nav id="nav"></nav>
+      <nav id="nav" aria-label="주요 메뉴"></nav>
       <div style="margin-top:auto;padding:12px;border-top:1px solid #F2F4F7">
         <div class="mcap">데이터는 매일 새벽 3시에 갱신돼요</div>
-        <div class="mcap mt" style="margin-top:2px;color:#98A2B3">마지막 갱신 08-21 03:00</div>
+        <div class="mcap mt" style="margin-top:2px;color:#69707C">마지막 갱신 08-21 03:00</div>
       </div>
     </aside>
 
-    <div class="main">
+    <main class="main" id="main" tabindex="-1">
       <section class="pane on" data-pane="today"><div id="v-today" class="gap"></div></section>
       <section class="pane" data-pane="people"><div id="v-people" class="gap"></div></section>
       <section class="pane" data-pane="person"><div id="v-person" class="gap"></div></section>
@@ -50,42 +51,42 @@
       <section class="pane" data-pane="report"><div id="v-report" class="gap"></div></section>
       <section class="pane" data-pane="apply"><div id="v-apply" class="gap"></div></section>
       <section class="pane" data-pane="audit"><div id="v-audit" class="gap"></div></section>
-    </div>
+    </main>
   </div>
 </div>
 
-<div class="toasts" id="toasts"></div>
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 
-<div class="mask" id="m-reveal"><div class="modal sm">
-  <h3>개인정보 원문 보기<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-reveal"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-reveal-h">
+  <h3 id="m-reveal-h">개인정보 원문 보기<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
     <div class="note" style="background:#FFFAEB;color:#B54708">사유는 기록에 남고 보건소 점검 때 증빙으로 제출돼요. 열람 후 30초가 지나면 자동으로 다시 가려져요.</div>
-    <div><span class="flab">대상</span><div class="mt" id="rev-t" style="font-size:13.5px">—</div></div>
-    <div><span class="flab">열람 사유 <span style="color:#B42318">*</span></span>
-      <select class="mfld" id="rev-r" style="width:100%"><option value="">사유를 선택하세요</option><option>미활동자 안부 연락</option><option>위험군 상담 연계</option><option>앱 오류 문의 회신</option><option>참여 신청 확인</option><option>보건소 공문 회신</option></select>
+    <div><span class="flab" id="rev-t-l">대상</span><div class="mt" id="rev-t" style="font-size:13.5px" role="group" aria-labelledby="rev-t-l">—</div></div>
+    <div><label class="flab" for="rev-r">열람 사유 <span style="color:#B42318" aria-hidden="true">*</span><span class="sr">(필수)</span></label>
+      <select class="mfld" id="rev-r" required aria-describedby="rev-e" style="width:100%"><option value="">사유를 선택하세요</option><option>미활동자 안부 연락</option><option>위험군 상담 연계</option><option>앱 오류 문의 회신</option><option>참여 신청 확인</option><option>보건소 공문 회신</option></select>
       <div id="rev-e" style="display:none;gap:6px;align-items:center;margin-top:7px;font-size:12.5px;color:#B42318"><span class="mdot" style="background:#F04438"></span>사유를 선택해야 열람할 수 있어요</div></div>
   </div>
   <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb mbp" id="rev-ok">열람하기</button></div>
 </div></div>
 
-<div class="mask" id="m-withdraw"><div class="modal sm">
-  <h3 style="color:#B42318">탈퇴 처리<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-withdraw"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-withdraw-h">
+  <h3 id="m-withdraw-h" style="color:#B42318">탈퇴 처리<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
     <div class="note" style="background:#FEF3F2;color:#B42318"><b id="wd-c">1명</b>을 탈퇴 처리해요. 앱 이용이 바로 막히고 되돌릴 수 없어요.</div>
     <div id="wd-n" style="font-size:12.5px;line-height:1.9;max-height:110px;overflow-y:auto;color:#475467"></div>
-    <div><span class="flab">탈퇴 사유 <span style="color:#B42318">*</span></span>
+    <div><label class="flab" for="wd-r">탈퇴 사유 <span style="color:#B42318" aria-hidden="true">*</span><span class="sr">(필수)</span></label>
       <select class="mfld" id="wd-r" style="width:100%"><option value="">사유를 선택하세요</option><option>본인 요청</option><option>연락 두절</option><option>타 지역 전출</option><option>중복 계정</option></select></div>
-    <label style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:#475467;cursor:pointer" id="wd-aw"><span class="cbx" id="wd-a"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span>위 내용을 확인했어요</label>
+    <label style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:#475467;cursor:pointer" id="wd-aw"><span class="cbx" id="wd-a" role="checkbox" tabindex="0" aria-checked="false" aria-label="위 내용을 확인했어요"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span>위 내용을 확인했어요</label>
   </div>
-  <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb" id="wd-ok" style="background:#B42318;border-color:#B42318;color:#fff;opacity:.55;cursor:not-allowed">탈퇴 처리</button></div>
+  <div class="mfoot"><span id="wd-hint" class="sr">사유를 선택하고 확인란에 체크해야 탈퇴 처리를 할 수 있어요</span><button class="mb" data-close>취소</button><button class="mb" id="wd-ok" aria-disabled="true" aria-describedby="wd-hint" style="background:#B42318;border-color:#B42318;color:#fff;opacity:.8;cursor:not-allowed">탈퇴 처리</button></div>
 </div></div>
 
-<div class="mask" id="m-workout"><div class="modal"><h3 id="wo-t">세부 운동<button class="x" data-close>✕</button></h3><div class="mbody" id="wo-b"></div><div class="mfoot"><button class="mb" data-close>닫기</button></div></div></div>
-<div class="mask" id="m-achieve"><div class="modal"><h3 id="ac-t">달성 상세<button class="x" data-close>✕</button></h3><div class="mbody" id="ac-b"></div><div class="mfoot"><button class="mb" id="ac-p">참여자 상세로</button><button class="mb mbp" data-close>닫기</button></div></div></div>
-<div class="mask" id="m-excluded"><div class="modal"><h3 id="ex-t">빠진 사람 명단<button class="x" data-close>✕</button></h3><div class="mbody" id="ex-b"></div><div class="mfoot"><button class="mb" data-close>닫기</button><button class="mb mbp" id="ex-dl">명단 내려받기</button></div></div></div>
+<div class="mask" id="m-workout"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="wo-t"><h3 id="wo-t">세부 운동<button class="x" type="button" data-close aria-label="닫기">✕</button></h3><div class="mbody" id="wo-b"></div><div class="mfoot"><button class="mb" data-close>닫기</button></div></div></div>
+<div class="mask" id="m-achieve"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ac-t"><h3 id="ac-t">달성 상세<button class="x" type="button" data-close aria-label="닫기">✕</button></h3><div class="mbody" id="ac-b"></div><div class="mfoot"><button class="mb" id="ac-p">참여자 상세로</button><button class="mb mbp" data-close>닫기</button></div></div></div>
+<div class="mask" id="m-excluded"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ex-t"><h3 id="ex-t">빠진 사람 명단<button class="x" type="button" data-close aria-label="닫기">✕</button></h3><div class="mbody" id="ex-b"></div><div class="mfoot"><button class="mb" data-close>닫기</button><button class="mb mbp" id="ex-dl">명단 내려받기</button></div></div></div>
 
-<div class="mask" id="m-channel"><div class="modal sm">
-  <h3>채널 전환<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-channel"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-channel-h">
+  <h3 id="m-channel-h">채널 전환<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
     <div style="padding:12px 14px;background:#E7F9F1;border-radius:8px;display:flex;align-items:center;gap:10px">
       <span><b style="font-size:13.5px">인천 남동구 치매안심센터</b><span class="mcap" style="display:block;color:#065C3D;margin-top:2px">3기 진행 중 · 822명</span></span>
@@ -96,34 +97,34 @@
   <div class="mfoot"><button class="mb" data-close>닫기</button></div>
 </div></div>
 
-<div class="mask" id="m-export"><div class="modal sm">
-  <h3>명단 내려받기<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-export"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-export-h">
+  <h3 id="m-export-h">명단 내려받기<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
-    <div><span class="flab">범위</span><select class="mfld" id="ex-scope" style="width:100%"></select></div>
-    <div><span class="flab">개인정보</span><select class="mfld" id="ex-mask" style="width:100%"><option value="m">가린 상태 (권장)</option><option value="r">원문 포함 — 사유 필요</option></select></div>
+    <div><label class="flab" for="ex-scope">범위</label><select class="mfld" id="ex-scope" style="width:100%"></select></div>
+    <div><label class="flab" for="ex-mask">개인정보</label><select class="mfld" id="ex-mask" aria-describedby="ex-note" style="width:100%"><option value="m">가린 상태 (권장)</option><option value="r">원문 포함 — 사유 필요</option></select></div>
     <div id="ex-note" class="note" style="background:#F9FAFB;color:#475467">가린 상태로 내려받아요. 이름은 가운데 글자, 전화번호는 뒷 4자리만 나와요.</div>
   </div>
   <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb mbp" id="ex-go">엑셀로 받기</button></div>
 </div></div>
 
-<div class="mask" id="m-schedreq"><div class="modal">
-  <h3>일정 변경 요청<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-schedreq"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-schedreq-h">
+  <h3 id="m-schedreq-h">일정 변경 요청<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
     <div class="note" style="background:#F9FAFB;color:#475467">채널관리자는 일정을 직접 바꿀 수 없어요. 요청을 보내면 운영팀이 처리하고 결과를 알려드려요.</div>
-    <div><span class="flab">대상일</span><input type="date" class="mfld" value="2026-08-25" style="width:100%"></div>
-    <div><span class="flab">유형</span><select class="mfld" style="width:100%"><option>활동 교체</option><option>휴강 처리</option><option>활동 추가</option></select></div>
-    <div><span class="flab">사유</span><textarea class="mfld" rows="3" style="width:100%;height:auto;padding:10px 12px" placeholder="예) 8/25 지역 행사로 휴강 예정입니다."></textarea></div>
+    <div><label class="flab" for="sr-date">대상일</label><input id="sr-date" type="date" class="mfld" value="2026-08-25" style="width:100%"></div>
+    <div><label class="flab" for="sr-type">유형</label><select id="sr-type" class="mfld" style="width:100%"><option>활동 교체</option><option>휴강 처리</option><option>활동 추가</option></select></div>
+    <div><label class="flab" for="sr-why">사유</label><textarea id="sr-why" class="mfld" rows="3" style="width:100%;height:auto;padding:10px 12px" placeholder="예) 8/25 지역 행사로 휴강 예정입니다."></textarea></div>
   </div>
   <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb mbp" id="sr-go">요청 보내기</button></div>
 </div></div>
 
-<div class="mask" id="m-edit"><div class="modal sm">
-  <h3>대상자 정보 수정<button class="x" data-close>✕</button></h3>
+<div class="mask" id="m-edit"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-edit-h">
+  <h3 id="m-edit-h">대상자 정보 수정<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">
-    <div><span class="flab">이름</span><input class="mfld" id="ed-n" style="width:100%"></div>
-    <div><span class="flab">생년</span><input class="mfld" id="ed-b" style="width:100%"></div>
-    <div><span class="flab">담당 복지관</span><select class="mfld" id="ed-o" style="width:100%"></select></div>
-    <div><span class="flab">담당상담사</span><select class="mfld" style="width:100%"><option>김주무 (채널)</option><option>이운영 (원메딕스)</option></select></div>
+    <div><label class="flab" for="ed-n">이름</label><input class="mfld" id="ed-n" style="width:100%"></div>
+    <div><label class="flab" for="ed-b">생년</label><input class="mfld" id="ed-b" inputmode="numeric" style="width:100%"></div>
+    <div><label class="flab" for="ed-o">담당 복지관</label><select class="mfld" id="ed-o" style="width:100%"></select></div>
+    <div><label class="flab" for="ed-c">담당상담사</label><select id="ed-c" class="mfld" style="width:100%"><option>김주무 (채널)</option><option>이운영 (원메딕스)</option></select></div>
   </div>
   <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb mbp" id="ed-s">저장</button></div>
 </div></div>

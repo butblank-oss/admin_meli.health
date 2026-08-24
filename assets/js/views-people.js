@@ -64,8 +64,8 @@ V.people=function(keep){
       '<button class="mb" id="p-msg">단체 메시지</button><button class="mb" data-modal="m-export">명단 내려받기</button>')
      +'<div class="mc" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
        +'<div class="row">'+search('pq','이름, 전화 뒷자리, PIN으로 찾기','320px')
-       +'<select class="mfld" id="p-age"><option>연령 전체</option><option>60대 미만</option><option>60대</option><option>70대</option><option>80대 이상</option></select>'
-       +'<select class="mfld" id="p-sex"><option>성별 전체</option><option>여성</option><option>남성</option><option>미상</option></select>'
+       +'<select class="mfld" id="p-age" aria-label="연령대 필터"><option>연령 전체</option><option>60대 미만</option><option>60대</option><option>70대</option><option>80대 이상</option></select>'
+       +'<select class="mfld" id="p-sex" aria-label="성별 필터"><option>성별 전체</option><option>여성</option><option>남성</option><option>미상</option></select>'
        +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 참여자 <b class="mt" style="color:#101828" id="p-cnt">822</b>명</span></div>'
        +'<div class="row" id="p-chips"></div><div class="row" id="p-app" style="display:none;padding-top:10px;border-top:1px solid #F2F4F7"></div></div>'
      +'<div class="mc" style="overflow:hidden"><div class="bulk" id="p-bulk"></div>'
@@ -99,7 +99,7 @@ V.people=function(keep){
   pageRows=pList.slice((pPager.page-1)*pPager.size,pPager.page*pPager.size);
   var allOn=pageRows.length&&pageRows.every(function(p){return pSel[p.id]}),someOn=pageRows.some(function(p){return pSel[p.id]});
   var thh=$('#p-th');
-  thh.innerHTML='<th style="width:50px;padding-left:20px"><span id="p-all">'+cbx(allOn?'on':someOn?'mx':'off')+'</span></th>'
+  thh.innerHTML='<th style="width:50px;padding-left:20px"><span id="p-all">'+cbx(allOn?'on':someOn?'mx':'off','이 페이지 전체 선택')+'</span></th>'
    +sth('이름','name',pSort)+sth('PIN','pin',pSort,1)+'<th class="num">N</th><th>연락처</th>'+sth('생년','birth',pSort,1)
    +sth('기관','org',pSort)+'<th>상태</th>'+sth('활동일','days',pSort,1)+sth('수행률','rate',pSort,1)
    +sth('최근 이용','last',pSort)+'<th style="padding-right:20px">앱</th>';
@@ -111,16 +111,16 @@ V.people=function(keep){
   if(!pList.length)$('#p-empty .mb').addEventListener('click',resetP);
   rows.forEach(function(p){
     var tr=el('tr','clk'+(pSel[p.id]?' sel':''));
-    tr.innerHTML='<td style="padding-left:20px">'+cbx(pSel[p.id]?'on':'off')+'</td>'
+    tr.innerHTML='<td style="padding-left:20px">'+cbx(pSel[p.id]?'on':'off',p.name+' 선택')+'</td>'
      +'<td><span class="mask-n" style="font-weight:600">'+p.name+'</span> <button class="mb mbx rv" style="margin-left:4px">보기</button></td>'
-     +'<td class="num mt" style="color:#98A2B3">'+p.pin+'</td>'
+     +'<td class="num mt" style="color:#69707C">'+p.pin+'</td>'
      +'<td class="num">'+(p.todayN?'<span class="mpill" style="background:#E7F9F1;color:#065C3D">'+p.todayN+'</span>':'')+'</td>'
      +'<td class="mt mask-p" style="color:#475467">'+p.phone+'</td>'
      +'<td class="num mt" style="color:#475467">'+p.birth+'</td>'
-     +'<td style="color:'+(p.org==='미배정'?'#98A2B3':'#475467')+'">'+p.org+'</td><td>'+statusPill(p)+'</td>'
+     +'<td style="color:'+(p.org==='미배정'?'#69707C':'#475467')+'">'+p.org+'</td><td>'+statusPill(p)+'</td>'
      +'<td class="num mt">'+p.days+'</td><td class="num mt">'+(p.days?p.rate+'%':'—')+'</td>'
      +'<td class="mt" style="color:#667085">'+(p.last>900?'—':p.last===0?'오늘':p.last+'일 전')+'</td>'
-     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+p.app+'</td>';
+     +'<td class="mt" style="color:#69707C;padding-right:20px">'+p.app+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(pSel[p.id])delete pSel[p.id];else pSel[p.id]=1;pAll=false;V.people(1)});
     tr.querySelector('.rv').addEventListener('click',function(e){e.stopPropagation();askReveal(p,tr)});
     tr.addEventListener('click',function(e){if(!e.target.closest('button')&&!e.target.closest('.cbx'))openPerson(p,'people')});
@@ -151,7 +151,7 @@ function renderApplied(){
   if(pSex)it.push([['','여성','남성','미상'][pSex],function(){pSex=0;V.people()}]);
   if(!it.length){box.style.display='none';return}
   box.style.display='flex';box.innerHTML='<span class="mcap" style="margin-right:2px">적용된 조건</span>';
-  it.forEach(function(x){var c=el('span','ftag',esc(x[0])+'<span class="x">✕</span>');
+  it.forEach(function(x){var c=el('span','ftag',esc(x[0])+'<button type="button" class="x" aria-label="'+esc(x[0])+' 필터 제거">✕</button>');
     c.querySelector('.x').addEventListener('click',x[1]);box.appendChild(c)});
   var b=el('button','mb mbs mbg','모두 지우기');b.addEventListener('click',resetP);box.appendChild(b)}
 function resetP(){pf={st:[],org:[],act:[]};pq='';pAge=0;pSex=0;pPager.page=1;V.people()}
@@ -197,11 +197,14 @@ function openWithdraw(list){
   wdL=list.filter(function(p){return p.status!=='withdrawn'});
   if(!wdL.length){toast('탈퇴 처리할 대상이 없어요','cr');return}
   $('#wd-c').textContent=fmt(wdL.length)+'명';
-  $('#wd-n').innerHTML=wdL.slice(0,10).map(function(p){return p.name+' <span class="mt" style="color:#98A2B3">'+p.phone+' · '+p.org+'</span>'}).join('<br>')+(wdL.length>10?'<br><span style="color:#98A2B3">외 '+(wdL.length-10)+'명</span>':'');
-  $('#wd-r').value='';wdA=false;$('#wd-a').className='cbx';updWd();open('m-withdraw')}
-function updWd(){var ok=$('#wd-r').value&&wdA,b=$('#wd-ok');b.style.opacity=ok?'1':'.55';b.style.cursor=ok?'pointer':'not-allowed';b.dataset.ok=ok?'1':''}
+  $('#wd-n').innerHTML=wdL.slice(0,10).map(function(p){return p.name+' <span class="mt" style="color:#69707C">'+p.phone+' · '+p.org+'</span>'}).join('<br>')+(wdL.length>10?'<br><span style="color:#69707C">외 '+(wdL.length-10)+'명</span>':'');
+  $('#wd-r').value='';wdA=false;setWdA();updWd();open('m-withdraw')}
+function updWd(){var ok=$('#wd-r').value&&wdA,b=$('#wd-ok');b.style.opacity=ok?'1':'.8';b.style.cursor=ok?'pointer':'not-allowed';b.dataset.ok=ok?'1':'';
+  b.setAttribute('aria-disabled',ok?'false':'true');
+  b.setAttribute('aria-describedby','wd-hint')}
 $('#wd-r').addEventListener('change',updWd);
-$('#wd-aw').addEventListener('click',function(e){e.preventDefault();wdA=!wdA;$('#wd-a').className='cbx'+(wdA?' on':'');updWd()});
+$('#wd-aw').addEventListener('click',function(e){e.preventDefault();wdA=!wdA;setWdA();updWd()});
+function setWdA(){var a=$('#wd-a');a.className='cbx'+(wdA?' on':'');a.setAttribute('aria-checked',wdA?'true':'false')}
 $('#wd-ok').addEventListener('click',function(){
   if(!this.dataset.ok)return;
   var n=wdL.length,r=$('#wd-r').value;
@@ -240,6 +243,7 @@ V.person=function(){
   [['act','활동 내역'],['chk','검사 이력'],['qst','챌린지 참여']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',pdTab===x[0]?'true':'false');
     b.addEventListener('click',function(){pdTab=x[0];V.person()});tb.appendChild(b)});
+  A.bindTabs(tb);
   var body=$('#pd-body');
   if(pdTab==='act')tabAct(p,body);else if(pdTab==='chk')tabChk(p,body);else tabQst(p,body)};
 function tabAct(p,box){
@@ -247,8 +251,8 @@ function tabAct(p,box){
   if(!pdM)pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};
   box.innerHTML='<div style="padding:20px;display:grid;grid-template-columns:284px minmax(0,1fr);gap:18px">'
    +'<div style="display:flex;flex-direction:column"><div class="row" style="margin-bottom:14px">'
-     +'<button class="pgn" id="am-p">'+LT+'</button><span class="mt" style="font-size:13.5px;font-weight:700;min-width:104px;text-align:center">'+pdM.y+'년 '+pdM.m+'월</span>'
-     +'<button class="pgn" id="am-n">'+RT+'</button><button class="mb mbs mbg" id="am-l" style="margin-left:auto">최근 활동일</button></div>'
+     +'<button type="button" class="pgn" id="am-p" aria-label="이전 달">'+LT+'</button><span class="mt" style="font-size:13.5px;font-weight:700;min-width:104px;text-align:center">'+pdM.y+'년 '+pdM.m+'월</span>'
+     +'<button type="button" class="pgn" id="am-n" aria-label="다음 달">'+RT+'</button><button class="mb mbs mbg" id="am-l" style="margin-left:auto">최근 활동일</button></div>'
      +'<div class="dcal" id="am-c"></div>'
      +'<div class="lgd" style="margin-top:14px"><span><b style="background:#F2F4F7"></b>0회</span><span><b style="background:#C6F2E0"></b>1–2</span><span><b style="background:#6BDCAF"></b>3–4</span><span><b style="background:#13BD7E"></b>5+</span></div>'
      +'<div id="am-f" style="margin-top:auto;padding:12px 14px;background:#F9FAFB;border-radius:8px;font-size:13px;color:#475467"></div></div>'
@@ -273,12 +277,12 @@ function tabAct(p,box){
   var rec=dayRec(p,pdSel),diff=Math.round((AMAX-pdSel)/864e5);
   var lab=diff===0?'오늘':diff===1?'어제':(pdSel.getMonth()+1)+'월 '+pdSel.getDate()+'일 '+'일월화수목금토'[pdSel.getDay()]+'요일';
   var D=$('#am-d');
-  D.innerHTML='<div class="row" style="padding:16px 20px"><button class="pgn" id="ad-p" style="background:#fff">'+LT+'</button>'
-   +'<span class="mh">'+lab+'</span><button class="pgn" id="ad-n" style="background:#fff">'+RT+'</button>'
+  D.innerHTML='<div class="row" style="padding:16px 20px"><button type="button" class="pgn" id="ad-p" aria-label="이전 날" style="background:#fff">'+LT+'</button>'
+   +'<span class="mh">'+lab+'</span><button type="button" class="pgn" id="ad-n" aria-label="다음 날" style="background:#fff">'+RT+'</button>'
    +'<span class="mcap mt" style="margin-left:auto">'+dstr(pdSel)+'</span></div>'
    +'<div style="padding:0 20px 14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px">'
    +[['활동',rec.acts.length,'회',0],['걸음 수',fmt(rec.steps),'보',0],['마음 기록',rec.mind,'건',0],['증상 기록',rec.symp,'건',!rec.symp]].map(function(x){
-     return '<div style="background:#fff;border-radius:8px;padding:12px"><div class="mcap">'+x[0]+'</div><div class="mt" style="font-size:20px;font-weight:700;letter-spacing:-0.03em;margin-top:2px'+(x[3]?';color:#98A2B3':'')+'">'+x[1]+'<span style="font-size:11.5px;color:#98A2B3;font-weight:600;margin-left:2px">'+x[2]+'</span></div></div>'}).join('')
+     return '<div style="background:#fff;border-radius:8px;padding:12px"><div class="mcap">'+x[0]+'</div><div class="mt" style="font-size:20px;font-weight:700;letter-spacing:-0.03em;margin-top:2px'+(x[3]?';color:#69707C':'')+'">'+x[1]+'<span style="font-size:11.5px;color:#69707C;font-weight:600;margin-left:2px">'+x[2]+'</span></div></div>'}).join('')
    +'</div><div id="ad-l" style="background:#fff;margin:0 14px 14px;border-radius:8px;flex:1;min-height:0;overflow:auto"></div>';
   var L=$('#ad-l');
   if(rec.acts.length){
@@ -289,7 +293,7 @@ function tabAct(p,box){
         return '<span class="r"><span class="tt">'+r.t+'</span><span>'+esc(r.nm)+'</span><span class="pp"'+(r.z?' style="color:#B42318"':'')+'>'+r.p+'</span></span>'}).join('')+'</span>';
       var hh=+a.t.slice(0,2);
       L.appendChild(el('div','fd','<span class="t">'+(hh>=12?'오후':'오전')+' '+((hh%12)||12)+'시 '+(+a.t.slice(3))+'분</span>'
-       +'<span class="m"><span style="font-size:13.5px;font-weight:600">'+esc(a.name)+(a.score!=null?' <span class="mt" style="font-size:12px;font-weight:400;color:#98A2B3">'+fmt(a.score)+'점</span>':'')+'</span>'
+       +'<span class="m"><span style="font-size:13.5px;font-weight:600">'+esc(a.name)+(a.score!=null?' <span class="mt" style="font-size:12px;font-weight:400;color:#69707C">'+fmt(a.score)+'점</span>':'')+'</span>'
        +'<span class="mcap" style="display:block;margin-top:2px">두뇌운동 치매예방교실-26년 · '+a.kind+(a.dur?' · '+a.dur+'초':'')+'</span>'+sub+'</span>'
        +'<span class="p" style="color:'+pc+'">'+pct+'%</span>'))});
   }else{
@@ -304,8 +308,8 @@ function tabChk(p,box){
   if(!h.length){box.innerHTML=emptyBox('검사 기록이 없어요','');return}
   box.innerHTML='<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">검사일</th><th>검사</th><th class="num">점수</th><th>판정</th><th class="num">직전</th><th style="padding-right:20px">변화</th></tr></thead><tbody>'
    +h.map(function(x){var lv=x.test.lv(x.score);
-     var d=x.prev==null?'<span style="color:#98A2B3">첫 검사</span>':x.score<x.prev?'<span style="color:#067647;font-weight:600">▼ '+(x.prev-x.score)+' 호전</span>':x.score>x.prev?'<span style="color:#B42318;font-weight:600">▲ '+(x.score-x.prev)+'</span>':'<span style="color:#98A2B3">변화 없음</span>';
-     return '<tr><td class="mt" style="padding-left:20px;color:#475467">'+x.date+' '+x.time+'</td><td>'+x.test.n+'</td><td class="num mt">'+x.score+'</td><td>'+pill(lv[0],lv[1])+'</td><td class="num mt" style="color:#98A2B3">'+(x.prev==null?'—':x.prev)+'</td><td style="padding-right:20px">'+d+'</td></tr>'}).join('')
+     var d=x.prev==null?'<span style="color:#69707C">첫 검사</span>':x.score<x.prev?'<span style="color:#067647;font-weight:600">▼ '+(x.prev-x.score)+' 호전</span>':x.score>x.prev?'<span style="color:#B42318;font-weight:600">▲ '+(x.score-x.prev)+'</span>':'<span style="color:#69707C">변화 없음</span>';
+     return '<tr><td class="mt" style="padding-left:20px;color:#475467">'+x.date+' '+x.time+'</td><td>'+x.test.n+'</td><td class="num mt">'+x.score+'</td><td>'+pill(lv[0],lv[1])+'</td><td class="num mt" style="color:#69707C">'+(x.prev==null?'—':x.prev)+'</td><td style="padding-right:20px">'+d+'</td></tr>'}).join('')
    +'</tbody></table></div>'}
 function tabQst(p,box){
   box.innerHTML='<div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px" id="qz"></div>';
@@ -328,7 +332,7 @@ function openAchieve(p,q){
   b.innerHTML=kpi([['달성일',a.done,'/ '+q.crit+'일'],['하루 기준',q.ty==='attendance'?'활동 '+q.per+'개':fmt(q.per)+'보',''],
     ['결과',a.done>=q.crit?'성공':'진행 중','',a.done>=q.crit?'ok':'wa']])
    +'<div style="background:#F9FAFB;border-radius:10px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:12px"><span class="mh" style="font-size:14.5px">일별 달성 캘린더</span><div class="acal" id="ac-c"></div>'
-   +'<div class="lgd"><span><b style="background:#13BD7E"></b>달성</span><span><b style="background:#FFFAEB"></b>기준 미달</span><span><b style="background:#F2F4F7"></b>활동 없음</span>'+(q.ty==='attendance'?'<span style="color:#98A2B3">빈 칸은 주말</span>':'')+'</div></div>';
+   +'<div class="lgd"><span><b style="background:#13BD7E"></b>달성</span><span><b style="background:#FFFAEB"></b>기준 미달</span><span><b style="background:#F2F4F7"></b>활동 없음</span>'+(q.ty==='attendance'?'<span style="color:#69707C">빈 칸은 주말</span>':'')+'</div></div>';
   var g=$('#ac-c');
   ['일','월','화','수','목','금','토'].forEach(function(d){g.appendChild(el('span','h',d))});
   var f=new Date(2026,q.m-1,1).getDay();

@@ -48,7 +48,7 @@ V.push=function(){
     var acts=m.tab==='sent'?'<button class="mb mbx">성과 보기</button>':
       '<button class="mb mbx ed">수정</button> <button class="mb mbx cn" style="color:#B42318">'+(m.tab==='draft'?'삭제':'취소')+'</button>';
     tr.innerHTML='<td style="padding-left:20px"><b class="mt" style="font-size:13px">'+m.when+'</b><span class="mcap" style="display:block;font-size:11.5px">'+m.rel+'</span></td>'
-     +'<td><b style="font-weight:600">'+(m.t||'<span style="color:#98A2B3">제목 없음</span>')+'</b><span class="mcap" style="display:block;font-size:11.5px">'+m.memo+'</span></td>'
+     +'<td><b style="font-weight:600">'+(m.t||'<span style="color:#69707C">제목 없음</span>')+'</b><span class="mcap" style="display:block;font-size:11.5px">'+m.memo+'</span></td>'
      +'<td style="color:#475467">'+m.tgt+'</td><td class="num mt">'+(m.n?fmt(m.n):'—')+'</td>'
      +'<td class="mcap">'+m.how+'</td><td>'+pill(m.st,m.k)+'</td>'
      +'<td style="text-align:right;padding-right:20px">'+acts+'</td>';
@@ -98,9 +98,9 @@ V.pushnew=function(){
        +[['both','푸시 + 알림함'],['push','푸시만'],['inbox','알림함만']].map(function(s){return '<button data-v="'+s[0]+'" class="'+(nw.seg===s[0]?'on':'')+'">'+s[1]+'</button>'}).join('')+'</span></span></div>'
        +'<div style="display:flex;flex-direction:column;gap:14px">'
        +'<div><div class="row" style="margin-bottom:6px"><span class="flab" style="margin:0">알림 제목</span><span class="mcap mt" style="margin-left:auto" id="nw-tc">'+nw.title.length+' / 20자</span></div>'
-         +'<input class="mfld" id="nw-title" style="width:100%" maxlength="20" value="'+esc(nw.title)+'"></div>'
+         +'<input class="mfld" id="nw-title" aria-label="메시지 제목" style="width:100%" maxlength="20" value="'+esc(nw.title)+'"></div>'
        +'<div><div class="row" style="margin-bottom:6px"><span class="flab" style="margin:0">알림 내용</span><span class="mcap mt" style="margin-left:auto" id="nw-bc">'+nw.bodyT.length+' / 60자</span></div>'
-         +'<textarea class="mfld" id="nw-body" rows="2" maxlength="60" style="width:100%;height:auto;padding:10px 12px">'+esc(nw.bodyT)+'</textarea></div>'
+         +'<textarea class="mfld" id="nw-body" aria-label="메시지 내용" rows="2" maxlength="60" style="width:100%;height:auto;padding:10px 12px">'+esc(nw.bodyT)+'</textarea></div>'
        +'<div><span class="flab">넣을 수 있는 값</span><div class="row" id="nw-vars"></div>'
          +'<span class="mcap" style="display:block;margin-top:6px">이름이 없는 분에게는 “어르신”으로 나가요</span></div>'
        +'<div><span class="flab">누르면 열릴 화면</span><div class="row" id="nw-land"></div></div></div></div>'
@@ -112,17 +112,17 @@ V.pushnew=function(){
    /* preview */
    +'<div class="gap"><div class="mc" style="padding:18px">'
      +'<div class="row" style="margin-bottom:14px"><span class="mh">미리보기</span><span class="mcap" style="margin-left:auto">잠금화면 · 글씨 크게</span></div>'
-     +'<div class="prev"><div class="mt" style="text-align:center;padding:6px 0 14px"><div style="font-size:12.5px;color:#98A2B3">8월 22일 금요일</div><div style="font-size:34px;font-weight:700;letter-spacing:-0.03em">9:00</div></div>'
+     +'<div class="prev"><div class="mt" style="text-align:center;padding:6px 0 14px"><div style="font-size:12.5px;color:#A9B2C0">8월 22일 금요일</div><div style="font-size:34px;font-weight:700;letter-spacing:-0.03em">9:00</div></div>'
        +'<div class="pnote"><span style="width:26px;height:26px;border-radius:7px;background:#13BD7E;flex:none;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="#043528" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5 7 13l7.5-8"/></svg></span>'
-       +'<span style="min-width:0"><span style="display:flex;gap:8px"><b id="pv-t" style="font-size:13px;font-weight:700">'+esc(nw.title)+'</b><span class="mcap" style="margin-left:auto;color:#98A2B3;font-size:11.5px">지금</span></span>'
+       +'<span style="min-width:0"><span style="display:flex;gap:8px"><b id="pv-t" style="font-size:13px;font-weight:700">'+esc(nw.title)+'</b><span class="mcap" style="margin-left:auto;color:#A9B2C0;font-size:11.5px">지금</span></span>'
        +'<span id="pv-b" style="display:block;font-size:12.5px;color:#D0D5DD;margin-top:3px;line-height:1.5">'+esc(nw.bodyT.replace('{이름}','안순'))+'</span></span></div>'
-       +'<div class="mcap" style="text-align:center;margin-top:12px;color:#667085;font-size:11.5px">맬리 케어센터 · 알림함에도 함께 쌓여요</div></div>'
+       +'<div class="mcap" style="text-align:center;margin-top:12px;color:#A9B2C0;font-size:11.5px">맬리 케어센터 · 알림함에도 함께 쌓여요</div></div>'
      +'<div style="margin-top:16px"><span class="flab">앱 알림함에서는 이렇게 보여요</span>'
        +'<div style="border:1px solid #EAECF0;border-radius:8px;padding:12px;display:flex;gap:10px">'
        +'<span style="width:26px;height:26px;border-radius:7px;background:#E7F9F1;flex:none"></span>'
        +'<span style="min-width:0"><b id="pv-t2" style="font-size:13px;font-weight:600">'+esc(nw.title)+'</b>'
        +'<span id="pv-b2" class="mcap" style="display:block;margin-top:2px">'+esc(nw.bodyT.replace('{이름}','안순'))+'</span>'
-       +'<span class="mcap mt" style="display:block;margin-top:4px;color:#98A2B3;font-size:11.5px">8월 22일 오전 9:00</span></span></div></div></div>'
+       +'<span class="mcap mt" style="display:block;margin-top:4px;color:#69707C;font-size:11.5px">8월 22일 오전 9:00</span></span></div></div></div>'
      +note('오전 9시 발송이 열어본 비율이 가장 높아요(41.2%). 고령 이용자가 많아 야간 발송은 피해주세요.','in')+'</div></div>';
   $('#nw-b').addEventListener('click',function(){go('push')});
   $('#nw-save').addEventListener('click',function(){toast('임시저장했어요','ok')});
@@ -167,7 +167,7 @@ V.pushnew=function(){
     b.addEventListener('click',function(){nw.sched=w[1];V.pushnew()});wh.appendChild(b)});
   var dt=$('#nw-detail');
   if(nw.sched==='now')dt.innerHTML=note('지금 바로 보내면 되돌릴 수 없어요. 발송 후에는 성과만 확인할 수 있어요.','wa');
-  else dt.innerHTML='<div class="row"><span class="flab" style="margin:0;width:42px">날짜</span><input type="date" class="mfld" value="'+nw.date+'"></div>'
+  else dt.innerHTML='<div class="row"><label class="flab" for="nw-date" style="margin:0;width:42px">날짜</label><input id="nw-date" type="date" class="mfld" value="'+nw.date+'"></div>'
     +'<div class="row" style="margin-top:10px"><span class="flab" style="margin:0;width:42px">시각</span>'
     +['오전 9:00','오전 10:00','오후 2:00'].map(function(t){return '<button class="mchip'+(nw.time===t?' on':'')+'" data-t="'+t+'">'+t+'</button>'}).join('')
     +'<span class="mcap" style="margin-left:8px">가장 많이 열어보는 시간대예요</span></div>'
@@ -184,10 +184,10 @@ var RI=[[1,'월별 앱 업데이트 횟수','스토어 배포 건수와 버전�
  [6,'기타 / 특이사항','장애·민원·현장 이슈',0,'수기 입력',1]];
 V.report=function(){
   var h=$('#v-report');
-  h.innerHTML=ph('월간 리포트','보건소 제출 자료 6종을 한 번에 만들어요.','<select class="mfld"><option>2026년 7월</option><option>2026년 6월</option></select>')
+  h.innerHTML=ph('월간 리포트','보건소 제출 자료 6종을 한 번에 만들어요.','<select class="mfld" aria-label="리포트 대상 월"><option>2026년 7월</option><option>2026년 6월</option></select>')
    +'<div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start">'
    +'<div class="gap"><div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px 10px"><span class="mh">포함할 항목</span><span class="mcap mt" style="margin-left:auto" id="r-c"></span></div><div id="r-l"></div></div>'
-     +'<div class="mc" style="padding:18px"><span class="mh">서식</span><select class="mfld" style="width:100%;margin-top:10px"><option>남동구 보건소 표준 공문 (기본)</option><option>요약본 (2쪽)</option></select>'
+     +'<div class="mc" style="padding:18px"><span class="mh">서식</span><select class="mfld" aria-label="공문 서식" style="width:100%;margin-top:10px"><option>남동구 보건소 표준 공문 (기본)</option><option>요약본 (2쪽)</option></select>'
      +'<p class="mcap" style="margin:8px 0 0">채널마다 다른 서식을 쓸 수 있어요.</p></div>'
      +'<div class="mc" style="padding:18px"><button class="mb mbp" style="width:100%;height:40px" id="r-hwp">한글(HWP) 공문으로 받기</button>'
      +'<div class="row" style="margin-top:8px;flex-wrap:nowrap"><button class="mb" style="flex:1" id="r-xls">엑셀 원자료</button><button class="mb" style="flex:1" id="r-pdf">PDF</button></div>'
@@ -196,8 +196,8 @@ V.report=function(){
   var L=$('#r-l');
   RI.forEach(function(it){
     var lab=el('label','chk');
-    lab.innerHTML='<span style="margin-top:1px">'+cbx(it[3]?'on':'off')+'</span>'
-     +'<span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:600;color:'+(it[3]?'#101828':'#98A2B3')+'">'+it[0]+'. '+it[1]+'</span>'
+    lab.innerHTML='<span style="margin-top:1px">'+cbx(it[3]?'on':'off',it[0]+'. '+it[1])+'</span>'
+     +'<span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:600;color:'+(it[3]?'#101828':'#69707C')+'">'+it[0]+'. '+it[1]+'</span>'
      +'<span class="mcap" style="display:block;margin-top:1px">'+it[2]+'</span>'
      +'<span class="src'+(it[5]?' ms':'')+'">'+it[4]+'</span></span>';
     lab.addEventListener('click',function(){it[3]=it[3]?0:1;V.report()});L.appendChild(lab)});
@@ -284,7 +284,7 @@ V.apply=function(keep){
   var nSel=Object.keys(aSel).length;
   var allOn=list.length&&list.every(function(a){return aSel[a.id]}),someOn=list.some(function(a){return aSel[a.id]});
   var th=$('#a-th');
-  th.innerHTML='<th style="width:50px;padding-left:20px"><span id="a-all">'+cbx(allOn?'on':someOn?'mx':'off')+'</span></th>'
+  th.innerHTML='<th style="width:50px;padding-left:20px"><span id="a-all">'+cbx(allOn?'on':someOn?'mx':'off','이 페이지 전체 선택')+'</span></th>'
    +sth('이름','name',aSort)+'<th>연락처</th>'+sth('주소','addr',aSort)+sth('경과','aged',aSort,1)
    +'<th>상태</th><th>앱 가입</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
   bindSort(th,aSort,function(){aPager.page=1;V.apply(1)});
@@ -305,7 +305,7 @@ V.apply=function(keep){
     var acts=a.st==='pending'?'<button class="mb mbx mbp ap">승인</button> <button class="mb mbx hd">보류</button> <button class="mb mbx rj" style="color:#B42318">거절</button>'
       :a.st==='hold'?'<button class="mb mbx mbp ap">승인</button> <button class="mb mbx rj" style="color:#B42318">거절</button>'
       :'<button class="mb mbx rv2" style="color:#667085">되돌리기</button>';
-    tr.innerHTML='<td style="padding-left:20px">'+cbx(aSel[a.id]?'on':'off')+'</td>'
+    tr.innerHTML='<td style="padding-left:20px">'+cbx(aSel[a.id]?'on':'off',a.name+' 선택')+'</td>'
      +'<td style="font-weight:600">'+a.name+'</td><td class="mt" style="color:#475467">'+a.phone+'</td>'
      +'<td style="color:#475467">'+a.addr+'</td>'
      +'<td class="num mt"'+(a.aged>30?' style="color:#B42318;font-weight:700"':'')+'>'+a.aged+'일</td>'
@@ -353,7 +353,7 @@ V.audit=function(){
     tb.appendChild(el('tr',null,'<td class="mt" style="padding-left:20px;color:#475467">'+a[0]+'</td>'
      +'<td style="font-weight:600">'+a[1]+'</td><td>'+(a[3]?pill(a[2],'in'):'<span style="color:#667085">'+a[2]+'</span>')+'</td>'
      +'<td>'+a[4]+'</td><td class="num mt" style="color:#475467">'+a[5]+'</td><td style="color:#475467">'+a[6]+'</td>'
-     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+a[7]+'</td>'))});
+     +'<td class="mt" style="color:#69707C;padding-right:20px">'+a[7]+'</td>'))});
   auPager.render($('#au-pg'))};
 
 /* ══════ init ══════ */

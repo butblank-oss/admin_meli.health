@@ -11,12 +11,13 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
 var sTab='ret';
 V.stats=function(){
   var h=$('#v-stats');
-  h.innerHTML=ph('활동 현황','기수 전체의 참여와 이탈을 봅니다.','<select class="mfld"><option>2026년 7월</option><option>2026년 6월</option></select>')
+  h.innerHTML=ph('활동 현황','기수 전체의 참여와 이탈을 봅니다.','<select class="mfld" aria-label="조회 월"><option>2026년 7월</option><option>2026년 6월</option></select>')
    +'<div class="mc" style="overflow:hidden"><div class="tabs" id="s-tabs"></div><div id="s-b" style="padding:20px"></div></div>';
   var tb=$('#s-tabs');
   [['sum','종합'],['ret','참여 지속'],['pat','활동 패턴'],['cont','콘텐츠'],['ind','개인별'],['def','판정 기준']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',sTab===x[0]?'true':'false');
     b.addEventListener('click',function(){sTab=x[0];V.stats()});tb.appendChild(b)});
+  A.bindTabs(tb);
   var B=$('#s-b');
   if(sTab==='sum')sumTab(B);else if(sTab==='ret')retTab(B);else if(sTab==='pat')patTab(B);
   else if(sTab==='cont')contTab(B);else if(sTab==='ind')indTab(B);else defTab(B)};
@@ -50,7 +51,7 @@ function retTab(B){
    +'<div class="mc" style="overflow:hidden">'+chead('언제 시작했느냐에 따른 잔존율','<span class="mcap">첫 활동 주 기준 · 그 주에 1회라도 활동</span>')
      +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">시작 시점</th><th class="num">인원</th>'
      +['1주 후','2주 후','4주 후','8주 후','12주 후'].map(function(x){return '<th style="text-align:center">'+x+'</th>'}).join('')+'</tr></thead><tbody>'
-     +COH.map(function(c){return '<tr><td style="padding-left:20px;font-weight:600">'+c[0]+' <span class="mt" style="color:#98A2B3;font-size:12px;font-weight:400">'+c[1]+'</span></td>'
+     +COH.map(function(c){return '<tr><td style="padding-left:20px;font-weight:600">'+c[0]+' <span class="mt" style="color:#69707C;font-size:12px;font-weight:400">'+c[1]+'</span></td>'
        +'<td class="num mt" style="color:#667085">'+c[2]+'</td>'+c[3].map(hc).join('')+'</tr>'}).join('')+'</tbody></table></div></div>'
    +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">'
    +'<div class="mc" style="padding:20px"><span class="mh">이탈 직전 콘텐츠</span><div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">'
@@ -79,7 +80,7 @@ function patTab(B){
   ['월','화','수','목','금','토','일'].forEach(function(d,di){
     hd+='<tr><th style="background:transparent;border:none">'+d+'</th>';
     for(var h3=0;h3<24;h3+=2){var v=Math.min(1,HR[h3]/17261*(di>=5?0.26:1)*(0.85+rnd(di*7+h3)*0.3));
-      hd+='<td style="border:none;text-align:center;padding:3px"><span style="display:block;padding:7px 0;border-radius:4px;background:color-mix(in srgb,#13BD7E '+(v*80).toFixed(0)+'%,#fff);color:'+(v>0.45?'#fff':'#98A2B3')+';font-size:11.5px;font-variant-numeric:tabular-nums">'+(v>0.12?(v*100).toFixed(0):'')+'</span></td>'}
+      hd+='<td style="border:none;text-align:center;padding:3px"><span style="display:block;padding:7px 0;border-radius:4px;background:color-mix(in srgb,#13BD7E '+(v*80).toFixed(0)+'%,#fff);color:'+(v>0.45?'#fff':'#69707C')+';font-size:11.5px;font-variant-numeric:tabular-nums">'+(v>0.12?(v*100).toFixed(0):'')+'</span></td>'}
     hd+='</tr>'});
   $('#hm').innerHTML=hd+'</tbody>'}
 function contTab(B){
@@ -93,7 +94,7 @@ function contTab(B){
      +C.map(function(c){var r=c[2]/c[1]*100;return '<tr><td style="padding-left:20px">'+c[0]+'</td><td class="num mt">'+fmt(c[1])+'</td><td class="num mt">'+fmt(c[2])+'</td><td class="num mt">'+r.toFixed(1)+'%</td><td style="padding-right:20px"><span class="bar"><i class="'+(r>75?'':r>70?'':'w')+'" style="width:'+r+'%"></i></span></td></tr>'}).join('')
      +'</tbody></table></div><p class="mcap" style="padding:14px 20px">완료율은 앱의 완료 신호 유실 이슈로 운동·마음 항목이 실제보다 낮게 집계돼요.</p></div>'
    +'<div class="mc" style="padding:20px"><span class="mh">두뇌훈련 인기 순위</span><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">'
-     +G.map(function(g,i){return '<div class="brow"><span class="l mt" style="width:18px;color:#98A2B3">'+(i+1)+'</span><span class="l" style="width:130px">'+g[0]+'</span><span class="bar"><i style="width:'+(g[1]/9873*100)+'%"></i></span><span class="v">'+fmt(g[1])+'</span></div>'}).join('')
+     +G.map(function(g,i){return '<div class="brow"><span class="l mt" style="width:18px;color:#69707C">'+(i+1)+'</span><span class="l" style="width:130px">'+g[0]+'</span><span class="bar"><i style="width:'+(g[1]/9873*100)+'%"></i></span><span class="v">'+fmt(g[1])+'</span></div>'}).join('')
      +'</div></div></div></div>'}
 var iSort={key:'score',dir:-1},iPager=mkPager(function(){V.stats()}),iq='';
 function indTab(B){
@@ -117,7 +118,7 @@ function indTab(B){
     var rows=iPager.slice(base),tb=$('#i-tb');tb.innerHTML='';
     rows.forEach(function(p,ix){
       var tr=el('tr','clk');
-      tr.innerHTML='<td class="num mt" style="padding-left:20px;color:#98A2B3">'+(base.indexOf(p)+1)+'</td>'
+      tr.innerHTML='<td class="num mt" style="padding-left:20px;color:#69707C">'+(base.indexOf(p)+1)+'</td>'
        +'<td><span class="lnk">'+p.name+'</span></td><td class="mt" style="color:#475467">'+p.phone+'</td><td style="color:#475467">'+p.org+'</td>'
        +'<td class="num mt">'+fmt(p.score)+'</td><td class="num mt">'+p.rate+'%</td><td class="num mt">'+p.days+'</td><td class="num mt">'+p.streak+'</td>'
        +'<td class="num mt">'+p.mind+'</td><td class="num mt">'+p.symp+'</td><td class="num mt">'+fmt(p.step)+'</td>';
@@ -129,14 +130,22 @@ function defTab(B){
    ['활동자 수','해당 월 1회 이상 활동','activistCount'],['누적 중도포기','참여 상태 = 종료(T)','abandonerCount'],
    ['수행률','추천받은 활동 중 수행 비율','활동수 ÷ 추천수'],['랭킹 점수','월 단위 총점 (최대 1000)','600×(활동÷추천) + 400×(연속일÷추천일)'],
    ['N (오늘 수행)','오늘 수행한 활동 수','todayActivityCount'],['PIN','전화 응대용 조회번호','vocNumber'],
-   ['무활동 판정','마지막 활동 이후 경과일','7일 주의 / 14일 위험'],['우울 (GDS-SF)','15문항','0–5 정상 / 6–9 주의 / 10+ 위험'],
-   ['불면 (ISI-K)','7문항','0–7 / 8–14 / 15–21 / 22+'],['스트레스 (PSS)','10문항','0–13 / 14–16 / 17–18 / 19+']];
+   ['무활동 판정','마지막 활동 이후 경과일','7일 주의 / 14일 위험']]
+   /* 검사 등급은 손으로 적지 않고 TESTS에서 뽑아 쓴다. 표와 실제 판정이 어긋날 수 없게 하기 위함. */
+   .concat(A.TESTS.map(function(t){
+     var seen={},bands=[],prev=0;
+     for(var sc=0;sc<=t.max;sc++){
+       var l=t.lv(sc)[0];
+       if(l!==seen.l){if(seen.l)bands.push(seen.l+' '+prev+'–'+(sc-1));seen={l:l};prev=sc}}
+     bands.push(seen.l+' '+prev+'–'+t.max);
+     return [t.n,t.items+'문항 · 0–'+t.max+'점',bands.join(' / ')]}));
   B.innerHTML='<div class="gap">'
    +note('화면의 숫자가 무엇을 세는지 정의해요. 보건소 제출 수치와 대조할 때 정의부터 맞추면 차이가 사라져요.','in')
    +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">지표</th><th>세는 대상</th><th style="padding-right:20px">계산식</th></tr></thead><tbody>'
    +D.map(function(d){return '<tr><td style="padding-left:20px;font-weight:600">'+d[0]+'</td><td style="color:#475467">'+d[1]+'</td><td class="mt" style="color:#667085;padding-right:20px;font-size:12.5px">'+d[2]+'</td></tr>'}).join('')
    +'</tbody></table></div></div>'
-   +note('<b>확인이 필요한 항목 — 운영팀 회신 대기 중</b><br>· 노력 점수는 계산되지만 랭킹 총점에 반영되지 않아요.<br>· 음주(AUDIT-K)와 기억감퇴(SMCQ)는 같은 점수가 다른 등급으로 판정되는 구간이 있어요.<br>· 터그테스트는 점수가 전송되지 않아 등급 산출이 안 돼요.','cr')+'</div>'}
+   +note('검사 등급은 이 표와 실제 판정이 <b>같은 값에서 나와요.</b> 표만 고치고 판정이 안 바뀌는 일은 생기지 않아요.','ok')
+   +note('<b>확인이 필요한 항목 — 운영팀 회신 대기 중</b><br>· 노력 점수는 계산되지만 랭킹 총점에 반영되지 않아요.<br>· 음주(AUDIT-K)는 아직 검사 목록에 없어요.<br>· 터그테스트는 점수가 전송되지 않아 등급 산출이 안 돼요.','cr')+'</div>'}
 
 /* ══════ 상담실 ══════ */
 var ROOMS=[{n:'황*학',st:'unans',t:'3일',last:'걸음 수가 안 올라가요',mine:1,msgs:[['them','걸음 수가 안 올라가요','오전 7:12','08-11']]},
@@ -175,7 +184,9 @@ V.consult=function(){
     var pl=r.st==='unans'?pill('미답변','cr'):r.st==='ops'?pill('운영팀','in'):r.st==='empty'?pill('대화 없음','nu'):pill('진행','ok');
     b.innerHTML='<span class="r1">'+r.n+' '+pl+'<span class="t">'+r.t+'</span></span><span class="r2">'+(r.last||'아직 대화가 없어요')+'</span>';
     b.setAttribute('aria-selected',cRoom===r?'true':'false');
+    b.setAttribute('role','option');b.type='button';
     b.addEventListener('click',function(){cRoom=r;V.consult()});rl.appendChild(b)});
+  rl.setAttribute('role','listbox');rl.setAttribute('aria-label','상담 목록');
   thread(cRoom)};
 function thread(r){
   var m=$('#c-msgs'),c=$('#c-comp'),p=$('#c-pn');
@@ -212,8 +223,8 @@ V.sched=function(){
   h.innerHTML=ph('프로그램 일정','확인만 할 수 있어요. 바꿔야 하면 변경 요청을 보내주세요.','<button class="mb" data-modal="m-schedreq">일정 변경 요청</button>')
    +note('채널관리자는 일정을 <b>확인만</b> 할 수 있어요. 변경 요청과 처리 결과는 기록에 남아요.','nu')
    +'<div class="mc" style="padding:20px"><div class="row" style="margin-bottom:16px">'
-     +'<button class="pgn" id="sc-p">'+LT+'</button><span class="mh mt" style="min-width:116px;text-align:center">'+pcM.y+'년 '+pcM.m+'월</span>'
-     +'<button class="pgn" id="sc-n">'+RT+'</button><button class="mb mbs" id="sc-t">오늘</button>'
+     +'<button type="button" class="pgn" id="sc-p" aria-label="이전 달">'+LT+'</button><span class="mh mt" style="min-width:116px;text-align:center">'+pcM.y+'년 '+pcM.m+'월</span>'
+     +'<button type="button" class="pgn" id="sc-n" aria-label="다음 달">'+RT+'</button><button class="mb mbs" id="sc-t">오늘</button>'
      +'<span class="lgd" style="margin-left:auto"><span><b style="background:#E7F9F1"></b>두뇌훈련</span>'
      +'<span><b style="background:#EFF8FF"></b>운동 <span style="color:#175CD3">눌러서 동작 보기</span></span>'
      +'<span><b style="background:#FFFAEB"></b>마음다루기</span><span><b style="background:#F4F3FF"></b>검사측정</span></span></div>'
@@ -241,7 +252,7 @@ function showWorkout(rt){
   $('#wo-b').innerHTML=kpi([['부위',rt.area,''],['난이도',rt.lv,''],['구성',rt.mv.length+'개 동작','약 '+rt.mv.length*2+'분']])
    +'<div class="mc" style="overflow:hidden">'+rt.mv.map(function(m,i){
      return '<div style="display:flex;gap:11px;padding:11px 16px;align-items:center'+(i?';border-top:1px solid #F2F4F7':'')+'">'
-      +'<span style="width:36px;height:36px;border-radius:8px;background:#F2F4F7;flex:none;display:grid;place-items:center;color:#98A2B3;font-size:11.5px;font-weight:700">'+(i+1)+'</span>'
+      +'<span style="width:36px;height:36px;border-radius:8px;background:#F2F4F7;flex:none;display:grid;place-items:center;color:#69707C;font-size:11.5px;font-weight:700">'+(i+1)+'</span>'
       +'<span style="min-width:0"><b style="font-size:13.5px;font-weight:600">'+esc(m[0])+'</b><span class="mcap" style="display:block">영상 '+(101+i)+' · 실사 시연</span></span>'
       +'<span class="mcap mt" style="margin-left:auto;color:#475467">'+esc(m[1])+'</span></div>'}).join('')+'</div>'
    +note('<b>운동 방법</b><br>'+esc(rt.how),'in')
@@ -306,7 +317,7 @@ V.questdetail=function(){
     rows.forEach(function(p){
       var a=achieve(p,q),ok=a.done>=q.crit,pr=Math.min(100,a.done/q.crit*100),rank=base.indexOf(p)+1;
       var tr=el('tr','clk');
-      tr.innerHTML='<td class="num mt" style="padding-left:20px;color:#98A2B3">'+rank+'</td><td><span class="lnk">'+p.name+'</span></td>'
+      tr.innerHTML='<td class="num mt" style="padding-left:20px;color:#69707C">'+rank+'</td><td><span class="lnk">'+p.name+'</span></td>'
        +'<td class="mt" style="color:#475467">'+p.phone+'</td><td style="color:#475467">'+p.org+'</td>'
        +'<td class="num mt">'+a.done+' / '+q.crit+'</td><td class="num mt">'+(q.ty==='attendance'?p.streak+'일':fmt(p.step)+'보')+'</td>'
        +'<td><span class="bar"><i class="'+(ok?'':'w')+'" style="width:'+pr+'%"></i></span></td>'
