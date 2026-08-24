@@ -14,6 +14,7 @@
 | [시연 시나리오](docs/시연-시나리오.md) | 기관·보건소 앞에서 시연할 때. 12분 대본 + 예상 질문 |
 | [정책 정의서](docs/정책-정의서.md) | 개발 착수 전. 확정된 규칙 15개 + **미결 정책 11건** |
 | [QA 리포트](docs/QA-리포트.md) | 무엇을 검증했고 무엇을 고쳤는지 |
+| [슈퍼어드민 기능정의](docs/슈퍼어드민-기능정의.md) | 운영팀용 관리 콘솔 범위. 4개 영역 14개 기능 + 미결 6건 |
 
 ---
 
@@ -74,12 +75,11 @@ vercel.json                 캐시·보안 헤더
 
 ## 배포
 
-**GitHub Pages로 배포합니다.** `main` 또는 작업 브랜치에 push하면
+**GitHub Pages로 배포합니다.** `main`에 push하면
 `.github/workflows/deploy.yml`이 저장소를 그대로 올립니다. 빌드 단계는 없습니다.
 
 - 주소: https://butblank-oss.github.io/admin_meli.health/
 - 저장소 Settings → Pages → Source가 **"GitHub Actions"** 로 되어 있어야 합니다 (설정 완료됨)
-- `main`으로 병합한 뒤에는 워크플로 트리거에서 작업 브랜치를 지워도 됩니다
 
 무료이고 상업적 용도 제한이 없어 Pages를 택했습니다.
 Vercel Hobby(무료)는 약관상 **비상업적·개인 용도 전용**이라 납품 건에는 맞지 않습니다.

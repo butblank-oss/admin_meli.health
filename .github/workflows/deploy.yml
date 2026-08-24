@@ -1,12 +1,10 @@
 # GitHub Pages 자동 배포.
-# main 또는 작업 브랜치에 push하면 저장소를 그대로 올립니다. 빌드 단계는 없습니다.
-#
-# main으로 병합한 뒤에는 아래 트리거에서 작업 브랜치를 지워도 됩니다.
+# main에 push하면 저장소를 그대로 올립니다. 빌드 단계는 없습니다.
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, claude/implement-github-deploy-fxvdeq]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
