@@ -219,3 +219,114 @@ $('#ce-ok').addEventListener('click',function(){
   closeAll();V.cohorts();
   toast(A.chName(x.ch)+' '+x.no+'기를 종료했어요','ok')});
 })(Sup);
+
+/* ══════ 계정·권한 (A-3) ══════
+   SP-6 권고를 화면으로 강제한다 — 정지는 즉시, 인수인계는 계정 2개로. */
+(function(A){
+"use strict";
+var $=A.$,el=A.el,esc=A.esc,fmt=A.fmt,pill=A.pill,note=A.note,kpi=A.kpi,ph=A.ph,chead=A.chead,
+    search=A.search,sth=A.sth,bindSort=A.bindSort,sortBy=A.sortBy,toast=A.toast,open=A.open,
+    closeAll=A.closeAll,V=A.V,ACCOUNTS=A.ACCOUNTS,ROLES=A.ROLES,AC_ST=A.AC_ST,chChip=A.chChip,chName=A.chName;
+var aFil=[],aSort={key:'last',dir:-1},aq='';
+V.accounts=function(){
+  var h=$('#v-accounts');
+  var wait=ACCOUNTS.filter(function(u){return u.st==='wait'});
+  var noMfa=ACCOUNTS.filter(function(u){return !u.mfa&&u.st==='live'});
+  h.innerHTML=ph('계정·권한','채널 어드민에 접속할 수 있는 계정을 여기서 만들고 막아요.',
+     '<button class="mb mbp" type="button" id="ac-new">계정 발급</button>')
+   +kpi([['사용 중',String(ACCOUNTS.filter(function(u){return u.st==='live'}).length),'개',''],
+         ['발급 대기',String(wait.length),'개',wait.length?'가장 오래된 건 9일째':'','cr'],
+         ['정지',String(ACCOUNTS.filter(function(u){return u.st==='susp'}).length),'개',''],
+         ['2단계 인증 미설정',String(noMfa.length),'개','개인정보를 다루는 계정이에요','wa'],
+         ['담당자 없는 채널','1','개','안산시 단원구','cr']])
+   +note('<b>퇴사 통보를 받으면 그날 정지해주세요.</b> 인수인계는 계정을 함께 쓰는 게 아니라 후임자 계정을 먼저 발급해서 풀어요. 퇴사자 계정으로 남긴 열람 기록은 감사 때 설명할 수 없어요.','wa')
+   +'<div class="mc" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
+     +'<div class="row">'+search('aq','이름, 이메일로 찾기','280px')
+     +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 계정 <b class="mt" style="color:#101828" id="ac-cnt">0</b>개</span></div>'
+     +'<div class="row" id="ac-chips"></div></div>'
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr id="ac-th"></tr></thead><tbody id="ac-tb"></tbody></table></div>'
+     +'<div id="ac-empty" style="display:none"></div></div>';
+  $('#ac-new').addEventListener('click',function(){open('m-account')});
+  var cc=$('#ac-chips');
+  Object.keys(ROLES).forEach(function(k){
+    var n=ACCOUNTS.filter(function(u){return u.role===k}).length;
+    var b=el('button','mchip'+(aFil.indexOf('r:'+k)>=0?' on':''),ROLES[k][0]+' <span class="c mt">'+n+'</span>');b.type='button';
+    b.addEventListener('click',function(){tog('r:'+k)});cc.appendChild(b)});
+  cc.appendChild(el('span','sep'));
+  Object.keys(AC_ST).forEach(function(k){
+    var n=ACCOUNTS.filter(function(u){return u.st===k}).length;
+    if(!n)return;
+    var b=el('button','mchip'+(aFil.indexOf('s:'+k)>=0?' on':''),AC_ST[k][0]+' <span class="c mt">'+n+'</span>');b.type='button';
+    b.addEventListener('click',function(){tog('s:'+k)});cc.appendChild(b)});
+  function tog(v){var i=aFil.indexOf(v);if(i>=0)aFil.splice(i,1);else aFil.push(v);V.accounts()}
+  $('#aq').value=aq;
+  $('#aq').addEventListener('input',function(){aq=this.value;fill()});
+  $('#aq-x').addEventListener('click',function(){aq='';$('#aq').value='';fill()});
+  function fill(){
+    $('#aq-x').style.display=aq?'flex':'none';
+    var rF=aFil.filter(function(v){return v[0]==='r'}).map(function(v){return v.slice(2)});
+    var sF=aFil.filter(function(v){return v[0]==='s'}).map(function(v){return v.slice(2)});
+    var list=ACCOUNTS.filter(function(u){
+      if(rF.length&&rF.indexOf(u.role)<0)return false;
+      if(sF.length&&sF.indexOf(u.st)<0)return false;
+      if(aq&&u.n.indexOf(aq)<0&&u.email.indexOf(aq)<0)return false;
+      return true});
+    list=sortBy(list,aSort,function(u,k){return k==='n'?u.n:k==='ch'?(u.ch?chName(u.ch):'—'):k==='last'?u.last:k==='role'?ROLES[u.role][0]:u[k]||0});
+    var th=$('#ac-th');
+    th.innerHTML=sth('이름','n',aSort)+sth('역할','role',aSort)+sth('담당 채널','ch',aSort)+'<th>이메일</th>'
+      +'<th>2단계</th>'+sth('마지막 접속','last',aSort)+'<th>상태</th><th style="padding-right:20px"></th>';
+    bindSort(th,aSort,fill);
+    var tb=$('#ac-tb');tb.innerHTML='';
+    $('#ac-cnt').textContent=list.length;
+    $('#ac-empty').innerHTML=list.length?'':A.emptyBox('조건에 맞는 계정이 없어요','필터를 줄여보세요');
+    $('#ac-empty').style.display=list.length?'none':'block';
+    list.forEach(function(u){
+      var r=ROLES[u.role],st=AC_ST[u.st],tr=el('tr');
+      tr.innerHTML='<td style="padding-left:20px;font-weight:600;color:'+(u.n==='—'?'#B42318':'#101828')+'">'+esc(u.n)+'</td>'
+       +'<td>'+pill(r[0],r[1])+'</td>'
+       +'<td>'+(u.ch?chChip(u.ch):'<span style="color:#69707C">전체</span>')+'</td>'
+       +'<td class="mt" style="color:#475467">'+esc(u.email)+'</td>'
+       +'<td>'+(u.mfa?'<span class="mcap" style="color:#067647">설정</span>':'<span class="mcap" style="color:#B42318;font-weight:600">미설정</span>')+'</td>'
+       +'<td class="mt" style="color:#475467">'+u.last+'</td>'
+       +'<td>'+pill(st[0],st[1])+'</td>'
+       +'<td style="text-align:right;padding-right:20px">'
+         +(u.st==='live'?'<button class="mb mbs sus" type="button" style="color:#B42318;border-color:#FDA29B">정지</button>'
+          :u.st==='susp'?'<button class="mb mbs act" type="button">해제</button>'
+          :u.st==='wait'?'<button class="mb mbs mbp iss" type="button">발급</button>':'')+'</td>';
+      var s=tr.querySelector('.sus'),a2=tr.querySelector('.act'),i=tr.querySelector('.iss');
+      if(s)s.addEventListener('click',function(){openSusp(u)});
+      if(a2)a2.addEventListener('click',function(){u.st='live';V.accounts();toast(u.n+' 계정을 다시 열었어요','ok')});
+      if(i)i.addEventListener('click',function(){open('m-account')});
+      tb.appendChild(tr)})}
+  fill()};
+
+/* 계정 정지 — 즉시 차단이므로 사유 + 확인 */
+var suspT=null,suA=false;
+function openSusp(u){
+  suspT=u;
+  $('#su-t').innerHTML='<b>'+esc(u.n)+'</b> 계정을 정지해요. '+(u.ch?esc(chName(u.ch))+' ':'')
+    +'접속이 <b>즉시</b> 막히고, 진행 중이던 작업은 저장되지 않아요.';
+  $('#su-r').value='';suA=false;setSuA();updSu();open('m-suspend')}
+function setSuA(){var a=$('#su-a');a.className='cbx'+(suA?' on':'');a.setAttribute('aria-checked',suA?'true':'false')}
+function updSu(){var ok=$('#su-r').value&&suA,b=$('#su-ok');
+  b.style.opacity=ok?'1':'.8';b.style.cursor=ok?'pointer':'not-allowed';b.dataset.ok=ok?'1':'';
+  b.setAttribute('aria-disabled',ok?'false':'true')}
+$('#su-r').addEventListener('change',updSu);
+$('#su-aw').addEventListener('click',function(e){e.preventDefault();suA=!suA;setSuA();updSu()});
+$('#su-ok').addEventListener('click',function(){
+  if(!this.dataset.ok)return;
+  var r=$('#su-r').value;
+  suspT.st='susp';suspT.note=r;
+  closeAll();V.accounts();
+  toast(suspT.n+' 계정을 정지했어요',"ok");
+  if(r==='퇴사'&&suspT.ch)
+    setTimeout(function(){toast(chName(suspT.ch)+'에 담당자가 없어요. 후임자 계정을 발급해주세요','wa',
+      '계정 발급',function(){open('m-account')})},600)});
+$('#ac-ok').addEventListener('click',function(){
+  var n=$('#ac-n').value.trim();
+  if(!n){toast('이름을 입력해주세요','cr');$('#ac-n').focus();return}
+  ACCOUNTS.unshift({id:'U'+(ACCOUNTS.length+10),n:n,role:$('#ac-r').value,ch:$('#ac-c').value,
+    st:'live',email:$('#ac-e').value||'—',last:'—',made:'2026-08-24',mfa:false,note:'발급 직후'});
+  closeAll();V.accounts();
+  toast(n+' 계정을 발급했어요. 2단계 인증 설정 안내가 갔어요','ok','되돌리기',function(){ACCOUNTS.shift();V.accounts()})});
+})(Sup);

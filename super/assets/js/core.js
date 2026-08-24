@@ -144,6 +144,8 @@ document.addEventListener('keydown',function(e){
 var BADGE={
  channels:function(){return {k:'n',v:Sup.CHANNELS.length}},
  content:function(){return {k:'n',v:Sup.CONTENT.length}},
+ accounts:function(){var n=Sup.ACCOUNTS.filter(function(u){return u.st==='wait'}).length;
+   return n?{k:'cr',v:n}:null},
  challenges:function(){var n=Sup.CHALLENGES.filter(function(q){return q.st==='review'}).length;
    return n?{k:'cr',v:n}:null},
  cs:function(){var n=Sup.TICKETS.filter(function(t){return t.st!=='done'}).length;
@@ -153,11 +155,11 @@ var BADGE={
  anomaly:function(){var n=Sup.ALERTS.filter(function(a){return a.st==='open'}).length;
    return n?{k:'cr',v:n}:null}};
 var NAV=[['운영',[['home','운영 현황']]],
- ['채널',[['channels','채널 관리'],['cohorts','기수 관리']]],
+ ['채널',[['channels','채널 관리'],['cohorts','기수 관리'],['accounts','계정·권한']]],
  ['프로그램',[['programs','프로그램 편성'],['content','콘텐츠'],['challenges','챌린지']]],
  ['소통',[['cs','CS 접수'],['push','전 채널 발송']]],
  ['감사',[['anomaly','이상 열람 탐지']]]];
-var TITLES={home:'운영 현황',channels:'채널 관리',channel:'채널 상세',cohorts:'기수 관리',
+var TITLES={home:'운영 현황',channels:'채널 관리',channel:'채널 상세',cohorts:'기수 관리',accounts:'계정·권한',
  programs:'프로그램 편성',content:'콘텐츠',challenges:'챌린지',challengenew:'챌린지 만들기',
  cs:'CS 접수',csdetail:'문의 상세',push:'전 채널 발송',pushnew:'발송 만들기',anomaly:'이상 열람 탐지'};
 var V={},cur='home';

@@ -321,6 +321,9 @@ $('#al-esc').addEventListener('click',function(){
   if(curAl)curAl.st='esc';closeAll();V.anomaly();toast('상부 보고로 올렸어요','wa')});
 
 /* ══════ 초기화 ══════ */
+/* 계정 발급 모달의 채널 목록은 데이터에서 채운다 */
+$('#ac-c').innerHTML='<option value="">전체 (운영팀)</option>'
+  +CHANNELS.map(function(c){return '<option value="'+c.id+'">'+esc(c.n)+'</option>'}).join('');
 A.buildNav();
 go('home');
 })(Sup);

@@ -43,6 +43,7 @@
       <section class="pane" data-pane="channels"><div id="v-channels" class="gap"></div></section>
       <section class="pane" data-pane="channel"><div id="v-channel" class="gap"></div></section>
       <section class="pane" data-pane="cohorts"><div id="v-cohorts" class="gap"></div></section>
+      <section class="pane" data-pane="accounts"><div id="v-accounts" class="gap"></div></section>
       <section class="pane" data-pane="programs"><div id="v-programs" class="gap"></div></section>
       <section class="pane" data-pane="content"><div id="v-content" class="gap"></div></section>
       <section class="pane" data-pane="challenges"><div id="v-challenges" class="gap"></div></section>
@@ -118,6 +119,32 @@
   <h3 id="cl-t">활동 배정<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody" id="cl-b"></div>
   <div class="mfoot"><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="cl-ok">배정</button></div>
+</div></div>
+
+<!-- 계정 정지 — 즉시 차단 -->
+<div class="mask" id="m-suspend"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-suspend-h">
+  <h3 id="m-suspend-h" style="color:#B42318">계정 정지<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody">
+    <div class="note" style="background:#FEF3F2;color:#B42318"><span id="su-t">—</span></div>
+    <div><label class="flab" for="su-r">정지 사유 <span style="color:#B42318" aria-hidden="true">*</span><span class="sr">(필수)</span></label>
+      <select class="mfld" id="su-r" style="width:100%"><option value="">사유를 선택하세요</option><option>퇴사</option><option>기수 종료</option><option>휴직</option><option>권한 회수</option><option>보안 사고 의심</option></select>
+      <p class="mcap" style="margin:7px 0 0">퇴사를 고르면 후임자 계정 발급을 안내해요.</p></div>
+    <label style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:#475467;cursor:pointer" id="su-aw"><span class="cbx" id="su-a" role="checkbox" tabindex="0" aria-checked="false" aria-label="즉시 차단됨을 확인했어요"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span>즉시 차단됨을 확인했어요</label>
+  </div>
+  <div class="mfoot"><span id="su-hint" class="sr">사유를 선택하고 확인란에 체크해야 정지할 수 있어요</span><button class="mb" type="button" data-close>취소</button><button class="mb" type="button" id="su-ok" aria-disabled="true" aria-describedby="su-hint" style="background:#B42318;border-color:#B42318;color:#fff;opacity:.8;cursor:not-allowed">계정 정지</button></div>
+</div></div>
+
+<!-- 계정 발급 -->
+<div class="mask" id="m-account"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-account-h">
+  <h3 id="m-account-h">계정 발급<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody">
+    <div><label class="flab" for="ac-n">이름</label><input class="mfld" id="ac-n" style="width:100%" placeholder="예) 홍길동"></div>
+    <div><label class="flab" for="ac-e">이메일</label><input class="mfld" id="ac-e" type="email" style="width:100%" placeholder="예) hong@example.go.kr"></div>
+    <div><label class="flab" for="ac-r">역할</label><select class="mfld" id="ac-r" style="width:100%"><option value="mgr">채널관리자</option><option value="view">조회 전용</option><option value="ops">운영팀</option></select></div>
+    <div><label class="flab" for="ac-c">담당 채널</label><select class="mfld" id="ac-c" style="width:100%"></select></div>
+    <div class="note" style="background:#F4F3FF;color:#53389E">발급하면 2단계 인증 설정 안내가 이메일로 나가요. 설정 전까지는 개인정보 원문을 열람할 수 없어요.</div>
+  </div>
+  <div class="mfoot"><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="ac-ok">발급</button></div>
 </div></div>
 
 <script src="assets/js/core.js"></script>
