@@ -334,7 +334,7 @@ V.audit=function(){
   h.innerHTML=ph('열람 기록','개인정보를 열람하거나 내려받은 이력이에요. 2년간 보관돼요.','<button class="mb" id="au-dl">점검표 증빙용 내려받기</button>')
    +note('보건소 관리·감독 점검표의 <b>접속기록 보관</b> 항목 증빙으로 그대로 제출할 수 있어요.','in')
    +kpi([['이번 달 열람',fmt(AUDIT.length),'건'],['명단 내려받기','6','회'],['원문 열람','38','건'],
-         ['사유 없이 열람','0','건','사유는 반드시 남겨야 해요','ok']])
+         ['기록 안 된 열람','0','건','열람은 기록이 자동으로 남아요','ok']])
    +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="au-f"></div>'
    +'<div class="scroll"><table class="mtb"><thead><tr id="au-th"></tr></thead><tbody id="au-tb"></tbody></table></div><div class="pager" id="au-pg"></div></div>';
   $('#au-dl').addEventListener('click',function(){toast('증빙용 파일을 내려받았어요','ok')});

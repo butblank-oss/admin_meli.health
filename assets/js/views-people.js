@@ -123,6 +123,9 @@ V.people=function(keep){
      +'<td class="mt" style="color:#69707C;padding-right:20px">'+p.app+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(pSel[p.id])delete pSel[p.id];else pSel[p.id]=1;pAll=false;V.people(1)});
     tr.querySelector('.rv').addEventListener('click',function(e){e.stopPropagation();askReveal(p,tr)});
+    var mn=tr.querySelector('.mask-n');
+    mn.style.cursor='pointer';mn.title='누르면 원문이 보여요';
+    mn.addEventListener('click',function(e){e.stopPropagation();askReveal(p,tr)});
     tr.addEventListener('click',function(e){if(!e.target.closest('button')&&!e.target.closest('.cbx'))openPerson(p,'people')});
     tb.appendChild(tr)});
   pPager.render($('#p-pg'));
@@ -172,22 +175,17 @@ function renderBulk(){
   var cl=el('button','lb','선택 해제');cl.style.marginLeft='auto';cl.addEventListener('click',function(){pSel={};pAll=false;V.people(1)});b.appendChild(cl)}
 
 /* reveal */
-var revC=null,revT=null;
+/* 원문 보기 — 클릭 즉시 토글 (2026-08-24 사용자 결정으로 사유 입력 팝업 폐지).
+   30초 자동 재마스킹과 열람 기록은 그대로 유지하고, 사유는 자동 기재한다.
+   타이머는 행마다 따로 둔다 — 전역 하나면 두 행을 연속으로 열었을 때 첫 행이 안 가려진다. */
 function askReveal(p,tr){
   if(tr.dataset.rev==='1'){hideRev(p,tr);return}
-  revC={p:p,tr:tr};$('#rev-t').textContent=p.name+' · '+p.phone+' ('+p.org+')';
-  $('#rev-r').value='';$('#rev-e').style.display='none';$('#rev-r').classList.remove('err');open('m-reveal')}
-$('#rev-r').addEventListener('change',function(){$('#rev-e').style.display='none';this.classList.remove('err')});
-$('#rev-ok').addEventListener('click',function(){
-  if(!$('#rev-r').value){$('#rev-e').style.display='flex';$('#rev-r').classList.add('err');return}
-  if(!revC||!revC.tr||!revC.tr.isConnected){closeAll();toast('목록이 새로고침되어 다시 시도해야 해요','wa');return}
-  var p=revC.p,tr=revC.tr;
   tr.querySelector('.mask-n').textContent=p.full;tr.querySelector('.mask-p').textContent=p.phoneFull;
   tr.querySelector('.rv').textContent='가리기';tr.dataset.rev='1';tr.style.background='#FFFAEB';
-  addAudit('원문 열람','1건',$('#rev-r').value);
+  addAudit('원문 열람','1건','목록에서 바로 보기');
   toast('원문을 열었어요. 30초 뒤 자동으로 가려져요','wa');
-  revT=setTimeout(function(){if(tr.dataset.rev==='1')hideRev(p,tr)},30000);closeAll()});
-function hideRev(p,tr){clearTimeout(revT);
+  tr._revT=setTimeout(function(){if(tr.dataset.rev==='1')hideRev(p,tr)},30000)}
+function hideRev(p,tr){clearTimeout(tr._revT);
   tr.querySelector('.mask-n').textContent=p.name;tr.querySelector('.mask-p').textContent=p.phone;
   tr.querySelector('.rv').textContent='보기';tr.dataset.rev='';tr.style.background=''}
 
