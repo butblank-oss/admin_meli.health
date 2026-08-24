@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="맬리 슈퍼어드민 — 원메딕스 운영팀용 플랫폼 관리 콘솔 프로토타입">
+<title>맬리 슈퍼어드민</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../assets/fonts/pretendard-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/pretendard-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/css/app.css">
+<link rel="stylesheet" href="assets/css/super.css">
+</head>
+<body>
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="app">
+  <div class="top" role="banner">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:20px;height:20px;border-radius:6px;background:#7C5CFF;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 2.5 15.5 6v6L9 15.5 2.5 12V6z"/></svg></span>
+      <span style="font-size:14.5px;font-weight:700;letter-spacing:-0.024em;color:#fff">맬리 슈퍼어드민</span>
+    </div>
+    <span style="width:1px;height:20px;background:rgba(255,255,255,.16)"></span>
+    <span class="mpill" style="background:rgba(255,255,255,.1);color:#D9CEFF">원메딕스 운영팀</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <a href="../" class="mb" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500;text-decoration:none">채널 어드민 보기 ↗</a>
+      <button class="mb" type="button" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px">3</span></button>
+      <button class="mb" type="button" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;padding-left:6px"><span style="width:24px;height:24px;border-radius:999px;background:#6941C6;color:#fff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center" aria-hidden="true">이</span>이운영<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#A9B2C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
+    </div>
+  </div>
+
+  <div class="mid">
+    <aside class="side">
+      <nav id="nav" aria-label="주요 메뉴"></nav>
+      <div style="margin-top:auto;padding:12px;border-top:1px solid #F2F4F7">
+        <div class="mcap">여기서 만든 것이 전 채널에 반영돼요</div>
+        <div class="mcap mt" style="margin-top:2px;color:#69707C">마지막 배치 08-24 03:00 성공</div>
+      </div>
+    </aside>
+
+    <main class="main" id="main" tabindex="-1">
+      <section class="pane on" data-pane="home"><div id="v-home" class="gap"></div></section>
+      <section class="pane" data-pane="channels"><div id="v-channels" class="gap"></div></section>
+      <section class="pane" data-pane="channel"><div id="v-channel" class="gap"></div></section>
+      <section class="pane" data-pane="cohorts"><div id="v-cohorts" class="gap"></div></section>
+      <section class="pane" data-pane="programs"><div id="v-programs" class="gap"></div></section>
+      <section class="pane" data-pane="content"><div id="v-content" class="gap"></div></section>
+      <section class="pane" data-pane="challenges"><div id="v-challenges" class="gap"></div></section>
+      <section class="pane" data-pane="challengenew"><div id="v-challengenew" class="gap"></div></section>
+      <section class="pane" data-pane="cs"><div id="v-cs" class="gap"></div></section>
+      <section class="pane" data-pane="csdetail"><div id="v-csdetail" class="gap"></div></section>
+      <section class="pane" data-pane="push"><div id="v-push" class="gap"></div></section>
+      <section class="pane" data-pane="pushnew"><div id="v-pushnew" class="gap"></div></section>
+      <section class="pane" data-pane="anomaly"><div id="v-anomaly" class="gap"></div></section>
+    </main>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- 기수 종료 — 되돌릴 수 없는 작업 -->
+<div class="mask" id="m-cohort-end"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-cohort-end-h">
+  <h3 id="m-cohort-end-h" style="color:#B42318">기수 종료<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody">
+    <div class="note" style="background:#FEF3F2;color:#B42318"><span id="ce-t">—</span></div>
+    <div><span class="flab">참여자 처리</span>
+      <label style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#475467;cursor:pointer;padding:9px 0" id="ce-aw1"><span class="cbx" id="ce-a1" role="checkbox" tabindex="0" aria-checked="true" aria-label="참여자를 만료 상태로 일괄 전환"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span><span>참여자를 <b>만료</b> 상태로 일괄 전환<span class="mcap" style="display:block">앱 이용이 막혀요</span></span></label>
+      <label style="display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:#475467;cursor:pointer;padding:9px 0;border-top:1px solid #F2F4F7" id="ce-aw2"><span class="cbx" id="ce-a2" role="checkbox" tabindex="0" aria-checked="false" aria-label="진행 중 챌린지를 중단 처리"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span><span>진행 중 챌린지를 <b>중단</b> 처리<span class="mcap" style="display:block">달성 직전인 분들의 기록이 사라져요</span></span></label></div>
+    <div><label class="flab" for="ce-r">종료 사유 <span style="color:#B42318" aria-hidden="true">*</span><span class="sr">(필수)</span></label>
+      <select class="mfld" id="ce-r" style="width:100%"><option value="">사유를 선택하세요</option><option>기간 만료</option><option>보건소 요청</option><option>계약 종료</option><option>기관 사정</option></select></div>
+    <label style="display:flex;gap:9px;align-items:center;font-size:13.5px;color:#475467;cursor:pointer" id="ce-aw"><span class="cbx" id="ce-a" role="checkbox" tabindex="0" aria-checked="false" aria-label="되돌릴 수 없음을 확인했어요"><svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="b"></span></span>되돌릴 수 없음을 확인했어요</label>
+  </div>
+  <div class="mfoot"><span id="ce-hint" class="sr">사유를 선택하고 확인란에 체크해야 종료할 수 있어요</span><button class="mb" type="button" data-close>취소</button><button class="mb" type="button" id="ce-ok" aria-disabled="true" aria-describedby="ce-hint" style="background:#B42318;border-color:#B42318;color:#fff;opacity:.8;cursor:not-allowed">기수 종료</button></div>
+</div></div>
+
+<!-- 검사 판정 기준 변경 — SP-4 소급 적용 경고 -->
+<div class="mask" id="m-criteria"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-criteria-h">
+  <h3 id="m-criteria-h">판정 기준 변경<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody" id="cr-b"></div>
+  <div class="mfoot"><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="cr-ok">적용</button></div>
+</div></div>
+
+<!-- 전 채널 발송 확인 — SP-7 안전장치 -->
+<div class="mask" id="m-push-confirm"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-push-confirm-h">
+  <h3 id="m-push-confirm-h">발송 전 확인<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody" id="pc-b"></div>
+  <div class="mfoot"><span id="pc-hint" class="sr">받는 사람 수를 직접 입력하고 확인란에 체크해야 발송할 수 있어요</span><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="pc-ok" aria-disabled="true" aria-describedby="pc-hint" style="opacity:.8;cursor:not-allowed">발송</button></div>
+</div></div>
+
+<!-- 이상 열람 조치 -->
+<div class="mask" id="m-alert"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-alert-h">
+  <h3 id="m-alert-h">이상 열람 상세<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody" id="al-b"></div>
+  <div class="mfoot"><button class="mb" type="button" data-close>닫기</button><button class="mb" type="button" id="al-esc" style="color:#B42318;border-color:#FDA29B">상부 보고</button><button class="mb mbp" type="button" id="al-ack">확인 완료 처리</button></div>
+</div></div>
+
+<!-- 채널 등록 -->
+<div class="mask" id="m-channel-new"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-channel-new-h">
+  <h3 id="m-channel-new-h">채널 등록<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody">
+    <div><label class="flab" for="cn-n">기관명</label><input class="mfld" id="cn-n" style="width:100%" placeholder="예) 인천 연수구 치매안심센터"></div>
+    <div><label class="flab" for="cn-r">지역</label><select class="mfld" id="cn-r" style="width:100%"><option>인천</option><option>경기</option><option>서울</option><option>기타</option></select></div>
+    <div><label class="flab" for="cn-d">개소 예정일</label><input type="date" class="mfld" id="cn-d" value="2026-09-14" style="width:100%"></div>
+    <div class="note" style="background:#F4F3FF;color:#53389E">등록해도 담당자 계정을 배정하기 전까지는 채널 어드민에 나타나지 않아요.</div>
+  </div>
+  <div class="mfoot"><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="cn-ok">등록</button></div>
+</div></div>
+
+<!-- 콘텐츠 상세 -->
+<div class="mask" id="m-content"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="ct-t">
+  <h3 id="ct-t">콘텐츠<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody" id="ct-b"></div>
+  <div class="mfoot"><button class="mb" type="button" data-close>닫기</button><button class="mb mbp" type="button" id="ct-save">저장</button></div>
+</div></div>
+
+<!-- 편성 칸 편집 -->
+<div class="mask" id="m-cell"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="cl-t">
+  <h3 id="cl-t">활동 배정<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
+  <div class="mbody" id="cl-b"></div>
+  <div class="mfoot"><button class="mb" type="button" data-close>취소</button><button class="mb mbp" type="button" id="cl-ok">배정</button></div>
+</div></div>
+
+<script src="assets/js/core.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/views-channel.js"></script>
+<script src="assets/js/views-program.js"></script>
+<script src="assets/js/views-comm.js"></script>
+</body>
+</html>

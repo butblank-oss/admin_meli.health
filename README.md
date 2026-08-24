@@ -1,7 +1,13 @@
-# 맬리 케어센터 채널 어드민
+# 맬리 어드민
 
-치매안심센터 **채널관리자**가 쓰는 운영 콘솔 프로토타입입니다.
-업로드된 단일 HTML 프로토타입을 화면과 동작은 그대로 둔 채 배포 가능한 구조로 분리했습니다.
+어드민 **두 개**가 들어 있습니다. 사용자·권한·화면이 겹치지 않습니다.
+
+| | 쓰는 사람 | 주소 | 강조색 |
+|---|---|---|---|
+| **채널 어드민** | 치매안심센터 채널관리자 | [`/`](https://butblank-oss.github.io/admin_meli.health/) | 초록 |
+| **슈퍼어드민** | 원메딕스 운영팀 | [`/super/`](https://butblank-oss.github.io/admin_meli.health/super/) | 보라 |
+
+색을 다르게 한 것은 취향이 아니라 **안전장치**입니다. 두 어드민을 헷갈리면 전 채널에 오발송이 납니다.
 
 용도는 두 가지입니다 — **기관 시연**과 **개발 착수 전 기준 문서**.
 
@@ -52,6 +58,7 @@ python3 -m http.server 8000
 ## 구조
 
 ```
+── 채널 어드민 ──────────────────────────────
 index.html                  화면 뼈대 + 모달 9개
 assets/css/app.css          전체 스타일 (Pretendard @font-face 포함)
 assets/fonts/*.woff2        Pretendard 400/500/700
@@ -59,8 +66,22 @@ assets/js/core.js           유틸·공통 컴포넌트·더미 데이터·라�
 assets/js/views-people.js   오늘 / 참여자 / 참여자 상세
 assets/js/views-program.js  활동 현황 / 상담실 / 일정 / 챌린지
 assets/js/views-report.js   푸시 / 리포트 / 신청 / 열람 기록 + 초기화
+
+── 슈퍼어드민 ───────────────────────────────
+super/index.html            화면 13개 + 모달 7개
+super/assets/css/super.css  강조색만 덮어씀 (app.css를 먼저 불러옴)
+super/assets/js/core.js     헬퍼·라우팅·사이드바
+super/assets/js/data.js     채널 6 / 콘텐츠 20 / CS 14 / 발송 6 / 열람 148건
+super/assets/js/views-channel.js   운영 현황 / 채널 / 기수
+super/assets/js/views-program.js   편성 / 콘텐츠 / 챌린지
+super/assets/js/views-comm.js      CS / 발송 / 이상 열람 + 초기화
+
 vercel.json                 캐시·보안 헤더
 ```
+
+슈퍼어드민은 채널 어드민의 `assets/css/app.css`와 폰트를 **그대로 재사용**합니다.
+`super.css`는 강조색만 덮어씁니다. JS 헬퍼는 프로토타입이라 중복을 허용했습니다
+(공유 파일로 빼면 검증 끝난 채널 어드민을 건드려야 해서 미뤘습니다).
 
 `core.js`가 `App` 네임스페이스를 만들고, 뷰 파일 3개가 `App.V`에 화면을 등록한 뒤
 마지막 `views-report.js`가 `buildNav()` → `go('today')`로 부팅합니다. **로드 순서가 중요합니다.**
