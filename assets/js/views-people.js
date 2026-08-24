@@ -75,7 +75,7 @@ V.people=function(keep){
       ['만료','st:expired',cnt(function(p){return p.status==='expired'})],['회원탈퇴','st:withdrawn',cnt(function(p){return p.status==='withdrawn'})],['|',''],
     ].concat(ORGS.map(function(o){return [o,'org:'+o,cnt(function(p){return p.org===o})]})).concat([['|',''],
       ['오늘 수행','act:today',cnt(function(p){return p.todayN>0})],['최근 활동','act:최근 활동',cnt(function(p){return p.actBand==='최근 활동'})],
-      ['7일 무활동','act:7일 무활동',cnt(function(p){return p.actBand==='7일 무활동'})],
+      ['7일+ 무활동','act:7일+ 무활동',cnt(function(p){return p.actBand==='7일+ 무활동'})],
       ['14일+ 무활동','act:14일+ 무활동',cnt(function(p){return p.actBand==='14일+ 무활동'})],
       ['무활동','act:무활동',cnt(function(p){return p.actBand==='무활동'})]]);
     var cb=$('#p-chips');

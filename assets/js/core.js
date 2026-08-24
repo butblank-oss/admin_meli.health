@@ -190,7 +190,7 @@ for(var i=0;i<822;i++){(function(i){
   p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
   p.age=2026-p.birth;
   p.ageBand=p.age<60?'60대 미만':p.age<70?'60대':p.age<80?'70대':'80대 이상';
-  p.actBand=p.days===0?'무활동':p.last<=7?'최근 활동':p.last<=14?'7일 무활동':'14일+ 무활동';
+  p.actBand=p.days===0?'무활동':p.last<=7?'최근 활동':p.last<=14?'7일+ 무활동':'14일+ 무활동';
   PEOPLE.push(p);byId[p.id]=p})(i)}
 
 function dayRec(p,d){
