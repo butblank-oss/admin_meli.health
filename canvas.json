@@ -1,0 +1,153 @@
+{
+  "pages": [
+    {
+      "id": "screens",
+      "name": "화면"
+    },
+    {
+      "id": "system",
+      "name": "패턴 · 컴포넌트"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "page": "screens",
+      "title": "오늘",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "file": "Participants.dc.html",
+      "page": "screens",
+      "title": "참여자",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 1100
+    },
+    {
+      "file": "ParticipantDetail.dc.html",
+      "page": "screens",
+      "title": "참여자 상세 — 활동 내역",
+      "x": 3120,
+      "y": 0,
+      "w": 1440,
+      "h": 1020
+    },
+    {
+      "file": "Analytics.dc.html",
+      "page": "screens",
+      "title": "활동 현황 — 참여 지속",
+      "x": 4680,
+      "y": 0,
+      "w": 1440,
+      "h": 1080
+    },
+    {
+      "file": "Report.dc.html",
+      "page": "screens",
+      "title": "월간 리포트",
+      "x": 6240,
+      "y": 0,
+      "w": 1440,
+      "h": 1020
+    },
+    {
+      "file": "Consult.dc.html",
+      "page": "screens",
+      "title": "상담실",
+      "x": 7800,
+      "y": 0,
+      "w": 1440,
+      "h": 1060
+    },
+    {
+      "file": "Schedule.dc.html",
+      "page": "screens",
+      "title": "프로그램 일정",
+      "x": 9360,
+      "y": 0,
+      "w": 1440,
+      "h": 940
+    },
+    {
+      "file": "Quest.dc.html",
+      "page": "screens",
+      "title": "챌린지",
+      "x": 10920,
+      "y": 0,
+      "w": 1440,
+      "h": 720
+    },
+    {
+      "file": "QuestDetail.dc.html",
+      "page": "screens",
+      "title": "챌린지 상세",
+      "x": 12480,
+      "y": 0,
+      "w": 1440,
+      "h": 1180
+    },
+    {
+      "file": "Apply.dc.html",
+      "page": "screens",
+      "title": "참여 신청",
+      "x": 14040,
+      "y": 0,
+      "w": 1440,
+      "h": 1160
+    },
+    {
+      "file": "Audit.dc.html",
+      "page": "screens",
+      "title": "열람 기록",
+      "x": 15600,
+      "y": 0,
+      "w": 1440,
+      "h": 1000
+    },
+    {
+      "file": "Patterns.dc.html",
+      "page": "system",
+      "title": "인터랙션 패턴",
+      "x": 0,
+      "y": 0,
+      "w": 1400,
+      "h": 3180
+    },
+    {
+      "file": "Components.dc.html",
+      "page": "system",
+      "title": "컴포넌트",
+      "x": 1520,
+      "y": 0,
+      "w": 1400,
+      "h": 1560
+    }
+  ],
+  "annotations": [
+    {
+      "id": "note-screens",
+      "page": "screens",
+      "x": 0,
+      "y": -260,
+      "w": 620,
+      "text": "채널관리자 어드민 · 화면 11개\n\n왼쪽부터 사용 순서대로 — 매일 보는 것(오늘·참여자·활동현황·상담실),\n가끔 보는 것(일정·챌린지, 읽기 전용), 월 1회(리포트·신청·열람기록).\n\n표는 어디서나 컬럼을 눌러 정렬하고, 목록은 20/50/100개씩 볼 수 있어요."
+    },
+    {
+      "id": "note-system",
+      "page": "system",
+      "x": 0,
+      "y": -200,
+      "w": 620,
+      "text": "화면마다 다르게 만들면 안 되는 약속들.\n정렬·선택·검색·되돌리기처럼 사람들이 이미 알고 있는 패턴이에요.\n\n특히 02(선택)은 사고로 이어지는 부분이라 꼭 확인해주세요."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "screens"
+  }
+}

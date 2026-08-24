@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>오늘 (대시보드) — 맬리 케어센터 채널 어드민</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-0.014em}
+a{color:#077A50;text-decoration:none}a:hover{color:#065C3D}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
+table{border-collapse:collapse;width:100%}
+th{text-align:left;font-size:13px;font-weight:500;color:#68727F;padding:0 16px;height:44px;white-space:nowrap;background:transparent;border-bottom:1px solid #EDEEF1}
+td{padding:0 16px;height:52px;font-size:14px;color:#15181D;border-bottom:1px solid #F5F6F8;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#FAFBFC}
+
+.card{background:#FFFFFF;border:1px solid #F1F2F4;border-radius:14px;padding:24px}
+.card.flush{padding:0;overflow:hidden}
+.plain{background:#FFFFFF;border-radius:14px}
+
+.ptitle{font-size:26px;font-weight:700;letter-spacing:-0.038em;color:#15181D;line-height:1.3}
+.psub{font-size:14px;color:#68727F;margin-top:7px;line-height:1.6}
+.h2{font-size:17px;font-weight:700;letter-spacing:-0.03em;color:#15181D}
+.h3{font-size:15px;font-weight:700;letter-spacing:-0.025em;color:#15181D}
+.metric{font-size:30px;font-weight:700;letter-spacing:-0.045em;color:#15181D;font-variant-numeric:tabular-nums;line-height:1.25}
+.metric small{font-size:15px;font-weight:600;color:#A0A8B3;margin-left:3px;letter-spacing:-0.02em}
+.lbl{font-size:13.5px;font-weight:500;color:#68727F}
+.cap{font-size:13px;color:#68727F}
+.body{font-size:14px;color:#4A5261;line-height:1.65}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:7px;letter-spacing:-0.008em;line-height:1.35}
+.dot{width:5px;height:5px;border-radius:999px;flex:none}
+
+.btn{height:38px;padding:0 16px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;font-weight:600;color:#4A5261;cursor:pointer;font-family:inherit;letter-spacing:-0.014em;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:#E9ECEF}
+.btn.pri{background:#13BD7E;color:#042E20}
+.btn.pri:hover{background:#0FA76D}
+.btn.dark{background:#20242B;color:#FFFFFF}
+.btn.dark:hover{background:#15181D}
+.btn.dgr{background:#FEF1F0;color:#C0362B}
+.btn.dgr:hover{background:#FDE3E1}
+.btn.gho{background:transparent;color:#68727F}
+.btn.gho:hover{background:#F2F4F6}
+.btn.sm{height:32px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn.xs{height:26px;padding:0 9px;font-size:12.5px;border-radius:7px}
+
+.nav{display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;margin:0 10px;border-radius:10px;font-size:14.5px;font-weight:500;color:#4A5261;cursor:pointer}
+.nav:hover{background:#F5F6F8}
+.nav.on{background:#F1FBF7;color:#0A6B4A;font-weight:700}
+.navgrp{padding:20px 22px 6px;font-size:12px;font-weight:600;color:#68727F}
+.badge{margin-left:auto;font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;font-variant-numeric:tabular-nums}
+
+.chip{height:36px;padding:0 14px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;font-weight:500;color:#4A5261;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;letter-spacing:-0.014em}
+.chip:hover{background:#E9ECEF}
+.chip.on{background:#E4F8EF;color:#0A6B4A;font-weight:700}
+.chip .c{font-variant-numeric:tabular-nums;color:#A0A8B3;font-size:13px}
+.chip.on .c{color:#3E9E78}
+
+.fld{height:38px;padding:0 14px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;color:#15181D;font-family:inherit;letter-spacing:-0.014em}
+.fld::placeholder{color:#A0A8B3}
+.sect{display:flex;flex-direction:column;gap:14px}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 900px; display: flex; background: #FFFFFF; color: #15181D; overflow: hidden">
+<aside style="width: 236px; flex: none; background: #FFFFFF; display: flex; flex-direction: column; padding: 26px 0 20px"><div style="padding: 0 22px 2px; display: flex; align-items: center; gap: 8px"><span style="width: 22px; height: 22px; border-radius: 7px; background: #13BD7E; display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="#042E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg></span><span style="font-size: 16px; font-weight: 700; letter-spacing: -0.04em; color: #15181D">맬리 케어센터</span></div><div style="margin: 18px 10px 2px; padding: 12px 12px; background: #F7F8F9; border-radius: 10px; cursor: pointer"><div style="display: flex; align-items: center; gap: 6px"><span style="font-size: 14px; font-weight: 700; color: #15181D; letter-spacing: -0.03em; line-height: 1.4">인천 남동구 치매안심센터</span><svg style="margin-left: auto; flex: none" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#A0A8B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5 10 12.5 15 7.5"/></svg></div><div style="font-size: 12.5px; color: #68727F; margin-top: 4px; font-variant-numeric: tabular-nums">3기 · 진행 171일째</div></div><div class="navgrp">운영</div><div class="nav on"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 10 2.5 17 8v8.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg> 오늘 <span class="badge" style="background: #FEF1F0; color: #C0362B">3</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 17v-1.5a3 3 0 0 0-3-3h-5a3 3 0 0 0-3 3V17"/><circle cx="8" cy="6.5" r="3"/><path d="M17.5 17v-1.5a3 3 0 0 0-2.2-2.9"/></svg> 참여자 <span class="badge" style="background: #F2F4F6; color: #A0A8B3">822</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h14M6 14V9M10 14V4M14 14V11"/></svg> 활동 현황 </div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 11.5a2 2 0 0 1-2 2H7.5L4 16.5V5a2 2 0 0 1 2-2h9.5a2 2 0 0 1 2 2z"/></svg> 상담실 <span class="badge" style="background: #FEF1F0; color: #C0362B">4</span></div><div class="navgrp">프로그램</div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2.5"/><path d="M3 8h14M7 2v3M13 2v3"/></svg> 프로그램 일정 <span class="badge" style="background: #F2F4F6; color: #A0A8B3; font-weight: 500">읽기</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2.3"/></svg> 챌린지 <span class="badge" style="background: #F2F4F6; color: #A0A8B3; font-weight: 500">읽기</span></div><div class="navgrp">행정</div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5H6A2 2 0 0 0 4 4.5v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z"/><path d="M11.5 2.5V7H16"/></svg> 월간 리포트 </div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 17v-1.5a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3V17"/><circle cx="7.5" cy="6.5" r="3"/><path d="M15.5 7v4M17.5 9h-4"/></svg> 참여 신청 <span class="badge" style="background: #FEF1F0; color: #C0362B">111</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h12M4 10h12M4 15h7"/></svg> 열람 기록 </div><div style="margin-top: auto; padding: 18px 22px 0; display: flex; align-items: center; gap: 10px"><span style="width: 30px; height: 30px; border-radius: 999px; background: #F2F4F6; color: #68727F; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; flex: none">김</span><span><span style="display: block; font-size: 13.5px; font-weight: 600; color: #15181D">김주무 주무관</span><span style="display: block; font-size: 12.5px; color: #A0A8B3">채널관리자</span></span></div></aside>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F7F8F9">
+  <div style="flex: 1; padding: 34px 36px 32px; display: flex; flex-direction: column; gap: 22px; overflow: hidden">
+    <div style="display: flex; align-items: flex-start; gap: 16px">
+      <div><div class="ptitle">오늘</div><div class="psub">8월 21일 목요일</div></div>
+      
+    </div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px">
+<div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center">3기 대상자</div><div class="metric" style="margin-top: 9px; color: #15181D">822<small>명</small></div><div style="margin-top: 7px; font-size: 12.5px; font-weight: 500; color: #68727F">1기 230 · 2기 714</div></div>
+<div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center">이번 주 활동자</div><div class="metric" style="margin-top: 9px; color: #15181D">191<small>명</small></div><div style="margin-top: 7px; font-size: 12.5px; font-weight: 500; color: #0A6B4A">전주보다 6명 늘었어요</div></div>
+<div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center"><span class="dot" style="background: #F79009; margin-right: 6px"></span>14일 넘게 활동이 없어요</div><div class="metric" style="margin-top: 9px; color: #A8620A">184<small>명</small></div><div style="margin-top: 7px; font-size: 12.5px; font-weight: 500; color: #A8620A">지난주보다 21명 늘었어요</div></div>
+<div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center"><span class="dot" style="background: #F04438; margin-right: 6px"></span>처리 안 된 신청</div><div class="metric" style="margin-top: 9px; color: #C0362B">111<small>건</small></div><div style="margin-top: 7px; font-size: 12.5px; font-weight: 500; color: #C0362B">가장 오래된 건 42일째</div></div>
+</div>
+
+<div class="card flush">
+  <div style="padding: 22px 24px 14px"><span class="h2">처리할 일</span></div>
+  <div style="display: flex; align-items: center; gap: 14px; padding: 14px 24px; "><span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #FEF1F0; color: #C0362B; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.5v5M10 14.2v.3"/></svg></span><span style="min-width: 0"><span style="display: block; font-size: 14px; font-weight: 600">참여 신청 111건이 대기 중이에요</span><span style="display: block; font-size: 14px; color: #68727F; margin-top: 2px">이 중 27명은 이미 앱에 가입해서 활동하고 있어요</span></span><button class="btn " style="margin-left: auto; flex: none">신청 목록 열기</button></div><div style="display: flex; align-items: center; gap: 14px; padding: 14px 24px; border-top: 1px solid #F2F4F6;"><span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #FFF6E5; color: #A8620A; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 11.5a2 2 0 0 1-2 2H7.5L4 16.5V5a2 2 0 0 1 2-2h9.5a2 2 0 0 1 2 2z"/></svg></span><span style="min-width: 0"><span style="display: block; font-size: 14px; font-weight: 600">답변을 기다리는 상담이 4건 있어요</span><span style="display: block; font-size: 14px; color: #68727F; margin-top: 2px">가장 오래된 건 3일 지났어요. 3일이 넘으면 운영팀에 알림이 가요</span></span><button class="btn " style="margin-left: auto; flex: none">상담실 열기</button></div><div style="display: flex; align-items: center; gap: 14px; padding: 14px 24px 22px; border-top: 1px solid #F2F4F6;"><span style="width: 40px; height: 40px; flex: none; border-radius: 10px; background: #E4F8EF; color: #0A6B4A; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5H6A2 2 0 0 0 4 4.5v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z"/><path d="M11.5 2.5V7H16"/></svg></span><span style="min-width: 0"><span style="display: block; font-size: 14px; font-weight: 600">7월 보건소 제출 자료를 아직 안 만들었어요</span><span style="display: block; font-size: 14px; color: #68727F; margin-top: 2px">6개 항목 중 5개는 자동으로 채워져요</span></span><button class="btn pri" style="margin-left: auto; flex: none">리포트 만들기</button></div>
+</div>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px; flex: 1; min-height: 0">
+  <div class="card" style="display: flex; flex-direction: column">
+    <div style="display: flex; align-items: baseline; gap: 10px">
+      <span class="h2">최근 2주 활동</span><span class="cap" style="margin-left: auto">주말은 회색</span>
+    </div>
+    <div style="display: flex; align-items: flex-end; gap: 7px; height: 92px; margin-top: 20px"><div style="flex: 1; height: 93%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 97%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 92%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 96%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 91%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 28%; background: #EDEEF1; border-radius: 6px"></div><div style="flex: 1; height: 21%; background: #EDEEF1; border-radius: 6px"></div><div style="flex: 1; height: 93%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 100%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 85%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 96%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 92%; background: #13BD7E; border-radius: 6px"></div><div style="flex: 1; height: 28%; background: #EDEEF1; border-radius: 6px"></div><div style="flex: 1; height: 22%; background: #EDEEF1; border-radius: 6px"></div></div>
+    <div class="cap mono" style="display: flex; justify-content: space-between; margin-top: 10px"><span>08-08</span><span>08-14</span><span>08-21</span></div>
+    <p style="margin: auto 0 0; font-size: 14px; line-height: 1.6; color: #68727F">추천 활동이 평일에만 있어서 주말 활동량이 평일의 <span style="font-weight: 700; color: #15181D">27%</span>로 떨어져요.</p>
+  </div>
+
+  <div class="card flush" style="display: flex; flex-direction: column; overflow: hidden">
+    <div style="padding: 22px 24px 12px; display: flex; align-items: center; gap: 10px"><span class="h2">먼저 연락해볼 분들</span><span style="margin-left: auto; display: flex; gap: 8px; align-items: center"><span class="cap">자동 선별</span></span></div>
+    <table><thead><tr><th style="padding-left: 24px">이름</th><th>사유</th><th style="text-align: right">경과</th><th style="padding-right: 24px"></th></tr></thead>
+    <tbody><tr><td style="padding-left: 24px; font-weight: 600">정*순</td><td><span class="pill" style="background: #FEF1F0; color: #C0362B"><span class="dot" style="background: #F04438"></span>우울 위험</span> <span style="font-size: 14px; color: #68727F; margin-left: 4px">GDS-SF 11점</span></td><td class="mono" style="text-align: right; color: #68727F">3일</td><td style="text-align: right; padding-right: 24px"><button class="btn sm">연락</button></td></tr><tr><td style="padding-left: 24px; font-weight: 600">황*학</td><td><span class="pill" style="background: #FFF6E5; color: #A8620A"><span class="dot" style="background: #F79009"></span>활동 중단</span> <span style="font-size: 14px; color: #68727F; margin-left: 4px">14일 무활동</span></td><td class="mono" style="text-align: right; color: #68727F">14일</td><td style="text-align: right; padding-right: 24px"><button class="btn sm">연락</button></td></tr><tr><td style="padding-left: 24px; font-weight: 600">이*자</td><td><span class="pill" style="background: #FFF6E5; color: #A8620A"><span class="dot" style="background: #F79009"></span>불면 경계</span> <span style="font-size: 14px; color: #68727F; margin-left: 4px">ISI-K 16점</span></td><td class="mono" style="text-align: right; color: #68727F">6일</td><td style="text-align: right; padding-right: 24px"><button class="btn sm">연락</button></td></tr><tr><td style="padding-left: 24px; font-weight: 600">박*희</td><td><span class="pill" style="background: #FEF1F0; color: #C0362B"><span class="dot" style="background: #F04438"></span>앱 미설치</span> <span style="font-size: 14px; color: #68727F; margin-left: 4px">승인 후 미가입</span></td><td class="mono" style="text-align: right; color: #68727F">37일</td><td style="text-align: right; padding-right: 24px"><button class="btn sm">연락</button></td></tr></tbody></table>
+    <div style="padding: 16px 24px; margin-top: auto"><p style="margin: 0; font-size: 14px; color: #68727F">선별 기준은 활동 현황 → 판정 기준에서 바꿀 수 있어요.</p></div>
+  </div>
+</div>
+  </div>
+</div>
+</div>
+</body>
+</html>

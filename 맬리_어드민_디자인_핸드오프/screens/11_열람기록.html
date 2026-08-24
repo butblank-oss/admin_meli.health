@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>열람 기록 — 맬리 케어센터 채널 어드민</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo',sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-0.014em}
+a{color:#077A50;text-decoration:none}a:hover{color:#065C3D}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
+table{border-collapse:collapse;width:100%}
+th{text-align:left;font-size:13px;font-weight:500;color:#68727F;padding:0 16px;height:44px;white-space:nowrap;background:transparent;border-bottom:1px solid #EDEEF1}
+td{padding:0 16px;height:52px;font-size:14px;color:#15181D;border-bottom:1px solid #F5F6F8;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#FAFBFC}
+
+.card{background:#FFFFFF;border:1px solid #F1F2F4;border-radius:14px;padding:24px}
+.card.flush{padding:0;overflow:hidden}
+.plain{background:#FFFFFF;border-radius:14px}
+
+.ptitle{font-size:26px;font-weight:700;letter-spacing:-0.038em;color:#15181D;line-height:1.3}
+.psub{font-size:14px;color:#68727F;margin-top:7px;line-height:1.6}
+.h2{font-size:17px;font-weight:700;letter-spacing:-0.03em;color:#15181D}
+.h3{font-size:15px;font-weight:700;letter-spacing:-0.025em;color:#15181D}
+.metric{font-size:30px;font-weight:700;letter-spacing:-0.045em;color:#15181D;font-variant-numeric:tabular-nums;line-height:1.25}
+.metric small{font-size:15px;font-weight:600;color:#A0A8B3;margin-left:3px;letter-spacing:-0.02em}
+.lbl{font-size:13.5px;font-weight:500;color:#68727F}
+.cap{font-size:13px;color:#68727F}
+.body{font-size:14px;color:#4A5261;line-height:1.65}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:7px;letter-spacing:-0.008em;line-height:1.35}
+.dot{width:5px;height:5px;border-radius:999px;flex:none}
+
+.btn{height:38px;padding:0 16px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;font-weight:600;color:#4A5261;cursor:pointer;font-family:inherit;letter-spacing:-0.014em;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{background:#E9ECEF}
+.btn.pri{background:#13BD7E;color:#042E20}
+.btn.pri:hover{background:#0FA76D}
+.btn.dark{background:#20242B;color:#FFFFFF}
+.btn.dark:hover{background:#15181D}
+.btn.dgr{background:#FEF1F0;color:#C0362B}
+.btn.dgr:hover{background:#FDE3E1}
+.btn.gho{background:transparent;color:#68727F}
+.btn.gho:hover{background:#F2F4F6}
+.btn.sm{height:32px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn.xs{height:26px;padding:0 9px;font-size:12.5px;border-radius:7px}
+
+.nav{display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;margin:0 10px;border-radius:10px;font-size:14.5px;font-weight:500;color:#4A5261;cursor:pointer}
+.nav:hover{background:#F5F6F8}
+.nav.on{background:#F1FBF7;color:#0A6B4A;font-weight:700}
+.navgrp{padding:20px 22px 6px;font-size:12px;font-weight:600;color:#68727F}
+.badge{margin-left:auto;font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;font-variant-numeric:tabular-nums}
+
+.chip{height:36px;padding:0 14px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;font-weight:500;color:#4A5261;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;letter-spacing:-0.014em}
+.chip:hover{background:#E9ECEF}
+.chip.on{background:#E4F8EF;color:#0A6B4A;font-weight:700}
+.chip .c{font-variant-numeric:tabular-nums;color:#A0A8B3;font-size:13px}
+.chip.on .c{color:#3E9E78}
+
+.fld{height:38px;padding:0 14px;border-radius:10px;border:none;background:#F2F4F6;font-size:14px;color:#15181D;font-family:inherit;letter-spacing:-0.014em}
+.fld::placeholder{color:#A0A8B3}
+.sect{display:flex;flex-direction:column;gap:14px}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 1000px; display: flex; background: #FFFFFF; color: #15181D; overflow: hidden">
+<aside style="width: 236px; flex: none; background: #FFFFFF; display: flex; flex-direction: column; padding: 26px 0 20px"><div style="padding: 0 22px 2px; display: flex; align-items: center; gap: 8px"><span style="width: 22px; height: 22px; border-radius: 7px; background: #13BD7E; display: flex; align-items: center; justify-content: center"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="#042E20" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 8 14.5 16 6"/></svg></span><span style="font-size: 16px; font-weight: 700; letter-spacing: -0.04em; color: #15181D">맬리 케어센터</span></div><div style="margin: 18px 10px 2px; padding: 12px 12px; background: #F7F8F9; border-radius: 10px; cursor: pointer"><div style="display: flex; align-items: center; gap: 6px"><span style="font-size: 14px; font-weight: 700; color: #15181D; letter-spacing: -0.03em; line-height: 1.4">인천 남동구 치매안심센터</span><svg style="margin-left: auto; flex: none" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#A0A8B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5 10 12.5 15 7.5"/></svg></div><div style="font-size: 12.5px; color: #68727F; margin-top: 4px; font-variant-numeric: tabular-nums">3기 · 진행 171일째</div></div><div class="navgrp">운영</div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 10 2.5 17 8v8.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg> 오늘 <span class="badge" style="background: #FEF1F0; color: #C0362B">3</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 17v-1.5a3 3 0 0 0-3-3h-5a3 3 0 0 0-3 3V17"/><circle cx="8" cy="6.5" r="3"/><path d="M17.5 17v-1.5a3 3 0 0 0-2.2-2.9"/></svg> 참여자 <span class="badge" style="background: #F2F4F6; color: #A0A8B3">822</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h14M6 14V9M10 14V4M14 14V11"/></svg> 활동 현황 </div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 11.5a2 2 0 0 1-2 2H7.5L4 16.5V5a2 2 0 0 1 2-2h9.5a2 2 0 0 1 2 2z"/></svg> 상담실 <span class="badge" style="background: #FEF1F0; color: #C0362B">4</span></div><div class="navgrp">프로그램</div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2.5"/><path d="M3 8h14M7 2v3M13 2v3"/></svg> 프로그램 일정 <span class="badge" style="background: #F2F4F6; color: #A0A8B3; font-weight: 500">읽기</span></div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2.3"/></svg> 챌린지 <span class="badge" style="background: #F2F4F6; color: #A0A8B3; font-weight: 500">읽기</span></div><div class="navgrp">행정</div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5H6A2 2 0 0 0 4 4.5v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7z"/><path d="M11.5 2.5V7H16"/></svg> 월간 리포트 </div><div class="nav"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 17v-1.5a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3V17"/><circle cx="7.5" cy="6.5" r="3"/><path d="M15.5 7v4M17.5 9h-4"/></svg> 참여 신청 <span class="badge" style="background: #FEF1F0; color: #C0362B">111</span></div><div class="nav on"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h12M4 10h12M4 15h7"/></svg> 열람 기록 </div><div style="margin-top: auto; padding: 18px 22px 0; display: flex; align-items: center; gap: 10px"><span style="width: 30px; height: 30px; border-radius: 999px; background: #F2F4F6; color: #68727F; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 700; flex: none">김</span><span><span style="display: block; font-size: 13.5px; font-weight: 600; color: #15181D">김주무 주무관</span><span style="display: block; font-size: 12.5px; color: #A0A8B3">채널관리자</span></span></div></aside>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F7F8F9">
+  <div style="flex: 1; padding: 34px 36px 32px; display: flex; flex-direction: column; gap: 22px; overflow: hidden">
+    <div style="display: flex; align-items: flex-start; gap: 16px">
+      <div><div class="ptitle">열람 기록</div></div>
+      
+    </div>
+
+<div style="padding: 16px 18px; background: #EDF4FF; border-radius: 12px"><p style="margin: 0; font-size: 14px; line-height: 1.7; color: #1B5FCC">개인정보를 열람하거나 내려받은 기록이에요. 보건소 관리·감독 점검표의 <b>접속기록 보관</b> 항목 증빙으로 그대로 제출할 수 있어요. 보관 기간은 2년이에요.</p></div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px">
+  <div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center">이번 달 열람</div><div class="metric" style="margin-top: 9px; color: #15181D">47<small>건</small></div></div>
+  <div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center">명단 내려받기</div><div class="metric" style="margin-top: 9px; color: #15181D">6<small>회</small></div></div>
+  <div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center">원문 열람</div><div class="metric" style="margin-top: 9px; color: #15181D">38<small>건</small></div></div>
+  <div class="card" style="padding: 20px 22px"><div class="lbl" style="display: flex; align-items: center"><span class="dot" style="background: #17B26A; margin-right: 6px"></span>사유 없이 열람</div><div class="metric" style="margin-top: 9px; color: #0A6B4A">0<small>건</small></div><div style="margin-top: 7px; font-size: 12.5px; font-weight: 500; color: #0A6B4A">사유는 반드시 남겨야 해요</div></div>
+</div>
+
+<div class="card flush" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden">
+  <div style="padding: 20px 24px 14px; display: flex; flex-direction: column; gap: 12px">
+    <div style="display: flex; gap: 10px; align-items: center">
+      <div style="position: relative; display: flex; align-items: center; flex: 1; max-width: 300px"><span style="position:absolute;left:13px;color:#A0A8B3;display:flex"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="5.5"/><path d="m13.5 13.5 3.5 3.5"/></svg></span><input class="fld" style="width: 100%; padding-left: 39px; padding-right: 14px" placeholder="대상자·사유로 찾기"></div>
+      <span class="cap">기간</span>
+      <button class="chip">오늘</button><button class="chip">최근 7일</button><button class="chip on">이번 달</button><button class="chip">지난 달</button><button class="chip">직접 지정</button>
+      <button class="btn" style="margin-left: auto">점검표 증빙용 내려받기</button>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+      <button class="chip">원문 열람 <span class="c">38</span></button><button class="chip">명단 내려받기 <span class="c">6</span></button><button class="chip">리포트 생성 <span class="c">2</span></button><button class="chip">탈퇴 처리 <span class="c">1</span></button><span style="width: 1px; height: 18px; background: #E9EBEF; margin: 0 6px"></span>
+      <button class="chip">김주무 (채널) <span class="c">44</span></button><button class="chip">원메딕스 운영팀 <span class="c">3</span></button>
+    </div>
+  </div>
+  <table>
+    <thead><tr><th style="padding-left: 24px"><span style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;justify-content:flex-start;width:100%;color:#15181D;font-weight:700">일시<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#13BD7E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5 6 8l3-3.5"/></svg></span></th><th style=""><span style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;justify-content:flex-start;width:100%;color:#68727F;font-weight:600">담당자<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#C7CCD4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M4 4.8 6 2.5l2 2.3"/><path d="M4 7.2 6 9.5l2-2.3"/></svg></span></th><th>소속</th>
+      <th style=""><span style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;justify-content:flex-start;width:100%;color:#68727F;font-weight:600">행위<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#C7CCD4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M4 4.8 6 2.5l2 2.3"/><path d="M4 7.2 6 9.5l2-2.3"/></svg></span></th><th style=""><span style="display:inline-flex;align-items:center;gap:5px;cursor:pointer;justify-content:flex-end;width:100%;color:#68727F;font-weight:600">대상<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#C7CCD4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:.85"><path d="M4 4.8 6 2.5l2 2.3"/><path d="M4 7.2 6 9.5l2-2.3"/></svg></span></th><th>사유</th>
+      <th style="padding-right: 24px">접속 위치</th></tr></thead>
+    <tbody><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-21 14:22</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>원문 열람</td><td class="mono" style="text-align: right; color: #4A5261">1건</td><td style="color: #4A5261">미활동자 안부 연락</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-21 09:10</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>명단 내려받기</td><td class="mono" style="text-align: right; color: #4A5261">184건</td><td style="color: #4A5261">7월 보고자료 작성</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-20 16:47</td><td style="font-weight: 500">이운영</td><td><span class="pill" style="background: #EDF4FF; color: #1B5FCC"><span class="dot" style="background: #2E90FA"></span>원메딕스 운영팀</span></td><td>원문 열람</td><td class="mono" style="text-align: right; color: #4A5261">1건</td><td style="color: #4A5261">앱 오류 문의 회신</td><td class="mono" style="color: #68727F; padding-right: 24px">121.***.***.8</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-20 11:02</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>원문 열람</td><td class="mono" style="text-align: right; color: #4A5261">3건</td><td style="color: #4A5261">우울 위험군 안부 확인</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-19 10:31</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>리포트 생성</td><td class="mono" style="text-align: right; color: #4A5261">7월분</td><td style="color: #4A5261">보건소 제출</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-18 15:55</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>신청자 명단 열람</td><td class="mono" style="text-align: right; color: #4A5261">111건</td><td style="color: #4A5261">승인 검토</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr><tr><td class="mono" style="padding-left: 24px; color: #4A5261">2026-08-15 09:40</td><td style="font-weight: 500">김주무</td><td><span style='color:#68727F'>남동구 치매안심센터</span></td><td>탈퇴 처리</td><td class="mono" style="text-align: right; color: #4A5261">3건</td><td style="color: #4A5261">연락 두절</td><td class="mono" style="color: #68727F; padding-right: 24px">218.***.***.42</td></tr></tbody>
+  </table>
+  <div style="margin-top: auto; padding: 18px 24px; display: flex; align-items: center; gap: 12px; border-top: 1px solid #F1F2F4"><span style="font-size: 13.5px; color: #68727F">총 <span class="mono" style="color: #15181D; font-weight: 600">47</span>건 중 <span class="mono" style="color: #15181D; font-weight: 600">1–20</span></span><select class="fld" style="height: 32px; font-size: 13.5px; border-radius: 9px"><option>20개씩</option><option>50개씩</option><option>100개씩</option></select><div style="margin-left: auto; display: flex; align-items: center; gap: 4px"><button style="width: 32px; height: 32px; border-radius: 9px; border: none; background: #F7F8F9; color: #C7CCD4; cursor: not-allowed; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 6 10l6 6"/></svg></button><button class="mono" style="min-width: 32px; height: 32px; padding: 0 10px; border-radius: 9px; border: none; background: #13BD7E; color: #042E20; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit">1</button><button class="mono" style="min-width: 32px; height: 32px; padding: 0 10px; border-radius: 9px; border: none; background: transparent; color: #4A5261; font-size: 13.5px; cursor: pointer; font-family: inherit">2</button><button class="mono" style="min-width: 32px; height: 32px; padding: 0 10px; border-radius: 9px; border: none; background: transparent; color: #4A5261; font-size: 13.5px; cursor: pointer; font-family: inherit">3</button><button style="width: 32px; height: 32px; border-radius: 9px; border: none; background: #F2F4F6; color: #4A5261; cursor: pointer; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 4 6 6-6 6"/></svg></button></div></div>
+</div>
+  </div>
+</div>
+</div>
+</body>
+</html>

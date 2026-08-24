@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+.claude/
+.mcp.json
+figma-mcp/
+
+# 같은 폴더에 있는 별개 작업물 — 이 저장소 대상 아님
+malibrain-deck*.html
+맬리브레인-현황공유.html
+발표대본.md
+현황공유-대본.md
+맬리_어드민_디자인_핸드오프.zip
