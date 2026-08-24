@@ -1,12 +1,12 @@
-# GitHub Pages 배포 (보조 수단).
-# 주 배포는 Vercel입니다 — Vercel이 저장소에 연결돼 push마다 자동 배포합니다.
+# GitHub Pages 자동 배포.
+# main 또는 작업 브랜치에 push하면 저장소를 그대로 올립니다. 빌드 단계는 없습니다.
 #
-# 이 워크플로는 수동 실행 전용입니다. Actions 탭 → "Deploy to GitHub Pages" → Run workflow.
-# 처음 한 번은 Settings → Pages → Source를 "GitHub Actions"로 바꿔야 동작합니다.
-# (GITHUB_TOKEN 권한으로는 Pages를 자동으로 켤 수 없어 자동 실행에서 뺐습니다.)
+# main으로 병합한 뒤에는 아래 트리거에서 작업 브랜치를 지워도 됩니다.
 name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main, claude/implement-github-deploy-fxvdeq]
   workflow_dispatch:
 
 permissions:

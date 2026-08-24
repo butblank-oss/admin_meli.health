@@ -74,17 +74,25 @@ vercel.json                 캐시·보안 헤더
 
 ## 배포
 
-**주 배포는 Vercel입니다.** 저장소를 연결하면 push마다 자동 배포됩니다.
-빌드 설정은 필요 없고 `vercel.json`이 전부 처리합니다 (framework 없음, 루트를 그대로 서빙).
+**GitHub Pages로 배포합니다.** `main` 또는 작업 브랜치에 push하면
+`.github/workflows/deploy.yml`이 저장소를 그대로 올립니다. 빌드 단계는 없습니다.
 
-`vercel.json`이 하는 일:
-- `assets/`에 1년 immutable 캐시 → 재방문 전송량 203KB → 3.7KB
-- `index.html`은 매번 재검증
-- CSP, `X-Content-Type-Options`, `Referrer-Policy` 등 보안 헤더
+- 주소: https://butblank-oss.github.io/admin_meli.health/
+- 저장소 Settings → Pages → Source가 **"GitHub Actions"** 로 되어 있어야 합니다 (설정 완료됨)
+- `main`으로 병합한 뒤에는 워크플로 트리거에서 작업 브랜치를 지워도 됩니다
 
-> GitHub Pages 워크플로도 들어 있지만 **수동 실행 전용**입니다.
-> (GITHUB_TOKEN 권한으로 Pages를 자동으로 켤 수 없어 자동 실행에서 뺐습니다.
-> 쓰려면 Settings → Pages → Source를 "GitHub Actions"로 한 번 바꿔야 합니다.)
+무료이고 상업적 용도 제한이 없어 Pages를 택했습니다.
+Vercel Hobby(무료)는 약관상 **비상업적·개인 용도 전용**이라 납품 건에는 맞지 않습니다.
+
+> `vercel.json`도 남겨뒀습니다. Vercel Pro 계정으로 옮길 일이 생기면 저장소만 연결하면
+> 바로 됩니다 — `assets/`에 1년 immutable 캐시, CSP·보안 헤더가 들어 있습니다.
+> **Pages는 이 헤더 설정을 적용하지 않습니다.** Pages 자체 기본 캐시 정책을 따릅니다.
+
+### 접근 제한
+
+Pages는 공개 저장소에서 **비밀번호 보호를 지원하지 않습니다.** 주소를 아는 사람은 누구나 봅니다.
+더미 데이터라 실제 개인정보는 없지만 기관명과 운영 정책은 그대로 노출되니,
+외부 공개가 곤란하면 별도 수단(사내 호스팅 등)을 검토해야 합니다.
 
 ## 원본 대비 바뀐 것
 
