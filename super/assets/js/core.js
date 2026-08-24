@@ -186,7 +186,7 @@ function go(p){
     var on=e.dataset.p===hl;e.classList.toggle('on',on);
     if(on)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');
     var dot=e.querySelector('.navdot');
-    if(on&&!dot){var d=el('span','navdot mdot');d.style.cssText='background:#7C5CFF;width:6px;height:6px;margin-right:1px';e.insertBefore(d,e.firstChild)}
+    if(on&&!dot){var d=el('span','navdot mdot');d.style.cssText='background:#B79FFF;width:6px;height:6px;margin-right:1px';e.insertBefore(d,e.firstChild)}
     if(!on&&dot)dot.remove()});
   if(V[p])V[p]();
   window.scrollTo(0,0);

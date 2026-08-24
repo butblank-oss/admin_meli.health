@@ -7,8 +7,22 @@
 .mbp{background:#6941C6;border-color:#6941C6}
 .mbp:hover{background:#53389E;border-color:#53389E}
 
-/* 상단 바 — 채널 어드민(#101828)보다 어둡고 보라 기운 */
-.top{background:#1B1236}
+/* ═══ 다크 크롬 — 채널 어드민과 실루엣 자체를 다르게 ═══
+   강조색만 바꿨더니 두 어드민이 헷갈린다는 피드백이 있었다.
+   상단바·사이드바를 통째로 어둡게 해 열자마자 다른 앱임이 보이게 한다.
+   대비는 전부 계산으로 검증 — 사이드바 메뉴 13.67, 그룹 제목 7.38, 상단바 흰 글씨 15.8. */
+.top{background:#2A1650;border-bottom:3px solid #7C5CFF}
+.app,body{background:#F5F3FA}
+
+/* 사이드바 반전 */
+.side{background:#231A3E;border-right:1px solid #1A1230}
+.side .mgrp{color:#B4A8D6}
+.side .mnav{color:#EDE9F8}
+.side .mnav:hover{background:rgba(255,255,255,.07)}
+.side .mnav.on{background:#37285C;color:#fff}
+.side>div{border-top-color:rgba(255,255,255,.1)!important}
+.side .mcap{color:#B4A8D6}
+.side :focus-visible{outline-color:#C9BDE8}
 
 /* 선택 상태 */
 .mchip.on{background:#F4F3FF;border-color:#B9A5FF;color:#53389E}

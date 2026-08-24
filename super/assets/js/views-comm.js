@@ -20,8 +20,8 @@ V.cs=function(){
          ['처리 중',String(TICKETS.filter(function(x){return x.st==='prog'}).length),'건',''],
          ['완료',String(TICKETS.filter(function(x){return x.st==='done'}).length),'건',''],
          ['높은 우선순위',String(open2.filter(function(x){return x.pri==='high'}).length),'건','','cr'],
-         ['평균 대기','5.8','일','우리 SLA는 아직 정해지지 않았어요','wa']])
-   +note('채널에는 <b>3일 SLA</b>를 걸어놨는데 운영팀 자신의 기준은 없어요. 평균 대기가 5.8일이면 채널만 조이는 셈입니다.','wa')
+         ['SLA 초과',String(TICKETS.filter(function(x){return x.st!=='done'&&x.aged>2}).length),'건','기준: 영업일 2일 내 1차 회신','cr']])
+   +note('운영팀 SLA는 <b>영업일 2일 내 1차 회신</b>이에요(SP-8 확정). 채널의 3일보다 짧게 잡은 건, 채널의 답이 우리 회신에 달려 있어서 상위 단계가 더 빨라야 체인이 성립하기 때문입니다.','in')
    +'<div class="mc" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
      +'<div class="row">'+search('tq','제목, 담당자로 찾기','300px')
      +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 문의 <b class="mt" style="color:#101828" id="t-cnt">0</b>건</span></div>'
@@ -70,7 +70,7 @@ V.cs=function(){
        +'<td>'+pill(s[0],s[1])+'</td>'
        +'<td style="max-width:340px;overflow:hidden;text-overflow:ellipsis"><span class="lnk" style="font-weight:600">'+esc(x.t)+'</span></td>'
        +'<td>'+chChip(x.ch)+'</td><td style="color:#475467">'+esc(x.by)+'</td>'
-       +'<td class="num mt" style="color:'+(x.aged>7?'#B42318':x.aged>3?'#B54708':'#475467')+'">'+x.aged+'일</td>'
+       +'<td class="num mt" style="color:'+(x.aged>2?'#B42318':'#475467')+';font-weight:'+(x.aged>2?'600':'400')+'">'+x.aged+'일'+(x.aged>2&&x.st!=='done'?' <span class="mcap" style="color:#B42318">초과</span>':'')+'</td>'
        +'<td>'+pill(pr[0],pr[1])+'</td><td style="padding-right:20px">'+pill(st[0],st[1])+'</td>';
       tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation()});
       tr.addEventListener('click',function(e){if(!e.target.closest('.cbx'))openTk(x)});
@@ -258,6 +258,7 @@ V.anomaly=function(){
   h.innerHTML=ph('이상 열람 탐지','개인정보 유출은 대개 권한 있는 내부자에서 시작해요. 그래서 <b>열람 기록만</b> 감시합니다.',
      '<button class="mb" type="button" id="an-rules">판정 기준</button><button class="mb" type="button">증빙 내려받기</button>')
    +note('<b>운영팀은 개인정보 원문을 볼 수 없어요.</b> 감시하는 쪽이 감시 대상 권한을 함께 가지면 감사가 무의미해지기 때문입니다. 이 화면에서도 이름·전화번호는 나오지 않아요.','in')
+   +note('판정 기준 3종은 <b>2026-08-24 확정</b>됐어요(SP-2). 3개월 뒤 오탐률을 보고 조정합니다 — 오탐이 많으면 아무도 안 보게 돼요.','nu')
    +kpi([['확인 필요',String(op.length),'건','','cr'],
          ['이번 달 열람',fmt(AUDIT.length),'건','전 채널 합계'],
          ['원문 열람',fmt(AUDIT.filter(function(a){return a.act==='원문 열람'}).length),'건',''],

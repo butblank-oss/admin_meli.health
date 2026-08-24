@@ -38,7 +38,8 @@ V.home=function(){
      +'<p class="mcap" style="margin:auto 0 0;padding-top:10px;border-top:1px solid #F2F4F7">'
        +'<b style="color:#B42318">'+esc(worst.n)+'</b>가 중도포기 '+worst.drop+'%로 가장 높아요. '+esc(worst.note||'확인이 필요합니다.')+'</p></div></div>';
 
-  var TD=[['cr','답변 대기 CS가 '+openTk+'건이에요','가장 오래된 건 15일 지났어요. 채널에는 3일 SLA를 걸어놨는데 우리 기준은 아직 없어요','CS 큐 열기','cs','mbp'],
+  var slaOver=TICKETS.filter(function(x){return x.st!=='done'&&x.aged>2}).length;
+  var TD=[['cr','SLA를 넘긴 CS가 '+slaOver+'건이에요','우리 기준은 영업일 2일 내 1차 회신이에요. 가장 오래된 건 15일 지났어요','CS 큐 열기','cs','mbp'],
    ['cr','이상 열람 '+openAl+'건이 확인을 기다려요','시흥시 담당자가 8분 동안 23건을 열람했어요','열람 기록 보기','anomaly',''],
    ['wa','9월 출석 챌린지가 검수 대기예요','9월 1일 시작인데 아직 승인되지 않았어요. 대상 채널 4곳','챌린지 열기','challenges',''],
    ['wa','안산시 단원구에 담당자가 없어요','9월 14일 개소 예정인데 계정 발급 요청이 9일째 대기예요','채널 관리','channels','']];

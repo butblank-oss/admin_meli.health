@@ -145,7 +145,7 @@ function defTab(B){
    +D.map(function(d){return '<tr><td style="padding-left:20px;font-weight:600">'+d[0]+'</td><td style="color:#475467">'+d[1]+'</td><td class="mt" style="color:#667085;padding-right:20px;font-size:12.5px">'+d[2]+'</td></tr>'}).join('')
    +'</tbody></table></div></div>'
    +note('검사 등급은 이 표와 실제 판정이 <b>같은 값에서 나와요.</b> 표만 고치고 판정이 안 바뀌는 일은 생기지 않아요.','ok')
-   +note('<b>확인이 필요한 항목 — 운영팀 회신 대기 중</b><br>· 노력 점수는 계산되지만 랭킹 총점에 반영되지 않아요.<br>· 음주(AUDIT-K)는 아직 검사 목록에 없어요.<br>· 터그테스트는 점수가 전송되지 않아 등급 산출이 안 돼요.','cr')+'</div>'}
+   +note('<b>운영팀 확정 사항 (2026-08-24)</b><br>· 노력 점수는 랭킹과 별개 지표라 화면에서 제외했어요 — 수행률·연속일이 이미 노력을 반영해요.<br>· 음주(AUDIT-K)는 <b>4기부터</b> 도입해요. 기수 중간에 넣으면 참여자별 검사가 달라져 통계가 갈라져요.<br>· 터그테스트는 앱 수정이 끝날 때까지 지표에서 뺐어요.','in')+'</div>'}
 
 /* ══════ 상담실 ══════ */
 var ROOMS=[{n:'황*학',st:'unans',t:'3일',last:'걸음 수가 안 올라가요',mine:1,msgs:[['them','걸음 수가 안 올라가요','오전 7:12','08-11']]},
@@ -211,7 +211,7 @@ function thread(r){
    +'<div style="border-top:1px solid #F2F4F7;padding-top:14px"><div class="mcap" style="margin-bottom:6px">담당</div>'
    +'<div style="font-size:13.5px;font-weight:600">'+(r.mine?'김주무 (채널)':'이운영 (원메딕스)')+'</div>'
    +'<button class="mb mbs" style="margin-top:9px;width:100%" id="c-mv">'+(r.mine?'운영팀으로 이관':'담당 가져오기')+'</button></div>'
-   +note('3일 넘게 답변이 없으면 운영팀에 자동으로 알림이 가요.','nu');
+   +note('<b>영업일 3일</b> 넘게 답변이 없으면 운영팀에 자동으로 알림이 가요. 주말·공휴일은 세지 않아요.','nu');
   $('#c-op').addEventListener('click',function(){openPerson(PEOPLE[11],'consult')});
   $('#c-mv').addEventListener('click',function(){var was=r.mine;r.mine=r.mine?0:1;r.st=r.mine?'open':'ops';V.consult();
     toast(was?'운영팀으로 이관했어요':'담당을 가져왔어요','ok','되돌리기',function(){r.mine=was;r.st=was?'open':'ops';V.consult()})})}

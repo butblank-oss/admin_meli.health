@@ -36,7 +36,7 @@ V.today=function(){
      +'<table class="mtb"><thead><tr><th style="padding-left:20px">이름</th><th>사유</th><th class="num">경과</th><th style="padding-right:20px"></th></tr></thead><tbody id="t-attn"></tbody></table>'
      +'<p class="mcap" style="padding:14px 20px;margin:auto 0 0">선별 기준은 활동 현황 → 판정 기준에서 바꿀 수 있어요.</p></div></div>';
   var TD=[['cr','참여 신청 111건이 대기 중이에요','이 중 27명은 이미 앱에 가입해서 활동하고 있어요','신청 목록 열기','apply',''],
-   ['wa','답변을 기다리는 상담이 4건 있어요','가장 오래된 건 3일 지났어요. 3일이 넘으면 운영팀에 알림이 가요','상담실 열기','consult',''],
+   ['wa','답변을 기다리는 상담이 4건 있어요','가장 오래된 건 3일 지났어요. 영업일 3일이 넘으면 운영팀에 알림이 가요','상담실 열기','consult',''],
    ['ok','7월 보건소 제출 자료를 아직 안 만들었어요','6개 항목 중 5개는 자동으로 채워져요','리포트 만들기','report','mbp']];
   var tb=$('#t-todo');
   TD.forEach(function(t,ix){

@@ -169,6 +169,7 @@ function openCriteria(c){
   var t=TESTS[c.id];if(!t){toast('이 검사는 기준이 등록되지 않았어요','cr');return}
   $('#m-criteria-h').textContent=t.n+' 판정 기준';
   $('#cr-b').innerHTML=note('이 표가 <b>유일한 기준</b>이에요. 채널 어드민의 판정 기준 탭과 위험군 자동 선별이 모두 이 값을 읽습니다.','in')
+   +note('현재 <b>v2 · 2026-08-22 적용</b> (표준 척도 정정). 정책 변경은 소급하지 않고 버전으로 관리해요 — SP-4 확정.','nu')
    +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:4px">등급</th><th class="num">시작</th><th class="num">끝</th><th>구간</th></tr></thead><tbody>'
    +t.b.map(function(b,i){
      var k=['ok','wa','cr','cr'][i]||'nu';
