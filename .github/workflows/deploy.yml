@@ -24,6 +24,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # HTML과 JS/CSS가 따로 캐시되면 신·구 버전이 섞여 화면이 깨진다
+      # (실제로 사유 모달 제거 배포 때 구 JS + 신 HTML 조합으로 빈 페이지가 났다).
+      # 에셋 주소에 커밋 버전을 붙여 HTML이 바뀌면 에셋도 반드시 새로 받게 한다.
+      # 폰트 preload는 CSS 내부 주소와 일치해야 해서 건드리지 않는다.
+      - name: Version asset URLs
+        run: |
+          V="${GITHUB_SHA::8}"
+          sed -i "s/\.js\"/.js?v=${V}\"/g; s/\.css\"/.css?v=${V}\"/g" index.html super/index.html
+          grep -o 'v='"${V}" index.html | head -1
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
