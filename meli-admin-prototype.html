@@ -37,6 +37,21 @@ button,input,select,textarea{font-family:inherit;letter-spacing:-0.011em}
 .mnav{display:flex;align-items:center;gap:10px;height:38px;padding:0 12px 0 23px;border-radius:8px;font-size:13.5px;font-weight:500;color:#344054;cursor:pointer}
 .mnav:hover{background:#F2F4F7}
 .mnav.on{background:#F2F4F7;font-weight:700;padding-left:12px}
+.kvform{display:grid;grid-template-columns:150px 1fr;gap:11px 14px;align-items:start}
+.kvform>label{font-size:13px;font-weight:500;color:#344054;padding-top:9px}
+.dcal button.lockd{background:repeating-linear-gradient(45deg,#F9FAFB,#F9FAFB 3px,#F2F4F7 3px,#F2F4F7 6px);color:#D0D5DD;cursor:not-allowed}
+.mnav.ext{color:#98A2B3}
+.mnav.ext:hover{background:#F9FAFB}
+#sf-tog button{height:26px;padding:0 10px;border-radius:6px;border:none;background:none;font:inherit;font-size:12.5px;font-weight:600;color:#98A2B3;cursor:pointer}
+#sf-tog button[aria-pressed=true]{background:#fff;color:#101828}
+.maprow{display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;gap:0 14px;padding:9px 0;border-bottom:1px solid #F2F4F7}
+.maprow:last-child{border-bottom:none}
+.mcode{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;letter-spacing:0;background:#F9FAFB;border:1px solid #EAECF0;border-radius:6px;padding:2px 7px;display:inline-block;color:#344054}
+pre.mjson{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.65;letter-spacing:0;background:#FCFCFD;border:1px solid #EAECF0;border-radius:10px;padding:16px 18px;overflow-x:auto;color:#344054;margin:0}
+pre.mjson b{color:#077A50;font-weight:600}
+pre.mjson i{color:#175CD3;font-style:normal}
+pre.mjson s{color:#98A2B3;text-decoration:none}
+.rsn{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .mgrp{padding:18px 12px 6px;font-size:11.5px;font-weight:600;color:#98A2B3}
 .mbdg{margin-left:auto;font-size:11.5px;font-weight:700;padding:1px 6px;border-radius:6px;font-variant-numeric:tabular-nums}
 .mchip{height:32px;padding:0 12px;border-radius:8px;border:1px solid #EAECF0;background:#fff;font-size:13px;font-weight:500;color:#344054;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
@@ -240,8 +255,14 @@ th .sw:hover{color:#101828}
       <span style="font-size:14.5px;font-weight:700;letter-spacing:-0.024em;color:#fff">맬리 케어센터</span>
     </div>
     <span style="width:1px;height:20px;background:rgba(255,255,255,.16)"></span>
-    <button class="mb" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<span class="mt" style="font-size:12.5px;color:#98A2B3">3기 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
+    <button class="mb" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
+    <span style="color:#475467;font-size:13px">›</span>
+    <button class="mb" id="grp-btn" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">3기 두뇌운동 치매예방교실<span class="mt" id="grp-sub" style="font-size:12.5px;color:#98A2B3">기수형 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <div id="sf-tog" role="group" aria-label="표면 전환" style="display:flex;background:rgba(255,255,255,.08);border-radius:8px;padding:3px;gap:2px;margin-right:4px">
+        <button data-s="manager" aria-pressed="true">채널관리자</button>
+        <button data-s="admin" aria-pressed="false">슈퍼어드민</button>
+      </div>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">도움말</button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px">3</span></button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;padding-left:6px"><span style="width:24px;height:24px;border-radius:999px;background:#13BD7E;color:#043528;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center">김</span>김주무<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
@@ -271,6 +292,14 @@ th .sw:hover{color:#101828}
       <section class="pane" data-pane="report"><div id="v-report" class="gap"></div></section>
       <section class="pane" data-pane="apply"><div id="v-apply" class="gap"></div></section>
       <section class="pane" data-pane="audit"><div id="v-audit" class="gap"></div></section>
+      <section class="pane" data-pane="groups"><div id="v-groups" class="gap"></div></section>
+      <section class="pane" data-pane="settings"><div id="v-settings" class="gap"></div></section>
+      <section class="pane" data-pane="allgroups"><div id="v-allgroups" class="gap"></div></section>
+      <section class="pane" data-pane="cohort"><div id="v-cohort" class="gap"></div></section>
+      <section class="pane" data-pane="ungrouped"><div id="v-ungrouped" class="gap"></div></section>
+      <section class="pane" data-pane="operators"><div id="v-operators" class="gap"></div></section>
+      <section class="pane" data-pane="arch"><div id="v-arch" class="gap"></div></section>
+      <section class="pane" data-pane="channels"><div id="v-channels" class="gap"></div></section>
     </div>
   </div>
 </div>
@@ -283,7 +312,7 @@ th .sw:hover{color:#101828}
     <div class="note" style="background:#FFFAEB;color:#B54708">사유는 기록에 남고 보건소 점검 때 증빙으로 제출돼요. 열람 후 30초가 지나면 자동으로 다시 가려져요.</div>
     <div><span class="flab">대상</span><div class="mt" id="rev-t" style="font-size:13.5px">—</div></div>
     <div><span class="flab">열람 사유 <span style="color:#B42318">*</span></span>
-      <select class="mfld" id="rev-r" style="width:100%"><option value="">사유를 선택하세요</option><option>미활동자 안부 연락</option><option>위험군 상담 연계</option><option>앱 오류 문의 회신</option><option>참여 신청 확인</option><option>보건소 공문 회신</option></select>
+      <select class="mfld" id="rev-r" style="width:100%"><option value="">사유를 선택하세요</option><optgroup label="공통 — 맬리 본서비스 확정"><option value="USER_REQUEST">사용자 요청에 따른 정보 확인</option><option value="CONSULT">환자 상담/고객 응대</option><option value="DATA_ANOMALY">이상 데이터 확인 (오류/누락 검증)</option><option value="OPS_ISSUE">서비스 운영 이슈 대응</option><option value="LEGAL">법적 요구 대응 (분쟁, 요청 등)</option><option value="INTERNAL_AUDIT">내부 감사 및 점검</option><option value="IDENTITY_CHECK">회원 상담 중 본인 확인</option><option value="ETC">기타 (직접 입력)</option></optgroup><optgroup label="케어센터 전용"><option value="CARE_OUTREACH">미활동자 안부 연락</option><option value="CARE_RISK">위험군 상담 연계</option><option value="CARE_APPLY">참여 신청 확인</option><option value="CARE_HEALTH_DOC">보건소 공문 회신</option></optgroup></select>
       <div id="rev-e" style="display:none;gap:6px;align-items:center;margin-top:7px;font-size:12.5px;color:#B42318"><span class="mdot" style="background:#F04438"></span>사유를 선택해야 열람할 수 있어요</div></div>
   </div>
   <div class="mfoot"><button class="mb" data-close>취소</button><button class="mb mbp" id="rev-ok">열람하기</button></div>
@@ -369,7 +398,7 @@ var SRCH='<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="cu
 
 var P={ok:['#ECFDF3','#067647','#17B26A'],wa:['#FFFAEB','#B54708','#F79009'],
  cr:['#FEF3F2','#B42318','#F04438'],nu:['#F2F4F7','#475467','#98A2B3'],in:['#EFF8FF','#175CD3','#2E90FA']};
-function pill(t,k){var c=P[k];return '<span class="mpill" style="background:'+c[0]+';color:'+c[1]+'"><span class="mdot" style="background:'+c[2]+'"></span>'+t+'</span>'}
+function pill(t,k){var c=P[k||'nu'];return '<span class="mpill" style="background:'+c[0]+';color:'+c[1]+'"><span class="mdot" style="background:'+c[2]+'"></span>'+t+'</span>'}
 function note(t,k){var c={ok:['#ECFDF3','#067647','#17B26A'],wa:['#FFFAEB','#B54708','#F79009'],cr:['#FEF3F2','#B42318','#F04438'],nu:['#F9FAFB','#475467','#98A2B3'],in:['#EFF8FF','#175CD3','#2E90FA']}[k||'nu'];
   return '<div class="note" style="background:'+c[0]+';color:'+c[1]+'"><span class="mdot" style="background:'+c[2]+';margin-top:7px"></span><span>'+t+'</span></div>'}
 function kpi(items){
@@ -446,7 +475,109 @@ document.addEventListener('click',function(e){
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
 
 /* ═══ data ═══ */
-var ORGS=['남동구보건소','만수노인문화센터','남동구노인복지관','만월종합사회복지관','미배정'];
+var ORGS=['남동구보건소','만수노인문화센터','남동구노인복지관','만월종합사회복지관','미배정']
+/* ═══ 프로그램 그룹 ═══
+   기수·상시반·코호트가 전부 이것의 인스턴스다. 두 축으로 갈린다.
+   kind   fixed  = 전원 같은 날 시작 (개강형). 늦게 들어오면 잔존율이 무너진다.
+          rolling= 사람마다 등록일이 D+1 (상시형). 병원 수술일 코호트도 여기.
+   scope  site(시설 1곳) | multi(여러 곳) | district(구 전체) | city(시 전체)
+   승인 = 이 그룹에 소속시키는 스위치. 소속되면 그룹 프로그램, 아니면 기본 프로그램. */
+var SITES=['남동구보건소','만수노인문화센터','남동구노인복지관','만월종합사회복지관',
+           '구월동 경로당','간석동 경로당','논현동 경로당'];
+var CH_SELF='인천 남동구 치매안심센터';
+/* 그룹은 계층이다 — 큰 단위에서 분해된다.
+   남동구 경로당 > 구월동 경로당 > 걷기 챌린지 처럼 중첩된다.
+   담당자는 참여자가 아니라 이 그룹(또는 기관)에 붙는다. */
+var GROUPS=[
+ {id:'g3',parent:null,ch:CH_SELF,name:'3기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2026-03-03',
+  weeks:12,scope:'district',sites:['남동구 전체'],n:822,active:296,st:'진행 중',k:'ok',day:171,owner:'김주무',subs:['박선영']},
+ {id:'gj',parent:null,ch:CH_SELF,name:'남동구 경로당',kind:'rolling',anchor:'등록일',start:'2026-05-11',
+  weeks:0,scope:'district',sites:['경로당 3곳'],n:82,active:56,st:'진행 중',k:'ok',day:103,owner:'정미경',subs:[]},
+ {id:'gj1',parent:'gj',ch:CH_SELF,name:'구월동 경로당',kind:'rolling',anchor:'등록일',start:'2026-05-11',
+  weeks:0,scope:'site',sites:['구월동 경로당'],n:41,active:28,st:'진행 중',k:'ok',day:103,owner:'정미경',subs:[]},
+ {id:'gj1w',parent:'gj1',ch:CH_SELF,name:'걷기 챌린지',kind:'fixed',anchor:'개강일',start:'2026-08-01',
+  weeks:4,scope:'site',sites:['구월동 경로당'],n:41,active:22,st:'진행 중',k:'ok',day:39,owner:'정미경',subs:[]},
+ {id:'gj1g',parent:'gj1',ch:CH_SELF,name:'게임 챌린지',kind:'fixed',anchor:'개강일',start:'2026-09-01',
+  weeks:4,scope:'site',sites:['구월동 경로당'],n:0,active:0,st:'예정',k:'in',day:0,owner:null,subs:[]},
+ {id:'gj2',parent:'gj',ch:CH_SELF,name:'논현동 경로당',kind:'rolling',anchor:'등록일',start:'2026-08-04',
+  weeks:0,scope:'site',sites:['논현동 경로당'],n:18,active:15,st:'진행 중',k:'ok',day:18,owner:null,subs:[]},
+ {id:'gj3',parent:'gj',ch:CH_SELF,name:'간석동 경로당',kind:'rolling',anchor:'등록일',start:'2026-06-02',
+  weeks:0,scope:'site',sites:['간석동 경로당'],n:23,active:13,st:'진행 중',k:'ok',day:81,owner:'최한나',subs:[]},
+ {id:'g2',parent:null,ch:CH_SELF,name:'2기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2025-03-04',
+  weeks:12,scope:'district',sites:['남동구 전체'],n:714,active:0,st:'종료',k:'nu',day:0,owner:'김주무',subs:[]},
+ {id:'gx',parent:null,ch:CH_SELF,name:'미그룹',kind:'rolling',anchor:'가입일',start:'—',
+  weeks:0,scope:'district',sites:['—'],n:133,active:44,st:'상시',k:'nu',day:0,owner:null,subs:[],ghost:1},
+ {id:'gb',parent:null,ch:'부평구 치매안심센터',name:'1기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2026-09-14',
+  weeks:12,scope:'district',sites:['부평구 전체'],n:0,active:0,st:'예정',k:'in',day:0,owner:'한지원',subs:[]},
+ {id:'gd',parent:null,ch:'대찬병원',name:'무릎인공관절(TKRA) 재활 코호트',kind:'rolling',anchor:'수술일',start:'2026-07-06',
+  weeks:0,scope:'site',sites:['대찬병원'],n:43,active:36,st:'진행 중',k:'ok',day:63,owner:'서동혁',subs:[]},
+ {id:'gs',parent:null,ch:'서울재활의원',name:'외래 재활 상시반',kind:'rolling',anchor:'등록일',start:'2026-08-11',
+  weeks:0,scope:'site',sites:['서울재활의원'],n:5,active:4,st:'진행 중',k:'ok',day:28,owner:null,subs:[]}];
+/* 기관도 그룹과 같은 구조로 둔다 — 주/부 규칙을 한 벌만 유지하려고 */
+var SITES_OWN={'남동구보건소':{owner:'김주무',subs:['박선영']},
+  '만수노인문화센터':{owner:'박선영',subs:[]},
+  '남동구노인복지관':{owner:'박선영',subs:['최한나']},
+  '만월종합사회복지관':{owner:null,subs:[]},
+  '미배정':{owner:null,subs:[]}};
+function siteOwner(o){return (SITES_OWN[o]||{}).owner||null}
+function groupDepth(g){var d=0,x=g;while(x&&x.parent){x=groupById(x.parent);d++}return d}
+function groupTree(list){
+  var out=[],byP={};
+  list.forEach(function(g){(byP[g.parent||'_']=byP[g.parent||'_']||[]).push(g)});
+  (function walk(pid){(byP[pid]||[]).forEach(function(g){out.push(g);walk(g.id)})})('_');
+  return out}
+/* 참여자 담당자는 저장하지 않는다 — 기관 담당자, 없으면 소속 그룹 담당자에서 파생. */
+function ownerOf(p,g){return siteOwner(p.org)||(g&&g.owner)||null}
+/* ★ 역할은 계정이 아니라 (사람 × 그룹) 관계다.
+   같은 사람이 A그룹 주관리자이면서 B그룹 부관리자일 수 있다. */
+function assignments(name){
+  var out=[];
+  GROUPS.forEach(function(g){
+    if(g.ghost)return;
+    if(g.owner===name)out.push({kind:'group',ref:g,name:g.name,role:'owner'});
+    else if((g.subs||[]).indexOf(name)>=0)out.push({kind:'group',ref:g,name:g.name,role:'sub'})});
+  Object.keys(SITES_OWN).forEach(function(k){
+    if(k==='미배정')return;var o=SITES_OWN[k];
+    if(o.owner===name)out.push({kind:'site',ref:o,name:k,role:'owner'});
+    else if(o.subs.indexOf(name)>=0)out.push({kind:'site',ref:o,name:k,role:'sub'})});
+  return out}
+function ownedBy(name){return assignments(name).filter(function(a){return a.role==='owner'})
+  .map(function(a){return a.name})}
+/* 그 자리(그룹·기관)의 부관리자만 이전 후보가 된다 */
+function subsAt(a){return (a.kind==='group'?a.ref.subs:a.ref.subs)||[]}
+
+/* 운영자 — 3단계. 주관리자는 모든 기능 + 부관리자 초대,
+   부관리자는 열린 메뉴만, 시스템관리자(원메딕스)는 주·부 초대/삭제/수정. */
+var ROLES={owner:['주관리자','ok'],sub:['부관리자','nu'],sys:['시스템관리자','in']};
+/* 계정에는 역할을 두지 않는다. sys(원메딕스)만 계정 속성이다. */
+var OPERATORS=[
+ {id:'o1',name:'김주무',ch:CH_SELF,sys:0,last:'오늘 09:12',st:'정상',stK:'nu'},
+ {id:'o2',name:'박선영',ch:CH_SELF,sys:0,last:'어제 17:40',st:'정상',stK:'nu'},
+ {id:'o3',name:'정미경',ch:CH_SELF,sys:0,last:'3일 전',st:'정상',stK:'nu'},
+ {id:'o4',name:'최한나',ch:CH_SELF,sys:0,last:'62일 전',st:'휴면',stK:'wa'},
+ {id:'o5',name:'이운영',ch:'전체 채널',sys:1,last:'오늘 08:03',st:'정상',stK:'nu'},
+ {id:'o6',name:'한지원',ch:'부평구 치매안심센터',sys:0,last:'—',st:'초대됨',stK:'in'},
+ {id:'o7',name:'서동혁',ch:'대찬병원',sys:0,last:'오늘 11:26',st:'정상',stK:'nu'}];
+/* 코호트 원자료 — 채널은 쉬운 그래프로, 슈퍼는 잔존율 표로 같은 데이터를 본다 */
+var COHORTS={
+ g3:[['개강 첫 주','3월 3일~',140,[76.4,78.6,75.7,67.1,67.1]],
+     ['2주차','3월 10일~',58,[48.3,41.4,27.6,24.1,22.4]],
+     ['8주차','4월 21일~',30,[33.3,30.0,26.7,26.7,13.3]],
+     ['9주차','4월 28일~',22,[63.6,45.5,59.1,45.5,22.7]]],
+ gj:[['5월 등록','5월 11일~',34,[82.4,79.4,73.5,70.6,67.6]],
+     ['6월 등록','6월 2일~',26,[80.8,76.9,73.1,69.2,65.4]],
+     ['8월 등록','8월 4일~',22,[86.4,81.8,77.3,0,0]]],
+ gd:[['7월 수술','7월 6일~',24,[91.7,87.5,83.3,79.2,0]],
+     ['8월 수술','8월 3일~',19,[89.5,84.2,78.9,0,0]]]};
+var COH_COLS=['1주 후','2주 후','4주 후','8주 후','12주 후'];
+/* 4기 이월 — 리포트에서 신청하면 여기 쌓이고, 참여 신청에서 승인해야 참여자가 된다 (B4·C1) */
+var CARRY={done:false,n:0,at:'',from:'',to:''};
+var curGroup='g3';
+function groupById(id){for(var i=0;i<GROUPS.length;i++)if(GROUPS[i].id===id)return GROUPS[i];return GROUPS[0]}
+function getGroup(){return curGroup}
+function putGroup(id){curGroup=id}
+var KIND={fixed:['기수형','전원 같은 날 시작'],rolling:['상시형','등록일부터 개인별 시작']};
+var SCOPE={site:'시설 1곳',multi:'여러 시설',district:'구 전체',city:'시 전체'};;
 var SUR='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남'.split('');
 var GIV=['순','자','옥','희','수','식','호','철','영','미','숙','현','진','규','화','태','근','만','복','례'];
 var BRAIN=['꿀벌의 숫자놀이','기찻길 만들기','기억의 숨바꼭질','재밌는 숫자 퍼즐 4X4','숨은 헬씨 찾기','양말정리 대작전','초성 퀴즈','진짜 색깔 찾기'];
@@ -466,16 +597,24 @@ var TESTS=[{c:'gds-sf',n:'노인우울 (GDS-SF)',max:15,lv:function(s){return s<
  {c:'pss',n:'스트레스 (PSS)',max:30,lv:function(s){return s<=13?['정상','ok']:s<=16?['주의','wa']:['높음','cr']}},
  {c:'smcq',n:'기억감퇴 (SMCQ)',max:14,lv:function(s){return s<=5?['정상','ok']:['주의','wa']}}];
 
+var STAFF=['김주무','박선영','정미경','최한나'];
 var PEOPLE=[],byId={};
 for(var i=0;i<822;i++){(function(i){
   var r=function(k){return rnd(i*17+k)};
   var st=r(1)<0.976?'active':(r(2)<0.25?'dropped':'expired');
-  var days=Math.floor(Math.pow(r(3),2.6)*170),last=days===0?999:Math.floor(Math.pow(r(4),2)*160);
+  /* 실측 분포에 맞춘다 — 무활동 198 · 이번 주 활동 191 · 8~14일 249 · 14일+ 무활동 184.
+     곡선 하나로는 세 구간을 동시에 못 맞춰서 구간을 직접 배정한다. */
+  var days=Math.floor(Math.pow(r(3),3.6)*170),u=r(4);
+  var last=days===0?999
+    :u<0.306?Math.floor(u/0.306*7)
+    :u<0.705?7+Math.floor((u-0.306)/0.399*7)
+    :15+Math.floor((u-0.705)/0.295*145);
   var p={idx:i,id:'P'+(10000+i),sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
    tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
    pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
    sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
-   org:st==='active'?ORGS[Math.floor(r(12)*4)]:(r(13)<0.6?ORGS[Math.floor(r(12)*4)]:'미배정'),
+   /* 미배정은 실측 119명(14.5%). 참여 중인 사람도 배정이 안 될 수 있다 — 그게 문제의 핵심이라 화면에 보여야 한다. */
+   org:r(13)<0.145?'미배정':ORGS[Math.floor(r(12)*4)],
    status:st,days:days,last:last,rate:days===0?0:Math.min(99,Math.round(Math.pow(r(15),1.4)*100)),
    app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)],
    score:Math.round(Math.pow(r(17),1.3)*1000),streak:Math.floor(Math.pow(r(18),2)*22),
@@ -485,11 +624,79 @@ for(var i=0;i<822;i++){(function(i){
   p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
   p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
   p.age=2026-p.birth;
+  /* 그룹 합류일. 이 날 이전은 미그룹 기간이라 채널이 볼 수 없다 (C3). */
+  var jw=r(28);
+  p.joinW=jw<0.60?0:jw<0.78?1:jw<0.88?2:jw<0.95?8:11;   /* 개강 후 몇 주차에 합류 */
+  p.joinG=new Date(2026,2,3+p.joinW*7);
   p.ageBand=p.age<60?'60대 미만':p.age<70?'60대':p.age<80?'70대':'80대 이상';
-  p.actBand=p.days===0?'무활동':p.last<=7?'최근 활동':p.last<=14?'7일 무활동':'14일+ 무활동';
+
   PEOPLE.push(p);byId[p.id]=p})(i)}
 
+/* ═══════════════ 지표 — 단일 계산 지점 ═══════════════
+   화면은 절대 직접 세지 않는다. 전부 M.<키>() 로 가져간다.
+   같은 지표가 화면마다 다른 숫자를 내는 건 어드민 신뢰를 무너뜨리는 1순위 사고고,
+   원인은 언제나 "화면마다 따로 셌다"이다. 여기 없는 숫자는 화면에 쓰지 않는다.
+   판정 기준 탭이 이 배열을 그대로 렌더하므로 정의서와 화면이 어긋날 수 없다.
+   c 가 있으면 계산되는 지표, 없으면 정의만 있는 항목. */
+/* ═══ 채널 설정 ═══
+   화면에 흩어져 하드코딩돼 있던 값들을 여기 모은다.
+   locked 는 법정·계약·시스템 제약이라 채널이 못 바꾸는 것 — 슈퍼에 변경 요청만 보낼 수 있다. */
+var CFG={
+  name:'인천 남동구 치매안심센터', key:'C-PRD-CARE-0001',
+  recvOrg:'인천남동구 보건소', recvTitle:'건강관리팀장',
+  sendOrg:'㈜원메딕스인더스트리', writer:'김주무 주무관',
+  docNo:'남동보건-{YYYY}-{NNN}', form:'남동구 보건소 표준 공문',
+  warn:7, risk:14,
+  pushFrom:9, pushTo:18,
+  locked:{escalateDays:3, remaskSec:30, retainYears:2, contract:'2026-03-01 ~ 2026-12-31'}};
+/* 무활동 구간 — 키는 고정, 라벨은 설정값을 따라간다 */
+function band(p){return p.days===0?'none':p.last<=CFG.warn?'recent':p.last<=CFG.risk?'warn':'risk'}
+function bandLabel(){return {none:'무활동',recent:'최근 활동',
+  warn:CFG.warn+'일 무활동',risk:CFG.risk+'일+ 무활동'}}
+function pCount(f){var n=0;for(var i=0;i<PEOPLE.length;i++)if(f(PEOPLE[i]))n++;return n}
+var METRICS=[
+ {k:'audience',n:'대상자 수',d:'그룹에 배정된 전원',f:'audienceCount',use:'오늘 · 참여자 · 리포트',
+  c:function(){return PEOPLE.length}},
+ {k:'participant',n:'참여자 수',d:'해당 월 참여 상태 유지자',f:'participantCount',use:'리포트',
+  c:function(){return pCount(function(p){return p.status==='active'})}},
+ {k:'activist',n:'활동자 수',d:'해당 월 1회 이상 활동',f:'activistCount',use:'오늘 · 활동 현황 · 리포트',
+  c:function(){return pCount(function(p){return p.days>0&&p.last<=30})}},
+ {k:'weekActive',n:'최근 활동',d:'마지막 활동이 경고 기준일 이내',f:'weeklyActivistCount',use:'오늘 · 참여자',
+  c:function(){return pCount(function(p){return band(p)==='recent'})}},
+ {k:'inactive7',n:'경고 구간 무활동',d:'경고 기준 초과 ~ 위험 기준 이내',f:'inactive7Count',use:'참여자',
+  c:function(){return pCount(function(p){return band(p)==='warn'})}},
+ {k:'inactive14',n:'위험 구간 무활동',d:'위험 기준일 초과',f:'inactive14Count',use:'오늘 · 참여자 · 활동 현황',
+  c:function(){return pCount(function(p){return band(p)==='risk'})}},
+ {k:'never',n:'무활동',d:'가입 후 한 번도 활동 없음',f:'neverActiveCount',use:'참여자 · 리포트',
+  c:function(){return pCount(function(p){return p.days===0})}},
+ {k:'todayDone',n:'오늘 수행',d:'오늘 활동을 1회 이상 한 사람',f:'todayActivistCount',use:'오늘 · 참여자',
+  c:function(){return pCount(function(p){return p.todayN>0})}},
+ {k:'unassigned',n:'기관 미배정',d:'담당 복지관이 지정되지 않음',f:'unassignedCount',use:'참여자',
+  c:function(){return pCount(function(p){return p.org==='미배정'})}},
+ {k:'noOwnerGroup',n:'담당자 없는 그룹',d:'주관리자가 지정되지 않은 그룹',f:'ownerlessGroupCount',use:'프로그램 그룹 · 운영자 관리',
+  c:function(){return GROUPS.filter(function(g){return !g.owner&&!g.ghost&&g.st!=='종료'}).length}},
+ {k:'noOwnerSite',n:'담당자 없는 기관',d:'기관 담당자가 지정되지 않음',f:'ownerlessSiteCount',use:'운영자 관리',
+  c:function(){var n=0;for(var k in SITES_OWN)if(k!=='미배정'&&!SITES_OWN[k].owner)n++;return n}},
+ {k:'applyPending',n:'처리 안 된 신청',d:'승인·거절·보류 어느 것도 아닌 신청',f:'pendingApplyCount',use:'오늘 · 참여 신청',
+  c:function(){return 111}},
+ {k:'approvedNoApp',n:'승인 후 앱 미설치',d:'승인됐지만 앱에 가입하지 않음',f:'approvedNotJoinedCount',use:'오늘 · 참여 신청',
+  c:function(){return 37}},
+ {k:'consultWaiting',n:'답변 대기 상담',d:'참여자 마지막 발화 후 미답변',f:'unansweredRoomCount',use:'오늘 · 상담실',
+  c:function(){return 4}},
+ {k:'roomsEmpty',n:'대화 없는 상담방',d:'자동 생성 후 발화가 한 번도 없음',f:'emptyRoomCount',use:'상담실',
+  c:function(){return 222}},
+ /* 값이 하나로 안 떨어지는 것들 — 정의만 둔다 */
+ {n:'수행률',d:'추천받은 활동 중 수행 비율',f:'활동수 ÷ 추천수',use:'참여자 · 참여자 상세'},
+ {n:'랭킹 점수',d:'월 단위 총점 (최대 1000)',f:'600×(활동÷추천) + 400×(연속일÷추천일)',use:'참여자 상세'},
+ {n:'PIN',d:'전화 응대용 조회번호',f:'vocNumber',use:'참여자 · 상담실'},
+ {n:'무활동 판정',d:'마지막 활동 이후 경과일',f:'7일 주의 / 14일 위험',use:'오늘 · 참여자'},
+ {n:'우울 (GDS-SF)',d:'15문항',f:'0–5 정상 / 6–9 주의 / 10+ 위험',use:'참여자 상세 · 활동 현황'},
+ {n:'불면 (ISI-K)',d:'7문항',f:'0–7 / 8–14 / 15–21 / 22+',use:'참여자 상세'},
+ {n:'스트레스 (PSS)',d:'10문항',f:'0–13 / 14–16 / 17–18 / 19+',use:'참여자 상세'}];
+var M={};METRICS.forEach(function(m){if(m.k)M[m.k]=m.c});
+
 function dayRec(p,d){
+  if(p.joinG&&d<p.joinG)return {acts:[],steps:0,mind:0,symp:0,locked:1};
   var doy=Math.floor((d-new Date(2026,0,1))/864e5),s=p.idx*991+doy*7;
   var dow=d.getDay(),wk=(dow===0||dow===6);
   var lastD=new Date(2026,7,21);lastD.setDate(lastD.getDate()-(p.last>900?9999:p.last));
@@ -565,27 +772,78 @@ function addAudit(act,tgt,reason){
   AUDIT.unshift(['2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),'김주무','남동구 치매안심센터',0,act,tgt,reason,'218.***.***.42']);
   if(V.audit)V.audit()}
 
-/* ═══ nav ═══ */
-var NAV=[['운영',[['today','오늘','cr:3'],['people','참여자','n:822'],['stats','활동 현황',''],['consult','상담실','cr:4']]],
- ['프로그램',[['sched','프로그램 일정','ro'],['quest','챌린지','']]],
- ['알림',[['push','푸시 메시지','n:예약 4']]],
- ['기록과 보고',[['report','월간 리포트',''],['apply','참여 신청','cr:111'],['audit','열람 기록','']]]];
+/* ═══ nav ═══
+   메뉴는 하드코딩이 아니라 맬리 boMenu/tree 스키마를 렌더한 결과다.
+   합칠 때 이 객체를 서버 응답으로 갈아끼우면 화면 코드는 그대로 둔다.
+   각 항목: menuId · label · page · feature · accessMode · suspendBehavior · permission */
+var MENU={
+manager:[
+ ['운영',[
+  {menuId:'today',  label:'오늘',       page:'/manager/care/today',        perm:'MELI_MANAGER_CARE_TODAY',    badge:'cr:3'},
+  {menuId:'people', label:'참여자',     page:'/manager/care/participants', perm:'MELI_MANAGER_CARE_MEMBERS',  badge:'n:822'},
+  {menuId:'stats',  label:'활동 현황',  page:'/manager/care/stats',        perm:'MELI_MANAGER_CARE_STATS'},
+  {menuId:'consult',label:'상담실',     page:'/manager/care/consult',      perm:'MELI_MANAGER_CARE_CONSULT',  badge:'cr:4'}]],
+ ['프로그램',[
+  {menuId:'groups', label:'프로그램 그룹',page:'/manager/care/groups',      perm:'MELI_MANAGER_CARE_GROUPS',   badge:'n:4'},
+  {menuId:'sched',  label:'프로그램 일정',page:'/manager/care/schedule',   perm:'MELI_MANAGER_CARE_SCHEDULE', access:'readonly'},
+  {menuId:'quest',  label:'챌린지',     page:'/manager/care/quests',       perm:'MELI_MANAGER_CARE_QUESTS'}]],
+ ['알림',[
+  {menuId:'push',   label:'푸시 메시지', page:'/manager/care/push',        perm:'MELI_MANAGER_CARE_PUSH',     badge:'n:예약 4'}]],
+ ['기록과 보고',[
+  {menuId:'report', label:'월간 리포트', page:'/manager/care/report',      perm:'MELI_MANAGER_CARE_REPORT'},
+  {menuId:'apply',  label:'참여 신청',  page:'/manager/care/applies',      perm:'MELI_MANAGER_CARE_APPLIES',  badge:'cr:111'},
+  {menuId:'audit',  label:'열람 기록',  page:'/manager/care/audit',        perm:'MELI_MANAGER_PRIVACY_AUDIT'}]],
+ ['설정',[
+  {menuId:'settings',label:'채널 설정', page:'/manager/care/settings',     perm:'MELI_MANAGER_CARE_SETTINGS'}]],
+ ['설계',[
+  {menuId:'arch',   label:'수렴 설계',  page:'/manager/care/architecture', perm:'—'}]]],
+admin:[
+ ['채널 통제',[
+  {menuId:'channels',  label:'채널 현황',   page:'/admin/meli/channels',      perm:'MELI_CHANNELS',            badge:'n:4'},
+  {menuId:'allgroups', label:'프로그램 그룹',page:'/admin/care/groups',       perm:'MELI_CARE_GROUPS',         badge:'cr:1'},
+  {menuId:'operators', label:'운영자 관리', page:'/admin/account/operators',  perm:'MELI_OPERATORS',           badge:'n:7'},
+  {menuId:'ungrouped', label:'미그룹 회원',  page:'/admin/care/ungrouped',     perm:'MELI_CARE_UNGROUPED',      badge:'n:133'},
+  {menuId:'cohort',    label:'코호트 분석', page:'/admin/care/cohort',        perm:'MELI_CARE_ANALYTICS'},
+  {menuId:'audit',     label:'열람 기록',   page:'/admin/privacy/audit',      perm:'MELI_PRIVACY_AUDIT'}]],
+ ['맬리 본서비스',[
+  {menuId:'x-members',  label:'회원 현황',      page:'/admin/meli/members',   perm:'MELI_MEMBERS',    access:'external'},
+  {menuId:'x-nfc',      label:'NFC 현황',       page:'/admin/meli/nfc',       perm:'MELI_NFC',        access:'external'},
+  {menuId:'x-notices',  label:'공지사항/이벤트', page:'/admin/meli/notices',   perm:'MELI_NOTICES',    access:'external'},
+  {menuId:'x-faqs',     label:'멜리 서비스 FAQ', page:'/admin/meli/faqs',      perm:'MELI_FAQS',       access:'external'},
+  {menuId:'x-inquiries',label:'멜리 1:1 문의',   page:'/admin/meli/inquiries', perm:'MELI_INQUIRIES',  access:'external'}]],
+ ['설계',[
+  {menuId:'arch',    label:'수렴 설계', page:'/admin/architecture',        perm:'—'}]]]};
+var SURFACE='manager';
 var TITLES={today:'오늘',people:'참여자',person:'참여자 상세',stats:'활동 현황',consult:'상담실',sched:'프로그램 일정',
- quest:'챌린지',questdetail:'챌린지 상세',push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록'};
+ quest:'챌린지',questdetail:'챌린지 상세',push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록',
+ arch:'수렴 설계',channels:'채널 현황',groups:'프로그램 그룹',allgroups:'프로그램 그룹 (전 채널)',operators:'운영자 관리',cohort:'코호트 분석',ungrouped:'미그룹 회원',settings:'채널 설정'};
 var V={},cur='today';
 function buildNav(){
   var n=$('#nav');n.innerHTML='';
-  NAV.forEach(function(g){
+  MENU[SURFACE].forEach(function(g){
     n.appendChild(el('div','mgrp',g[0]));
-    g[1].forEach(function(it){
-      var b=el('div','mnav');b.dataset.p=it[0];
+    g[1].forEach(function(m){
+      var ext=m.access==='external';
+      var b=el('div','mnav'+(ext?' ext':''));b.dataset.p=m.menuId;
+      b.title=m.page+'  ·  '+m.perm;
       var bd='';
-      if(it[2].indexOf('cr:')===0)bd='<span class="mbdg mt" style="background:#FEF3F2;color:#B42318">'+it[2].slice(3)+'</span>';
-      else if(it[2].indexOf('n:')===0)bd='<span class="mbdg mt" style="background:#F2F4F7;color:#667085">'+it[2].slice(2)+'</span>';
-      else if(it[2]==='ro')bd='<span class="mcap" style="margin-left:auto;font-size:11.5px">읽기 전용</span>';
-      b.innerHTML=it[1]+bd;
-      b.addEventListener('click',function(){go(it[0])});
+      if(ext)bd='<span class="mcap" style="margin-left:auto;font-size:11.5px">본서비스</span>';
+      else if(m.access==='readonly')bd='<span class="mcap" style="margin-left:auto;font-size:11.5px">읽기 전용</span>';
+      else if(m.badge&&m.badge.indexOf('cr:')===0)bd='<span class="mbdg mt" style="background:#FEF3F2;color:#B42318">'+m.badge.slice(3)+'</span>';
+      else if(m.badge&&m.badge.indexOf('n:')===0)bd='<span class="mbdg mt" style="background:#F2F4F7;color:#667085">'+m.badge.slice(2)+'</span>';
+      b.innerHTML=m.label+bd;
+      if(ext)b.addEventListener('click',function(){toast(m.label+'은 맬리 본서비스 화면이에요 · '+m.page)});
+      else b.addEventListener('click',function(){go(m.menuId)});
       n.appendChild(b)})})}
+function setSurface(s){
+  if(SURFACE===s)return;
+  SURFACE=s;
+  $$('#sf-tog button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.s===s)});
+  buildNav();
+  go(s==='manager'?'today':'channels');
+  toast(s==='manager'?'채널관리자 표면 — /manager 트리로 다시 그렸어요':'슈퍼어드민 표면 — 같은 코드, 다른 메뉴 트리예요');
+}
+function refresh(){if(V[cur])V[cur]()}
 function go(p){
   cur=p;
   $$('.pane').forEach(function(e){e.classList.toggle('on',e.dataset.pane===p)});
@@ -599,8 +857,9 @@ function go(p){
   window.scrollTo(0,0)}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
  chead:chead,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
- open:open,closeAll:closeAll,go:go,buildNav:buildNav,V:V,
- PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
+ open:open,closeAll:closeAll,go:go,buildNav:buildNav,setSurface:setSurface,V:V,refresh:refresh,
+ GROUPS:GROUPS,SITES:SITES,KIND:KIND,SCOPE:SCOPE,CARRY:CARRY,groupById:groupById,getGroup:getGroup,putGroup:putGroup,OPERATORS:OPERATORS,CH_SELF:CH_SELF,
+ PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,METRICS:METRICS,M:M,COHORTS:COHORTS,COH_COLS:COH_COLS,CFG:CFG,band:band,bandLabel:bandLabel,ROLES:ROLES,SITES_OWN:SITES_OWN,siteOwner:siteOwner,assignments:assignments,subsAt:subsAt,ownerOf:ownerOf,ownedBy:ownedBy,groupTree:groupTree,groupDepth:groupDepth,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,
  cur:function(){return cur}};
@@ -612,7 +871,7 @@ return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kp
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
-    PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
+    METRICS=A.METRICS,M=A.M,CFG=A.CFG,band=A.band,bandLabel=A.bandLabel,COHORTS=A.COHORTS,COH_COLS=A.COH_COLS,PEOPLE=A.PEOPLE,ownerOf=A.ownerOf,groupById=A.groupById,getGroup=A.getGroup,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,moveRows=A.moveRows,assessHist=A.assessHist,
     achieve=A.achieve,addAudit=A.addAudit,LT=A.LT,RT=A.RT;
 function cnt(f){return PEOPLE.filter(f).length}
@@ -620,7 +879,7 @@ function statusPill(p){
   if(p.status==='withdrawn')return pill('회원탈퇴','cr');
   if(p.status==='dropped')return pill('중도포기','nu');
   if(p.status==='expired')return pill('만료','nu');
-  if(p.actBand==='14일+ 무활동')return pill('활동 중단','wa');
+  if(band(p)==='risk')return pill('활동 중단','wa');
   return pill('참여 중','nu')}
 
 /* ══════ 오늘 ══════ */
@@ -631,9 +890,13 @@ V.today=function(){
   h.innerHTML=
    ph('오늘','2026년 8월 21일 목요일 · 3기 171일째',
      '<span class="mcap" style="margin-right:2px">기간</span><button class="mchip">오늘</button><button class="mchip">최근 7일</button><button class="mchip on">이번 달</button><button class="mchip">지난 달</button><button class="mb mbp" data-go="report" style="margin-left:8px">8월 리포트 만들기</button>')
-   +kpi([['3기 대상자','822','명','1기 230 · 2기 714'],['이번 주 활동자','191','명','전주보다 6명 늘었어요','','up'],
-         ['어제 활동','1,284','회','일평균 1,350회'],['14일+ 무활동','184','명','지난주보다 21명 늘었어요','wa'],
-         ['답변 대기 상담','4','건','가장 오래된 건 3일째','cr'],['처리 안 된 신청','111','건','가장 오래된 건 42일째','cr']])
+   /* 숫자는 전부 M에서 온다. 여기서 세지 않는다. */
+   +kpi([['3기 대상자',fmt(M.audience()),'명','1기 230 · 2기 714'],
+         ['이번 주 활동자',fmt(M.weekActive()),'명','전주보다 6명 늘었어요','','up'],
+         ['어제 활동','1,284','회','일평균 1,350회'],
+         [bandLabel().risk,fmt(M.inactive14()),'명','지난주보다 21명 늘었어요','wa'],
+         ['답변 대기 상담',fmt(M.consultWaiting()),'건','가장 오래된 건 3일째','cr'],
+         ['처리 안 된 신청',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
    +'<div class="mc"><div style="padding:16px 20px 12px"><span class="mh">처리할 일</span></div><div id="t-todo"></div></div>'
    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px">'
    +'<div class="mc" style="padding:20px;display:flex;flex-direction:column">'
@@ -683,10 +946,11 @@ V.people=function(keep){
     var CH=[['참여 중','st:active',cnt(function(p){return p.status==='active'})],['중도포기','st:dropped',cnt(function(p){return p.status==='dropped'})],
       ['만료','st:expired',cnt(function(p){return p.status==='expired'})],['회원탈퇴','st:withdrawn',cnt(function(p){return p.status==='withdrawn'})],['|',''],
     ].concat(ORGS.map(function(o){return [o,'org:'+o,cnt(function(p){return p.org===o})]})).concat([['|',''],
-      ['오늘 수행','act:today',cnt(function(p){return p.todayN>0})],['최근 활동','act:최근 활동',cnt(function(p){return p.actBand==='최근 활동'})],
-      ['7일 무활동','act:7일 무활동',cnt(function(p){return p.actBand==='7일 무활동'})],
-      ['14일+ 무활동','act:14일+ 무활동',cnt(function(p){return p.actBand==='14일+ 무활동'})],
-      ['무활동','act:무활동',cnt(function(p){return p.actBand==='무활동'})]]);
+      /* 오늘 화면과 같은 M을 쓴다. 화면마다 따로 세면 숫자가 갈린다. */
+      ['오늘 수행','act:today',M.todayDone()],[bandLabel().recent,'act:recent',M.weekActive()],
+      [bandLabel().warn,'act:warn',M.inactive7()],
+      [bandLabel().risk,'act:risk',M.inactive14()],
+      [bandLabel().none,'act:none',M.never()]]);
     var cb=$('#p-chips');
     CH.forEach(function(c){
       if(c[0]==='|'){cb.appendChild(el('span','sep'));return}
@@ -701,7 +965,7 @@ V.people=function(keep){
     $('#p-sex').addEventListener('change',function(){pSex=this.selectedIndex;pPager.page=1;V.people(1)});
     $('#p-msg').addEventListener('click',function(){go('pushnew')});
   }
-  pList=sortBy(filterP(),pSort,function(p,k){return k==='name'?p.full:k==='pin'?+p.pin:k==='birth'?p.birth:k==='org'?p.org:k==='days'?p.days:k==='rate'?p.rate:k==='last'?-p.last:0});
+  pList=sortBy(filterP(),pSort,function(p,k){return k==='name'?p.full:k==='pin'?+p.pin:k==='birth'?p.birth:k==='org'?p.org:k==='mgr'?(ownerOf(p,groupById(getGroup()))||'힣'):k==='days'?p.days:k==='rate'?p.rate:k==='last'?-p.last:0});
   $('#p-cnt').textContent=fmt(pList.length);
   $('#pq-x').style.display=pq?'flex':'none';
   renderApplied();
@@ -710,7 +974,7 @@ V.people=function(keep){
   var thh=$('#p-th');
   thh.innerHTML='<th style="width:50px;padding-left:20px"><span id="p-all">'+cbx(allOn?'on':someOn?'mx':'off')+'</span></th>'
    +sth('이름','name',pSort)+sth('PIN','pin',pSort,1)+'<th class="num">N</th><th>연락처</th>'+sth('생년','birth',pSort,1)
-   +sth('기관','org',pSort)+'<th>상태</th>'+sth('활동일','days',pSort,1)+sth('수행률','rate',pSort,1)
+   +sth('기관','org',pSort)+sth('담당자','mgr',pSort)+'<th>상태</th>'+sth('활동일','days',pSort,1)+sth('수행률','rate',pSort,1)
    +sth('최근 이용','last',pSort)+'<th style="padding-right:20px">앱</th>';
   bindSort(thh,pSort,function(){pPager.page=1;V.people(1)});
   $('#p-all').addEventListener('click',function(){var on=!allOn;pageRows.forEach(function(p){if(on)pSel[p.id]=1;else delete pSel[p.id]});if(!on)pAll=false;V.people(1)});
@@ -725,8 +989,11 @@ V.people=function(keep){
      +'<td class="num mt" style="color:#98A2B3">'+p.pin+'</td>'
      +'<td class="num">'+(p.todayN?'<span class="mpill" style="background:#E7F9F1;color:#065C3D">'+p.todayN+'</span>':'')+'</td>'
      +'<td class="mt mask-p" style="color:#475467">'+p.phone+'</td>'
-     +'<td class="num mt" style="color:#475467">'+p.birth+'</td>'
-     +'<td style="color:'+(p.org==='미배정'?'#98A2B3':'#475467')+'">'+p.org+'</td><td>'+statusPill(p)+'</td>'
+     +'<td class="num mt" style="color:#475467">'+p.birth+'<div class="mcap">만 '+p.age+'세</div></td>'
+     +'<td style="color:'+(p.org==='미배정'?'#98A2B3':'#475467')+'">'+p.org+'</td>'
+     +'<td>'+(function(){var o=ownerOf(p,groupById(getGroup()));
+        return o?esc(o)+'<div class="mcap">'+(siteOwner(p.org)?'기관 담당':'그룹 담당')+'</div>'
+                :'<span style="color:#98A2B3">미지정</span>'})()+'</td><td>'+statusPill(p)+'</td>'
      +'<td class="num mt">'+p.days+'</td><td class="num mt">'+(p.days?p.rate+'%':'—')+'</td>'
      +'<td class="mt" style="color:#667085">'+(p.last>900?'—':p.last===0?'오늘':p.last+'일 전')+'</td>'
      +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+p.app+'</td>';
@@ -745,7 +1012,7 @@ function filterP(){
   return PEOPLE.filter(function(p){
     if(pf.st.length&&pf.st.indexOf(p.status)<0)return false;
     if(pf.org.length&&pf.org.indexOf(p.org)<0)return false;
-    if(pf.act.length&&!pf.act.some(function(v){return v==='today'?p.todayN>0:p.actBand===v}))return false;
+    if(pf.act.length&&!pf.act.some(function(v){return v==='today'?p.todayN>0:band(p)===v}))return false;
     if(ab&&p.ageBand!==ab)return false;
     if(sx&&p.sex!==sx)return false;
     if(pq)return p.full.indexOf(pq)>=0||p.tail.indexOf(pq)>=0||p.pin.indexOf(pq)>=0;
@@ -792,7 +1059,7 @@ $('#rev-ok').addEventListener('click',function(){
   var p=revC.p,tr=revC.tr;
   tr.querySelector('.mask-n').textContent=p.full;tr.querySelector('.mask-p').textContent=p.phoneFull;
   tr.querySelector('.rv').textContent='가리기';tr.dataset.rev='1';tr.style.background='#FFFAEB';
-  addAudit('원문 열람','1건',$('#rev-r').value);
+  addAudit('원문 열람','1건',$('#rev-r').selectedOptions[0].text);
   toast('원문을 열었어요. 30초 뒤 자동으로 가려져요','wa');
   revT=setTimeout(function(){if(tr.dataset.rev==='1')hideRev(p,tr)},30000);closeAll()});
 function hideRev(p,tr){clearTimeout(revT);
@@ -832,7 +1099,7 @@ function openPerson(p,from){cP=p;backTo=from||'people';pdTab='act';pdSel=null;pd
 A.openPerson=openPerson;
 V.person=function(){
   var p=cP,h=$('#v-person');if(!p)return;
-  h.innerHTML=ph(p.name,p.birth+'년생 · '+p.sex+' · PIN '+p.pin+' · '+p.org,
+  h.innerHTML=ph(p.name,p.birth+'년생 · 만 '+p.age+'세 · '+p.sex+' · PIN '+p.pin+' · '+p.org+' · 담당 '+(ownerOf(p,groupById(getGroup()))||'미지정'),
     '<button class="mb" id="pd-b">‹ 목록</button><button class="mb" id="pd-e">정보 수정</button><button class="mb" id="pd-c">상담 열기</button><button class="mb mbd" id="pd-o">탈퇴 처리</button>')
    +kpi([['누적 활동일',p.days,'일'],['수행률',p.days?p.rate:'—',p.days?'%':''],['연속 출석',p.streak,'일'],
          ['랭킹 점수',fmt(p.score),'/ 1000'],['마음 기록',p.mind,'회'],['일평균 걸음',fmt(p.step),'보']])
@@ -845,11 +1112,49 @@ V.person=function(){
   if(p.days===0){$('#pd-none').innerHTML=emptyBox('활동 기록이 없어요','가입 후 한 번도 활동하지 않았어요. 앱 설치·로그인 안내가 필요할 수 있어요','안내 메시지 보내기');
     $('#pd-none .mb').addEventListener('click',function(){toast(p.name+'님에게 설치 안내를 보냈어요','ok','실행 취소',null)});return}
   var tb=$('#pd-tabs');
-  [['act','활동 내역'],['chk','검사 이력'],['qst','챌린지 참여']].forEach(function(x){
+  [['act','활동 내역'],['cmp','지난달 대비'],['chk','검사 이력'],['qst','챌린지 참여']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',pdTab===x[0]?'true':'false');
     b.addEventListener('click',function(){pdTab=x[0];V.person()});tb.appendChild(b)});
   var body=$('#pd-body');
-  if(pdTab==='act')tabAct(p,body);else if(pdTab==='chk')tabChk(p,body);else tabQst(p,body)};
+  if(pdTab==='act')tabAct(p,body);else if(pdTab==='cmp')tabCmp(p,body);
+  else if(pdTab==='chk')tabChk(p,body);else tabQst(p,body)};
+
+/* ══ 지난달 대비 — 한 번도 안 한 활동은 지우지 않고 회색으로 남긴다 ══ */
+function trendRows(p){
+  var r=function(k){return rnd(p.idx*31+k)};
+  return [['두뇌훈련',p.days>0,0],['상체·유연성 운동',p.days>0,4],['전신·지구력 운동',p.days>2,8],
+          ['마음다루기',p.mind>0,12],['걷기 기록',p.step>0,16],['증상 기록',p.symp>0,20]]
+   .map(function(b){
+    if(!b[1])return {n:b[0],none:true};
+    var k=b[2],pd=1+r(k)*4.5,cd=Math.max(1,pd+(r(k+1)-0.45)*2.2);
+    var pr=45+r(k+2)*45,cr=Math.max(5,Math.min(99,pr+(r(k+3)-0.45)*26));
+    return {n:b[0],pd:pd,cd:cd,pr:pr,cr:cr}})}
+/* 우리 색 규칙: 좋아진 건 색을 쓰지 않는다. 나빠진 것만 주의색. */
+function dlt(d,dp){
+  if(Math.abs(d)<0.05)return '<span class="mt" style="color:#98A2B3;font-size:12.5px;margin-left:5px">—</span>';
+  var down=d<0;
+  return '<span class="mt" style="font-size:12.5px;margin-left:5px;color:'+(down?'#B54708':'#667085')+(down?';font-weight:600':'')+'">'
+   +(down?'▼':'▲')+Math.abs(d).toFixed(dp)+'</span>'}
+function tabCmp(p,box){
+  var rows=trendRows(p),done=rows.filter(function(x){return !x.none});
+  if(!done.length){box.innerHTML=emptyBox('비교할 활동이 없어요','이번 달에도 지난달에도 기록된 활동이 없어요');return}
+  box.innerHTML='<div class="mcap" style="padding:14px 20px 0">한 번도 안 한 활동은 목록에서 지우지 않고 회색으로 남겨요 — <b>안 하고 있다는 것이 정보</b>예요.</div>'
+   +'<div class="scroll"><table class="mtb"><thead>'
+   +'<tr><th rowspan="2" style="padding-left:20px;vertical-align:bottom">활동 유형</th>'
+   +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0">평균 난이도</th>'
+   +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0;padding-right:20px">수행률 (%)</th></tr>'
+   +'<tr><th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num">이번달</th>'
+   +'<th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num" style="padding-right:20px">이번달</th></tr></thead><tbody>'
+   +rows.map(function(x){
+     if(x.none)return '<tr style="color:#98A2B3"><td style="padding-left:20px">'+x.n+'</td>'
+      +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num">–</td>'
+      +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num" style="padding-right:20px">–</td></tr>';
+     return '<tr><td style="padding-left:20px">'+x.n+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pd.toFixed(1)+'</td>'
+      +'<td class="num mt">'+x.cd.toFixed(1)+dlt(x.cd-x.pd,1)+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pr.toFixed(1)+'</td>'
+      +'<td class="num mt" style="padding-right:20px">'+x.cr.toFixed(1)+dlt(x.cr-x.pr,1)+'</td></tr>'}).join('')
+   +'</tbody></table></div>'}
 function tabAct(p,box){
   if(!pdSel)pdSel=lastAct(p);
   if(!pdM)pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};
@@ -868,17 +1173,29 @@ function tabAct(p,box){
   for(var dn=1;dn<=dim;dn++){(function(dn){
     var d=new Date(pdM.y,pdM.m-1,dn),b=el('button',null,String(dn));
     if(d<AMIN||d>AMAX){b.disabled=true;g.appendChild(b);return}
+    if(p.joinG&&d<p.joinG){                    /* 미그룹 기간 — 채널이 볼 수 없다 */
+      b.disabled=true;b.className='lockd';
+      b.title=dstr(d)+' · 미그룹 기간이라 볼 수 없어요';g.appendChild(b);return}
     var n=dayRec(p,d).acts.length;
     if(n>0){mD++;mA+=n;var s=n>=5?['#13BD7E','#043528','700']:n>=3?['#6BDCAF','#043528','600']:['#C6F2E0','#065C3D','500'];
       b.style.background=s[0];b.style.color=s[1];b.style.fontWeight=s[2]}
     b.title=dstr(d)+' · 활동 '+n+'회';
     if(dstr(d)===dstr(pdSel))b.classList.add('on');
     b.addEventListener('click',function(){pdSel=d;V.person()});g.appendChild(b)})(dn)}
-  $('#am-f').innerHTML='이번 달 활동 <b class="mt" style="color:#101828">'+mD+'</b>일 · 총 <b class="mt" style="color:#101828">'+fmt(mA)+'</b>회';
+  $('#am-f').innerHTML='이번 달 활동 <b class="mt" style="color:#101828">'+mD+'</b>일 · 총 <b class="mt" style="color:#101828">'+fmt(mA)+'</b>회'
+   +(p.joinW?'<div class="mcap" style="margin-top:6px">'+dstr(p.joinG)+'에 합류했어요. 그 전은 <b>미그룹 기간</b>이라 볼 수 없어요.</div>':'');
   $('#am-p').addEventListener('click',function(){pdM.m--;if(pdM.m<1){pdM.m=12;pdM.y--}V.person()});
   $('#am-n').addEventListener('click',function(){pdM.m++;if(pdM.m>12){pdM.m=1;pdM.y++}V.person()});
   $('#am-l').addEventListener('click',function(){pdSel=lastAct(p);pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};V.person()});
   var rec=dayRec(p,pdSel),diff=Math.round((AMAX-pdSel)/864e5);
+  if(rec.locked){
+    $('#am-d').innerHTML='<div class="empty" style="margin:auto"><span class="mh">이 날은 볼 수 없어요</span>'
+     +'<p class="mcap" style="margin:6px 0 0;max-width:34ch">'+dstr(pdSel)+'은(는) <b>미그룹 기간</b>이에요. '
+     +'이 분은 '+dstr(p.joinG)+'에 그룹에 합류했고, <b>합류 전 활동 기록은 채널에서 볼 수 없어요.</b></p></div>';
+    $('#am-p').addEventListener('click',function(){pdM.m--;if(pdM.m<1){pdM.m=12;pdM.y--}V.person()});
+    $('#am-n').addEventListener('click',function(){pdM.m++;if(pdM.m>12){pdM.m=1;pdM.y++}V.person()});
+    $('#am-l').addEventListener('click',function(){pdSel=lastAct(p);pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};V.person()});
+    return}
   var lab=diff===0?'오늘':diff===1?'어제':(pdSel.getMonth()+1)+'월 '+pdSel.getDate()+'일 '+'일월화수목금토'[pdSel.getDay()]+'요일';
   var D=$('#am-d');
   D.innerHTML='<div class="row" style="padding:16px 20px"><button class="pgn" id="ad-p" style="background:#fff">'+LT+'</button>'
@@ -914,7 +1231,39 @@ function tabChk(p,box){
    +h.map(function(x){var lv=x.test.lv(x.score);
      var d=x.prev==null?'<span style="color:#98A2B3">첫 검사</span>':x.score<x.prev?'<span style="color:#067647;font-weight:600">▼ '+(x.prev-x.score)+' 호전</span>':x.score>x.prev?'<span style="color:#B42318;font-weight:600">▲ '+(x.score-x.prev)+'</span>':'<span style="color:#98A2B3">변화 없음</span>';
      return '<tr><td class="mt" style="padding-left:20px;color:#475467">'+x.date+' '+x.time+'</td><td>'+x.test.n+'</td><td class="num mt">'+x.score+'</td><td>'+pill(lv[0],lv[1])+'</td><td class="num mt" style="color:#98A2B3">'+(x.prev==null?'—':x.prev)+'</td><td style="padding-right:20px">'+d+'</td></tr>'}).join('')
-   +'</tbody></table></div>'}
+   +'</tbody></table></div>'+prePost(h)}
+/* 사전·사후 관찰. '개선'이 아니라 '관찰' — 프로그램이 원인이라고 주장하지 않는다.
+   TESTS 4종은 전부 증상 척도라 점수가 낮을수록 좋다. 막대 높이는 척도별 만점 기준으로
+   따로 재고(만점이 15~28로 제각각이라 한 축에 겹치면 안 됨), 색은 우리 규칙대로
+   나빠진 경우에만 주의색을 쓴다. */
+function prePost(h){
+  var g={},order=[];
+  h.forEach(function(x){var n=x.test.n;
+    if(!g[n]){g[n]={n:n,t:x.test,first:x,last:x};order.push(n)}
+    if(x.date+x.time < g[n].first.date+g[n].first.time)g[n].first=x;
+    if(x.date+x.time > g[n].last.date+g[n].last.time)g[n].last=x});
+  var ks=order.filter(function(k){return g[k].first!==g[k].last});
+  if(!ks.length)return '<div class="mcap" style="padding:14px 20px 18px;border-top:1px solid #F2F4F7">검사가 한 번뿐이라 사전·사후를 비교할 수 없어요.</div>';
+  return '<div style="border-top:1px solid #F2F4F7;padding:18px 20px 20px">'
+   +'<div class="mh">점수 변화 관찰</div>'
+   +'<div class="mcap" style="margin-top:4px">첫 검사와 마지막 검사를 나란히 놓은 거예요. '
+   +'네 가지 모두 <b>점수가 낮을수록 좋아요.</b> 프로그램이 원인이라는 뜻은 아니에요.</div>'
+   +'<div style="display:flex;align-items:flex-start;gap:22px;margin-top:20px;padding:0 4px">'
+   +ks.map(function(k){var x=g[k],worse=x.last.score>x.first.score;
+     return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px">'
+      +'<div style="height:130px;display:flex;align-items:flex-end;gap:6px;justify-content:center;width:100%">'
+      +bar(x.first.score,x.t.max,'#EAECF0','#667085')
+      +bar(x.last.score,x.t.max,worse?'#F79009':'#13BD7E',worse?'#B54708':'#077A50')+'</div>'
+      +'<div class="mcap" style="text-align:center">'+x.n+'<br>만점 '+x.t.max+'</div></div>'}).join('')
+   +'</div>'
+   +'<div style="display:flex;gap:16px;margin-top:14px;font-size:12.5px;color:#667085;flex-wrap:wrap">'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#EAECF0;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사전 (첫 검사)</span>'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#13BD7E;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사후 — 낮아졌거나 그대로</span>'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#F79009;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사후 — 높아짐 (확인 필요)</span>'
+   +'</div></div>'}
+function bar(v,mx,bg,fg){
+  return '<div style="width:36px;border-radius:6px 6px 0 0;background:'+bg+';height:'+Math.max(4,v/mx*100)+'%;position:relative;display:flex;justify-content:center">'
+   +'<span class="mt" style="position:absolute;top:-19px;font-size:12px;font-weight:600;color:'+fg+'">'+v+'</span></div>'}
 function tabQst(p,box){
   box.innerHTML='<div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px" id="qz"></div>';
   QUESTS.filter(function(q){return q.st!=='예정'}).forEach(function(q){
@@ -954,7 +1303,7 @@ A.openAchieve=openAchieve;A.openWithdraw=openWithdraw;A.statusPill=statusPill;A.
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
-    PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
+    METRICS=A.METRICS,M=A.M,CFG=A.CFG,band=A.band,bandLabel=A.bandLabel,COHORTS=A.COHORTS,COH_COLS=A.COH_COLS,PEOPLE=A.PEOPLE,ownerOf=A.ownerOf,groupById=A.groupById,getGroup=A.getGroup,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,achieve=A.achieve,addAudit=A.addAudit,
     LT=A.LT,RT=A.RT,openPerson=A.openPerson,openAchieve=A.openAchieve,cnt=A.cnt;
 
@@ -987,29 +1336,46 @@ function sumTab(B){
      +brow('0일 (한 번도)',72,'198명','c')+brow('1–4일',100,'275명','c')+brow('5–19일',41,'112명','w')+brow('20–59일',21,'58명')+brow('60일 이상',33,'92명')
      +'</div><p class="mcap" style="margin:24px 0 0;font-size:13px"><b style="color:#101828">473명(64%)이 4일 이하로 하고 멈췄어요.</b> 반대로 92명은 60일 넘게 계속하고 있어요.</p></div></div></div>'}
 function retTab(B){
-  var COH=[['개강 첫 주','3/3~','140명',[76.4,78.6,75.7,67.1,67.1]],['2주차','3/10~','58명',[48.3,41.4,27.6,24.1,22.4]],
-   ['8주차','4/21~','30명',[33.3,30.0,26.7,26.7,13.3]],['9주차','4/28~','22명',[63.6,45.5,59.1,45.5,22.7]]];
-  function hc(v){var c=v>=60?['#ECFDF3','#067647']:v>=30?['#FFFAEB','#B54708']:['#FEF3F2','#B42318'];
-    return '<td style="text-align:center"><span style="display:block;margin:4px 0;padding:8px 0;border-radius:6px;background:'+c[0]+';color:'+c[1]+';font-weight:700;font-variant-numeric:tabular-nums">'+v.toFixed(1)+'%</span></td>'}
+  /* 채널관리자는 코호트 매트릭스를 안 읽는다. "지금 몇 명 남았나"만 보여준다.
+     잔존율 표 원본은 슈퍼어드민 > 코호트 분석에 있다. */
+  var C=COHORTS.g3.map(function(c){
+    var last=c[3].filter(function(v){return v>0}).pop()||0;
+    return {t:c[0],when:c[1],n:c[2],left:Math.round(c[2]*last/100),pct:last}});
+  var top=C[0],worst=C.reduce(function(a,b){return b.pct<a.pct?b:a},C[0]);
   var SIG=[['7일 연속 무활동','184','71%','#B42318'],['수행률 20% 미만 2주 지속','101','64%','#B42318'],
    ['진입만 하고 중단 3회 이상','57','48%','#B54708'],['앱 구버전 3개월 이상 사용','32','44%','#B54708']];
   B.innerHTML='<div class="gap">'
-   +kpi([['개강 첫 주 시작 → 12주 후','67.1','%','140명 중 94명이 남았어요','ok'],
-         ['2주차 이후 시작 → 12주 후','22.4','%','58명 중 13명만 남았어요','cr'],
-         ['첫 주 재방문 (D+7)','49.5','%','238 / 481명'],['한 달 후 (D+30)','40.2','%','182 / 453명']])
-   +note('<b>가장 중요한 발견이에요.</b> 개강 첫 주에 시작한 분은 12주 뒤에도 67%가 남아 있는데, 한 주만 늦게 시작하면 22%로 떨어져요. <b>3배 차이</b>예요. 개강 첫 주 온보딩에 힘을 쏟는 게 다른 어떤 개선보다 효과가 커요.','wa')
-   +'<div class="mc" style="overflow:hidden">'+chead('언제 시작했느냐에 따른 잔존율','<span class="mcap">첫 활동 주 기준 · 그 주에 1회라도 활동</span>')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">시작 시점</th><th class="num">인원</th>'
-     +['1주 후','2주 후','4주 후','8주 후','12주 후'].map(function(x){return '<th style="text-align:center">'+x+'</th>'}).join('')+'</tr></thead><tbody>'
-     +COH.map(function(c){return '<tr><td style="padding-left:20px;font-weight:600">'+c[0]+' <span class="mt" style="color:#98A2B3;font-size:12px;font-weight:400">'+c[1]+'</span></td>'
-       +'<td class="num mt" style="color:#667085">'+c[2]+'</td>'+c[3].map(hc).join('')+'</tr>'}).join('')+'</tbody></table></div></div>'
+   +note('<b>언제 시작했는지가 제일 크게 갈라요.</b> 개강 첫 주에 시작한 분은 '
+     +top.left+'명이 아직 하고 있는데('+top.pct.toFixed(0)+'%), '
+     +worst.t+'에 시작한 분은 '+worst.left+'명만 남았어요('+worst.pct.toFixed(0)+'%). '
+     +'<b>'+(top.pct/worst.pct).toFixed(1)+'배 차이</b>예요.','wa')
+   +'<div class="mc">'+chead('시작 시점별로 지금 남아 있는 분')
+   +'<div class="mcap" style="padding:0 20px 4px">막대 전체가 그때 시작한 인원, 채워진 부분이 지금까지 계속하고 있는 분이에요.</div>'
+   +'<div style="padding:16px 20px 22px;display:flex;flex-direction:column;gap:18px">'
+   +C.map(function(c){
+     var good=c.pct>=50;
+     return '<div>'
+      +'<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:7px">'
+      +'<b style="font-size:14px">'+c.t+'에 시작</b>'
+      +'<span class="mcap">'+c.when+' · '+c.n+'명이 시작했어요</span>'
+      +'<span style="margin-left:auto;font-weight:700;font-size:15px;color:'+(good?'#067647':'#B42318')+'">'
+      +c.left+'명</span>'
+      +'<span class="mcap">아직 활동 중</span></div>'
+      +'<div style="height:26px;border-radius:6px;background:#F2F4F7;overflow:hidden;position:relative">'
+      +'<div style="height:100%;width:'+c.pct+'%;background:'+(good?'#13BD7E':'#F79009')+'"></div>'
+      +'<span style="position:absolute;top:0;left:10px;line-height:26px;font-size:12.5px;font-weight:600;color:'
+      +(c.pct>18?(good?'#043528':'#7A3E02'):'#667085')+'">'+c.pct.toFixed(0)+'%</span></div></div>'}).join('')
+   +'</div></div>'
+   +note('<b>그래서 뭘 하면 되나요.</b> 개강 첫 주 안내에 힘을 쏟는 게 다른 어떤 개선보다 효과가 커요. '
+     +'기수 중간에 새로 오시는 분은 <b>다음 기수 개강에 맞춰 넣거나</b>, 각자 등록일이 1일차가 되는 '
+     +'<b>상시형 그룹</b>으로 넣는 게 나아요.')
    +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">'
-   +'<div class="mc" style="padding:20px"><span class="mh">이탈 직전 콘텐츠</span><div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">'
+   +'<div class="mc" style="padding:20px"><span class="mh">그만두기 직전에 하던 활동</span><div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">'
      +brow('두뇌훈련',100,'361명','c')+brow('운동',37,'135명','w')+brow('마음다루기',18,'64명')+brow('검사측정',6,'23명','w')+'</div>'
-     +'<p class="mcap" style="margin:24px 0 0;font-size:13px">두뇌훈련을 마지막으로 떠난 분이 가장 많지만, 전체 활동의 절반이라 노출량 대비로는 평균 수준이에요. 상대적으로 위험한 건 검사예요.</p></div>'
-   +'<div class="mc" style="overflow:hidden">'+chead('이탈 전조 신호','<span class="mcap">자동 감지</span>')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">신호</th><th class="num">해당</th><th class="num" style="padding-right:20px">2주 내 이탈률</th></tr></thead><tbody>'
-     +SIG.map(function(s){return '<tr><td style="padding-left:20px">'+s[0]+'</td><td class="num mt" style="color:#475467">'+s[1]+'</td><td class="num mt" style="padding-right:20px;font-weight:700;color:'+s[3]+'">'+s[2]+'</td></tr>'}).join('')
+     +'<p class="mcap" style="margin:24px 0 0;font-size:13px">두뇌훈련을 마지막으로 떠난 분이 가장 많지만, 전체 활동의 절반이라 노출량 대비로는 평균이에요. 상대적으로 위험한 건 검사예요.</p></div>'
+   +'<div class="mc" style="overflow:hidden">'+chead('곧 그만둘 것 같은 분','<span class="mcap">자동 감지</span>')
+     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">신호</th><th class="num">해당</th><th class="num" style="padding-right:20px">2주 내 그만둘 확률</th></tr></thead><tbody>'
+     +SIG.map(function(s2){return '<tr><td style="padding-left:20px">'+s2[0]+'</td><td class="num mt" style="color:#475467">'+s2[1]+'</td><td class="num mt" style="padding-right:20px;font-weight:700;color:'+s2[3]+'">'+s2[2]+'</td></tr>'}).join('')
      +'</tbody></table></div><p class="mcap" style="padding:14px 20px">이 신호에 걸린 분은 <b style="color:#475467">오늘</b> 화면에 자동으로 올라와요.</p></div></div></div>'}
 function patTab(B){
   var DOW=[['월',29236],['화',31459],['수',31034],['목',29428],['금',31926],['토',9111],['일',7533]];
@@ -1076,16 +1442,21 @@ function indTab(B){
     iPager.render($('#i-pg'))}
   fill()}
 function defTab(B){
-  var D=[['대상자 수','기수에 배정된 전원','audienceCount'],['참여자 수','해당 월 참여 상태 유지자','participantCount'],
-   ['활동자 수','해당 월 1회 이상 활동','activistCount'],['누적 중도포기','참여 상태 = 종료(T)','abandonerCount'],
-   ['수행률','추천받은 활동 중 수행 비율','활동수 ÷ 추천수'],['랭킹 점수','월 단위 총점 (최대 1000)','600×(활동÷추천) + 400×(연속일÷추천일)'],
-   ['N (오늘 수행)','오늘 수행한 활동 수','todayActivityCount'],['PIN','전화 응대용 조회번호','vocNumber'],
-   ['무활동 판정','마지막 활동 이후 경과일','7일 주의 / 14일 위험'],['우울 (GDS-SF)','15문항','0–5 정상 / 6–9 주의 / 10+ 위험'],
-   ['불면 (ISI-K)','7문항','0–7 / 8–14 / 15–21 / 22+'],['스트레스 (PSS)','10문항','0–13 / 14–16 / 17–18 / 19+']];
+  /* 이 표는 문서가 아니라 계산의 출력이다. '지금 값'은 화면들이 쓰는 바로 그 함수를 부른다.
+     그래서 정의서와 화면이 어긋나는 일이 구조적으로 생기지 않는다. */
   B.innerHTML='<div class="gap">'
    +note('화면의 숫자가 무엇을 세는지 정의해요. 보건소 제출 수치와 대조할 때 정의부터 맞추면 차이가 사라져요.','in')
-   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">지표</th><th>세는 대상</th><th style="padding-right:20px">계산식</th></tr></thead><tbody>'
-   +D.map(function(d){return '<tr><td style="padding-left:20px;font-weight:600">'+d[0]+'</td><td style="color:#475467">'+d[1]+'</td><td class="mt" style="color:#667085;padding-right:20px;font-size:12.5px">'+d[2]+'</td></tr>'}).join('')
+   +note('<b>여기 적힌 계산을 화면들이 그대로 씁니다.</b> ‘지금 값’은 문서에 적어둔 숫자가 아니라 오늘·참여자·리포트가 부르는 바로 그 함수를 실행한 결과예요. 이 표와 화면이 다르면 그건 버그예요.')
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">지표</th><th>세는 대상</th><th>계산식 · 필드</th>'
+   +'<th class="num">지금 값</th><th style="padding-right:20px">쓰이는 화면</th></tr></thead><tbody>'
+   +METRICS.map(function(m){
+     var v=m.c?fmt(m.c()):'<span style="color:#98A2B3">—</span>';
+     return '<tr><td style="padding-left:20px;font-weight:600">'+m.n+'</td>'
+      +'<td style="color:#475467">'+m.d+'</td>'
+      +'<td class="mt" style="color:#667085;font-size:12.5px">'+m.f+'</td>'
+      +'<td class="num mt"'+(m.c?' style="font-weight:600"':'')+'>'+v+'</td>'
+      +'<td class="mcap" style="padding-right:20px">'+(m.use||'')+'</td></tr>'}).join('')
    +'</tbody></table></div></div>'
    +note('<b>확인이 필요한 항목 — 운영팀 회신 대기 중</b><br>· 노력 점수는 계산되지만 랭킹 총점에 반영되지 않아요.<br>· 음주(AUDIT-K)와 기억감퇴(SMCQ)는 같은 점수가 다른 등급으로 판정되는 구간이 있어요.<br>· 터그테스트는 점수가 전송되지 않아 등급 산출이 안 돼요.','cr')+'</div>'}
 
@@ -1273,7 +1644,11 @@ A.showWorkout=showWorkout;
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
-    PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt;
+    PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt,
+    setSurface=A.setSurface,refresh=A.refresh,GROUPS=A.GROUPS,SITES=A.SITES,KIND=A.KIND,SCOPE=A.SCOPE,CARRY=A.CARRY,
+    groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,
+    OPERATORS=A.OPERATORS,CH_SELF=A.CH_SELF,CFG=A.CFG,M=A.M,band=A.band,bandLabel=A.bandLabel,
+    COHORTS=A.COHORTS,COH_COLS=A.COH_COLS,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,ownerOf=A.ownerOf,ownedBy=A.ownedBy,groupTree=A.groupTree,groupDepth=A.groupDepth;
 
 /* ══════ 푸시 메시지 목록 ══════ */
 var MSGS=[
@@ -1337,7 +1712,7 @@ var TGT=[['3기 전체','all',822],['14일+ 무활동','act:14',184],['활동 0�
   ['우울·불면 주의 이상','risk',298],['챌린지 미참여','noq',272],['기관별 고르기','org',0]];
 function tgtPeople(){
   var t=nw.target;
-  if(t==='act:14')return PEOPLE.filter(function(p){return p.actBand==='14일+ 무활동'});
+  if(t==='act:14')return PEOPLE.filter(function(p){return band(p)==='risk'});
   if(t==='act:0')return PEOPLE.filter(function(p){return p.days===0});
   if(t==='risk')return PEOPLE.filter(function(p){return p.idx%823<298});
   if(t==='noq')return PEOPLE.filter(function(p){return p.streak<3});
@@ -1453,8 +1828,19 @@ var RI=[[1,'월별 앱 업데이트 횟수','스토어 배포 건수와 버전�
  [5,'운영 결과','유형별 수행량, 검사 점수, 위험군',1,'getChallengeOutcomes',0],
  [6,'기타 / 특이사항','장애·민원·현장 이슈',0,'수기 입력',1]];
 V.report=function(){
-  var h=$('#v-report');
+  var h=$('#v-report'),cg=groupById(getGroup()),ended=cg.st==='종료';
   h.innerHTML=ph('월간 리포트','보건소 제출 자료 6종을 한 번에 만들어요.','<select class="mfld"><option>2026년 7월</option><option>2026년 6월</option></select>')
+   +(ended?(CARRY.done
+      ? note('<b>'+esc(CARRY.to)+' 이월 신청을 '+CARRY.at+'에 접수했어요.</b> '+fmt(CARRY.n)+'명이 신청 대기로 들어갔어요. '
+        +'<b>승인은 한 사람씩</b> 참여 신청 화면에서 하셔야 4기 참여자가 돼요.','ok')
+      : note('<b>'+esc(cg.name)+'이(가) 종료됐어요.</b> 이 기수 참여자를 다음 기수 신청으로 한 번에 넘길 수 있어요. '
+        +'넘겨도 바로 참여자가 되는 건 아니고 <b>승인을 거쳐야</b> 해요.','wa'))
+     :'')
+   +(ended?'<div class="mc" style="padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px">'
+      +'<div style="flex:1"><span class="mh">다음 기수로 이월 신청</span>'
+      +'<div class="mcap" style="margin-top:3px">'+esc(cg.name)+' 참여자를 4기 신청 대기로 쌓아요. 종료된 이 기수의 리포트는 계속 뽑을 수 있어요.</div></div>'
+      +'<button class="mb '+(CARRY.done?'':'mbp')+'" id="r-carry"'+(CARRY.done?' disabled':'')+'>'
+      +(CARRY.done?'신청 완료':'4기로 이월 신청')+'</button></div>':'')
    +'<div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start">'
    +'<div class="gap"><div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px 10px"><span class="mh">포함할 항목</span><span class="mcap mt" style="margin-left:auto" id="r-c"></span></div><div id="r-l"></div></div>'
      +'<div class="mc" style="padding:18px"><span class="mh">서식</span><select class="mfld" style="width:100%;margin-top:10px"><option>남동구 보건소 표준 공문 (기본)</option><option>요약본 (2쪽)</option></select>'
@@ -1472,6 +1858,7 @@ V.report=function(){
      +'<span class="src'+(it[5]?' ms':'')+'">'+it[4]+'</span></span>';
     lab.addEventListener('click',function(){it[3]=it[3]?0:1;V.report()});L.appendChild(lab)});
   $('#r-c').textContent=RI.filter(function(x){return x[3]}).length+' / 6';
+  if($('#r-carry'))$('#r-carry').addEventListener('click',function(){openCarry(cg)});
   ['#r-hwp','#r-xls','#r-pdf'].forEach(function(s,i){$(s).addEventListener('click',function(){
     addAudit('리포트 생성','7월분','보건소 제출');toast(['한글 공문','엑셀 원자료','PDF'][i]+'을 내려받았어요','ok')})});
   var M='text-align:right;font-variant-numeric:tabular-nums';
@@ -1505,8 +1892,56 @@ V.report=function(){
       [['마음다루기'],['3,986',M],['2,620',M],['65.7%',M]]]):'')
    +(S[6]?'<h4>6. 기타 / 특이사항</h4><p class="dn2" style="border:1px dashed #EAECF0;padding:12px;border-radius:8px">직접 입력하는 영역이에요. 현장 이슈, 민원, 장애, 다음 달 계획 등을 작성하세요.</p>':'')};
 
+/* 이월 신청 — 자동인 건 "신청"까지다. 참여자가 되려면 한 명씩 승인해야 한다 (B4) */
+function openCarry(g){
+  var elig=Math.round(g.n*0.86),skip=g.n-elig;
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>'+esc(g.name)+'</b> 참여자를 <b>4기 두뇌운동 치매예방교실</b> 신청으로 넘겨요.</p>'
+   +'<div><span class="flab">넘길 대상</span>'
+   +'<div id="cy-k" style="display:flex;gap:8px;margin-top:2px">'
+   +'<button class="mb" data-k="act" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>활동 이력이 있는 분</b><div class="mcap">'+fmt(elig)+'명 · 한 번이라도 활동한 분</div></button>'
+   +'<button class="mb" data-k="all" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>전원</b><div class="mcap">'+fmt(g.n)+'명 · 활동 0일인 '+fmt(skip)+'명 포함</div></button></div></div>'
+   +note('넘기면 <b>참여 신청</b> 화면에 <b>3기 이월</b> 표시로 쌓여요. 거기서 승인해야 4기 참여자가 돼요. '
+     +'승인 전까지는 <b>미그룹</b> 상태라 기본 화면만 보여요.','in');
+  var kind='act';
+  function paint(){$$('#cy-k .mb',b).forEach(function(x){
+    var on=x.dataset.k===kind;x.style.borderColor=on?'#6BDCAF':'#D0D5DD';x.style.background=on?'#E7F9F1':'#fff'})}
+  $$('#cy-k .mb',b).forEach(function(x){x.addEventListener('click',function(){kind=x.dataset.k;paint()})});
+  paint();
+  modalBox('4기로 이월 신청',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','신청 쌓기');
+  ok.addEventListener('click',function(){
+    var n=kind==='act'?elig:g.n;
+    CARRY.done=true;CARRY.n=n;CARRY.at='오늘';CARRY.from=g.name;CARRY.to='4기 두뇌운동 치매예방교실';
+    /* 신청 목록 맨 앞에 이월 건을 쌓는다 */
+    PEOPLE.slice(0,8).forEach(function(pp,i){
+      APPS.unshift({id:'C'+i,name:pp.name,tail:pp.tail,phone:pp.phone,
+        addr:'남동구 '+['구월동','만수동','논현동','간석동'][i%4],st:'pending',aged:0,
+        signed:'Y',memo:'',carry:20+i*7})});
+    addAudit('이월 신청',fmt(n)+'명',g.name+' → 4기');
+    closeAll();V.report();
+    toast(fmt(n)+'명을 4기 신청으로 넘겼어요. 승인은 참여 신청에서 하세요','ok','실행 취소',
+      function(){CARRY.done=false;CARRY.n=0;V.report()})});
+  f.appendChild(ok)}
+
 /* ══════ 참여 신청 ══════ */
-var aFil={st:['pending','hold'],sg:[],per:''},aSort={key:'aged',dir:-1},aPager=mkPager(function(){V.apply(1)}),aq='',aSel={};
+var aFil={st:['pending','hold'],sg:[],per:'',via:''},aSort={key:'aged',dir:-1},aPager=mkPager(function(){V.apply(1)}),aq='',aSel={};
+/* 승인 = 그룹 소속 스위치. 앱 가입 여부가 아니라 "지금 뭘 받고 있나"를 보여준다.
+   승인했는데 미설치 = 승인해줬는데 아무것도 못 받는 중 → 유일한 실제 액션 대상. */
+/* 이월 건은 직접 신청과 구분한다 — 이전 기수 활동 이력이 승인 판단 근거가 되니까 */
+function viaCell(a){
+  return a.carry?pill('3기 이월','in')+'<div class="mcap">지난 기수 활동 '+a.carry+'일</div>'
+                :'<span class="mt" style="color:#667085">직접 신청</span>'}
+function progCell(a){
+  var g=groupById(getGroup());
+  if(a.st==='approved')return a.signed==='Y'
+    ? pill(g.name.length>14?g.name.slice(0,13)+'…':g.name,'ok')
+    : pill('없음 — 앱 미설치','cr');
+  return a.signed==='Y'?pill('미그룹','nu')
+    :'<span style="color:#98A2B3">없음</span>'}
 V.apply=function(keep){
   var h=$('#v-apply');
   if(!keep){
@@ -1529,6 +1964,14 @@ V.apply=function(keep){
     [['전체 기간',''],['최근 7일','7'],['이번 달','m'],['지난 달','p'],['30일 초과','30']].forEach(function(x){
       var b=el('button','mchip'+(aFil.per===x[1]?' on':''),x[0]);
       b.addEventListener('click',function(){aFil.per=aFil.per===x[1]?'':x[1];aPager.page=1;V.apply()});per.appendChild(b)});
+    if(APPS.some(function(x){return x.carry})){        /* 이월 건이 있을 때만 경로 칩을 보여준다 */
+      per.appendChild(el('span','sep'));
+      [['전체 경로',''],['3기 이월','carry'],['직접 신청','direct']].forEach(function(x){
+        var n=x[1]==='carry'?APPS.filter(function(a2){return a2.carry}).length
+             :x[1]==='direct'?APPS.filter(function(a2){return !a2.carry}).length:0;
+        var b2=el('button','mchip'+(aFil.via===x[1]?' on':''),x[0]+(n?' <span class="c mt">'+fmt(n)+'</span>':''));
+        b2.addEventListener('click',function(){aFil.via=aFil.via===x[1]?'':x[1];aPager.page=1;V.apply()});
+        per.appendChild(b2)})}
     var cb=$('#a-chips');
     [['대기','st:pending',111],['보류','st:hold',6],['승인','st:approved',1227],['거절','st:rejected',27],['|'],
      ['가입함','sg:Y',1232],['미가입','sg:N',133]].forEach(function(c){
@@ -1542,6 +1985,8 @@ V.apply=function(keep){
   var list=APPS.filter(function(a){
     if(aFil.st.length&&aFil.st.indexOf(a.st)<0)return false;
     if(aFil.sg.length&&aFil.sg.indexOf(a.signed)<0)return false;
+    if(aFil.via==='carry'&&!a.carry)return false;
+    if(aFil.via==='direct'&&a.carry)return false;
     if(aFil.per==='7'&&a.aged>7)return false;
     if(aFil.per==='m'&&a.aged>21)return false;
     if(aFil.per==='p'&&(a.aged<=21||a.aged>51))return false;
@@ -1556,7 +2001,7 @@ V.apply=function(keep){
   var th=$('#a-th');
   th.innerHTML='<th style="width:50px;padding-left:20px"><span id="a-all">'+cbx(allOn?'on':someOn?'mx':'off')+'</span></th>'
    +sth('이름','name',aSort)+'<th>연락처</th>'+sth('주소','addr',aSort)+sth('경과','aged',aSort,1)
-   +'<th>상태</th><th>앱 가입</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
+   +'<th>경로</th><th>상태</th><th>받는 중인 프로그램</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
   bindSort(th,aSort,function(){aPager.page=1;V.apply(1)});
   $('#a-all').addEventListener('click',function(){var on=!allOn;list.forEach(function(a){if(on)aSel[a.id]=1;else delete aSel[a.id]});V.apply(1)});
   var b=$('#a-bulk');
@@ -1579,7 +2024,7 @@ V.apply=function(keep){
      +'<td style="font-weight:600">'+a.name+'</td><td class="mt" style="color:#475467">'+a.phone+'</td>'
      +'<td style="color:#475467">'+a.addr+'</td>'
      +'<td class="num mt"'+(a.aged>30?' style="color:#B42318;font-weight:700"':'')+'>'+a.aged+'일</td>'
-     +'<td>'+pill(SP[0],SP[1])+'</td><td>'+pill(a.signed==='Y'?'가입함':'미가입',a.signed==='Y'?'ok':'nu')+'</td>'
+     +'<td>'+viaCell(a)+'</td><td>'+pill(SP[0],SP[1])+'</td><td>'+progCell(a)+'</td>'
      +'<td class="mcap">'+(a.memo||'—')+'</td>'
      +'<td style="text-align:right;padding-right:20px">'+acts+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(aSel[a.id])delete aSel[a.id];else aSel[a.id]=1;V.apply(1)});
@@ -1626,9 +2071,675 @@ V.audit=function(){
      +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+a[7]+'</td>'))});
   auPager.render($('#au-pg'))};
 
+/* ══════ 프로그램 그룹 ══════ */
+function setGroup(id){
+  putGroup(id);var g=groupById(id);
+  $('#grp-btn').childNodes[0].nodeValue=g.name;
+  $('#grp-sub').textContent=KIND[g.kind][0]+' · '+(g.st==='예정'?'개강 전':g.st==='종료'?'종료됨':g.day+'일째');
+  toast(g.name+'(으)로 바꿨어요. 참여자·활동·리포트가 이 그룹 기준이에요');
+  refresh()}
+function openGroupPicker(){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:8px';
+  b.appendChild(el('p','mcap','참여자·활동 현황·리포트가 전부 여기서 고른 그룹 기준으로 바뀌어요.'));
+  GROUPS.filter(function(g){return g.ch===CH_SELF}).forEach(function(g){
+    var on=g.id===getGroup();
+    var row=el('button','mb');
+    row.style.cssText='width:100%;justify-content:flex-start;text-align:left;height:auto;padding:11px 13px;'
+     +(on?'border-color:#6BDCAF;background:#E7F9F1':'');
+    row.innerHTML='<div style="flex:1"><div style="font-weight:600">'+esc(g.name)+'</div>'
+     +'<div class="mcap" style="margin-top:2px">'+KIND[g.kind][0]+' · '+SCOPE[g.scope]+' · '+g.sites.join(', ')
+     +(g.n?' · '+fmt(g.n)+'명':' · 대상자 없음')+'</div></div>'+pill(g.st,g.k);
+    row.addEventListener('click',function(){setGroup(g.id);closeAll()});
+    b.appendChild(row)});
+  modalBox('그룹 바꾸기',b)}
+function modalBox(title,body){
+  var m=$('#m-group');
+  if(!m){m=el('div','mask');m.id='m-group';m.innerHTML='<div class="modal sm"><h3></h3><div class="mbody"></div>'
+    +'<div class="mfoot"><button class="mb" data-close>닫기</button></div></div>';document.body.appendChild(m);
+    m.addEventListener('click',function(e){if(e.target===m||e.target.hasAttribute('data-close'))closeAll()})}
+  m.querySelector('h3').innerHTML=esc(title)+'<button class="x" data-close>✕</button>';
+  var mb=m.querySelector('.mbody');mb.innerHTML='';mb.appendChild(body);
+  open('m-group')}
+
+V.groups=function(){
+  var h=$('#v-groups');
+  var mine=groupTree(GROUPS.filter(function(g){return g.ch===CH_SELF}));
+  h.innerHTML=ph('프로그램 그룹','참여자를 묶는 단위예요. 큰 단위 아래로 얼마든지 나눠져요.')
+   +note('<b>승인은 이 그룹에 넣는 스위치예요.</b> 소속되면 그룹 프로그램이 앱에 보이고, 어디에도 안 속하면 <b>미그룹</b>으로 기본 화면이 보여요. 앱 가입 자체는 누구나 할 수 있어요.','in')
+   +note('그룹을 만드는 건 원메딕스가 해요. 채널은 담당자 지정과 운영을 맡아요. 새 그룹이 필요하면 <b>변경 요청</b>을 보내주세요.')
+   +kpi([['진행 중 그룹',fmt(mine.filter(function(g){return g.st==='진행 중'&&!g.ghost}).length),'개'],
+         ['예정',fmt(mine.filter(function(g){return g.st==='예정'}).length),'개'],
+         ['담당자 없는 그룹',fmt(M.noOwnerGroup()),'개','지정이 필요해요','cr'],
+         ['미그룹 참여자',fmt(133),'명','아직 어느 그룹에도 안 속해요','wa']])
+   +'<div class="mc" style="overflow:hidden">'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">그룹</th><th>유형</th><th>시작 기준</th><th>주관리자</th><th>부관리자</th>'
+   +'<th class="num">대상자</th><th class="num">이번 달 활동</th><th style="padding-right:20px">상태</th>'
+   +'</tr></thead><tbody id="g-tb"></tbody></table></div></div>';
+  var tb=$('#g-tb');tb.innerHTML='';
+  mine.forEach(function(g){
+    var on=g.id===getGroup(),d=groupDepth(g);
+    var tr=el('tr','clk'+(on?' sel':''));
+    tr.innerHTML='<td style="padding-left:'+(20+d*22)+'px">'
+      +(d?'<span style="color:#D0D5DD;margin-right:6px">└</span>':'')
+      +'<b'+(g.ghost?' style="color:#667085"':'')+'>'+esc(g.name)+'</b>'
+      +(on?' <span class="mpill" style="background:#E7F9F1;color:#065C3D">보는 중</span>':'')
+      +'<div class="mcap">'+g.sites.join(' · ')+'</div></td>'
+     +'<td>'+(g.ghost?'<span style="color:#98A2B3">—</span>':pill(KIND[g.kind][0],g.kind==='fixed'?'nu':'in'))+'</td>'
+     +'<td class="mt" style="color:#475467">'+g.anchor+'<div class="mcap">'+g.start+'</div></td>'
+     +'<td>'+(g.owner?'<b style="font-weight:600">'+esc(g.owner)+'</b>'
+        :(g.ghost?'<span style="color:#98A2B3">—</span>':pill('미지정','cr')))+'</td>'
+     +'<td class="mt" style="color:#475467">'+(g.subs&&g.subs.length?g.subs.join(', ')
+        :'<span style="color:#98A2B3">없음</span>')+'</td>'
+     +'<td class="num mt">'+(g.n?fmt(g.n):'—')+'</td>'
+     +'<td class="num mt">'+(g.active?fmt(g.active):'—')+'</td>'
+     +'<td style="padding-right:20px">'+pill(g.st,g.k)+'</td>';
+    if(!g.ghost)tr.addEventListener('click',function(){setGroup(g.id);V.groups()});
+    tb.appendChild(tr)});
+  h.insertAdjacentHTML('beforeend',
+    note('<b>기수형을 만들 때 주의하세요.</b> 3기 실측으로는 개강 첫 주에 시작한 분이 12주 뒤 <b>67.1%</b> 남는데, '
+     +'한 주만 늦게 들어오면 <b>22.4%</b>로 떨어져요. 3배 차이예요. '
+     +'중간 합류가 잦은 경로당은 <b>상시형</b>이 맞아요 — 각자 등록일이 1일차가 되니까요.','wa'))};
+
+function openNewGroup(){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML=
+   '<div><span class="flab">그룹 이름 <span style="color:#B42318">*</span></span>'
+   +'<input class="mfld" id="ng-n" style="width:100%" placeholder="예) 4기 두뇌운동 치매예방교실"></div>'
+   +'<div><span class="flab">유형 <span style="color:#B42318">*</span></span>'
+   +'<div id="ng-k" style="display:flex;gap:8px;margin-top:2px">'
+   +'<button class="mb" data-k="fixed" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>기수형</b><div class="mcap">전원 같은 날 시작 · 12주 같은 고정 기간</div></button>'
+   +'<button class="mb" data-k="rolling" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>상시형</b><div class="mcap">등록일부터 개인별 시작 · 종료일 없음</div></button></div></div>'
+   +'<div id="ng-anchor"></div>'
+   +'<div><span class="flab">범위 <span style="color:#B42318">*</span></span>'
+   +'<select class="mfld" id="ng-s" style="width:100%">'
+   +'<option value="site">시설 1곳</option><option value="multi">여러 시설 골라서</option>'
+   +'<option value="district">구 전체</option><option value="city">시 전체</option></select>'
+   +'<div id="ng-sites" style="display:none;margin-top:8px;max-height:150px;overflow-y:auto;'
+   +'border:1px solid #EAECF0;border-radius:8px;padding:9px 11px"></div></div>'
+   +'<div id="ng-warn"></div>';
+  var kind='fixed';
+  var anchor=$('#ng-anchor',b),sitesBox=$('#ng-sites',b),warn=$('#ng-warn',b);
+  SITES.forEach(function(s){
+    var l=el('label');l.style.cssText='display:flex;gap:8px;align-items:center;font-size:13px;padding:3px 0';
+    l.innerHTML='<input type="checkbox" style="accent-color:#13BD7E;width:15px;height:15px"><span>'+esc(s)+'</span>';
+    sitesBox.appendChild(l)});
+  function paint(){
+    $$('#ng-k .mb',b).forEach(function(x){
+      var on=x.dataset.k===kind;
+      x.style.borderColor=on?'#6BDCAF':'#D0D5DD';x.style.background=on?'#E7F9F1':'#fff'});
+    anchor.innerHTML=kind==='fixed'
+      ? '<span class="flab">개강일 <span style="color:#B42318">*</span></span>'
+        +'<div style="display:flex;gap:8px"><input class="mfld" type="date" value="2026-09-07" style="flex:1">'
+        +'<select class="mfld" style="width:110px"><option>8주</option><option selected>12주</option><option>16주</option></select></div>'
+        +'<div class="mcap" style="margin-top:5px">모두 이 날짜가 1일차예요.</div>'
+      : '<span class="flab">시작 기준</span>'
+        +'<div class="mfld" style="width:100%;display:flex;align-items:center;color:#475467">등록일 — 사람마다 다름</div>'
+        +'<div class="mcap" style="margin-top:5px">승인한 날이 그 사람의 1일차가 돼요. 종료일은 없어요.</div>';
+    warn.innerHTML=kind==='fixed'
+      ? note('개강 후 합류자는 잔존율이 <b>67% → 22%</b>로 떨어져요. 중간 합류가 잦으면 상시형을 쓰세요.','wa') : '';
+  }
+  $$('#ng-k .mb',b).forEach(function(x){
+    x.addEventListener('click',function(){kind=x.dataset.k;paint()})});
+  $('#ng-s',b).addEventListener('change',function(){
+    sitesBox.style.display=this.value==='multi'?'block':'none'});
+  paint();
+  modalBox('새 그룹 만들기',b);
+  var f=$('#m-group .mfoot');
+  f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','만들기');
+  ok.addEventListener('click',function(){
+    var n=$('#ng-n').value.trim();
+    if(!n){$('#ng-n').classList.add('err');return}
+    closeAll();toast('"'+n+'" 그룹을 만들었어요. 참여자를 배정하면 시작돼요','ok')});
+  f.appendChild(ok)}
+
+/* ══════ 채널 설정 ══════
+   화면에 흩어져 하드코딩돼 있던 값들을 한곳에 모은다.
+   잠긴 항목은 숨기지 않고 이유와 함께 보여준다 — 원칙 1.6, 막을 때는 길을 함께 준다. */
+function fld(id,v,w,ph2){return '<input class="mfld" id="'+id+'" value="'+esc(v)+'"'
+  +(w?' style="width:'+w+'"':' style="width:100%"')+(ph2?' placeholder="'+esc(ph2)+'"':'')+'>'}
+function lockRow(label,val,why){
+  return '<div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #F2F4F7">'
+   +'<div style="width:150px;flex:none"><span class="flab" style="margin:0">'+label+'</span></div>'
+   +'<div style="flex:1"><div style="color:#475467">'+val+'</div>'
+   +'<div class="mcap" style="margin-top:2px">'+why+'</div></div>'
+   +'<span class="mpill" style="background:#F2F4F7;color:#667085;flex:none">🔒 원메딕스</span></div>'}
+function secCard(title,desc,inner,foot){
+  return '<div class="mc">'+chead(title)
+   +(desc?'<div class="mcap" style="padding:0 20px 4px">'+desc+'</div>':'')
+   +'<div style="padding:14px 20px '+(foot?'8px':'20px')+'">'+inner+'</div>'+(foot||'')+'</div>'}
+
+V.settings=function(){
+  var h=$('#v-settings'),L=bandLabel();
+  h.innerHTML=ph('채널 설정','이 채널의 기본값이에요. 리포트 공문과 화면 판정에 바로 반영돼요.',
+    '<button class="mb" id="st-req">변경 요청 보내기</button><button class="mb mbp" id="st-save">저장</button>')
+   +note('🔒 표시된 항목은 계약·법정·시스템 제약이라 채널에서 바꿀 수 없어요. 바꿔야 하면 <b>변경 요청</b>을 보내주세요 — 요청과 처리 결과는 열람 기록에 남아요.','in')
+
+   +secCard('기본 정보','',
+     '<div class="kvform">'
+     +'<label>기관명</label><div>'+fld('st-name',CFG.name)+'</div>'
+     +'<label>채널 ID</label><div class="mcap mt" style="padding-top:8px">'+CFG.key+'</div>'
+     +'</div>'
+     +lockRow('계약 기간',CFG.locked.contract,'계약서 기준이라 원메딕스가 관리해요. 종료 30일 전에 안내가 가요.'))
+
+   +secCard('보고 서식','월간 리포트 공문의 머리말에 그대로 들어가요.',
+     '<div class="kvform">'
+     +'<label>수신 기관</label><div>'+fld('st-recv',CFG.recvOrg)+'</div>'
+     +'<label>수신 직위</label><div>'+fld('st-recvt',CFG.recvTitle)+'</div>'
+     +'<label>발신 명의</label><div>'+fld('st-send',CFG.sendOrg)+'</div>'
+     +'<label>작성자</label><div>'+fld('st-writer',CFG.writer)+'</div>'
+     +'<label>문서번호</label><div>'+fld('st-doc',CFG.docNo,null,'남동보건-{YYYY}-{NNN}')
+       +'<div class="mcap" style="margin-top:5px">{YYYY} 연도 · {NNN} 일련번호. 다음 번호는 '
+       +'<b>'+CFG.docNo.replace('{YYYY}','2026').replace('{NNN}','014')+'</b>예요.</div></div>'
+     +'<label>기본 서식</label><div><select class="mfld" id="st-form" style="width:100%">'
+       +'<option>남동구 보건소 표준 공문</option><option>요약본 (2쪽)</option><option>엑셀 원자료만</option>'
+       +'</select></div></div>',
+     '<div style="padding:0 20px 18px">'+note('<b>미리보기</b><br>수신 <b id="pv-r">'+CFG.recvOrg+' '+CFG.recvTitle
+       +'</b> · 발신 <b id="pv-s">'+CFG.sendOrg+'</b> · 작성 <b id="pv-w">'+CFG.writer+'</b>')+'</div>')
+
+   +secCard('활동 판정 기준','여기 숫자를 바꾸면 오늘·참여자·활동 현황이 <b>같이</b> 바뀌어요. 지표를 한 곳에서 계산하니까요.',
+     '<div class="kvform">'
+     +'<label>경고 기준</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-warn" type="number" min="1" max="60" value="'+CFG.warn+'" style="width:88px"> 일 이상 무활동</div>'
+     +'<label>위험 기준</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-risk" type="number" min="2" max="90" value="'+CFG.risk+'" style="width:88px"> 일 이상 무활동</div>'
+     +'</div>',
+     '<div style="padding:0 20px 18px" id="st-pv"></div>')
+
+   +secCard('알림','',
+     '<div class="kvform">'
+     +'<label>푸시 발송 시간</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-pf" type="number" min="0" max="23" value="'+CFG.pushFrom+'" style="width:76px"> 시 ~ '
+       +'<input class="mfld" id="st-pt" type="number" min="1" max="23" value="'+CFG.pushTo+'" style="width:76px"> 시'
+       +'<span class="mcap">이 밖으로 예약하면 다음 날 시작 시각으로 옮겨져요</span></div></div>'
+     +lockRow('상담 자동 이관',CFG.locked.escalateDays+'일 무응답 시 운영팀으로 알림',
+       '담당자 1명 = 답변 권한 1명 구조라서 생긴 제약이에요. 구조가 바뀌면 열려요.'))
+
+   +secCard('개인정보','',
+     lockRow('원문 자동 재마스킹',CFG.locked.remaskSec+'초 후 다시 가림','열람 최소화 원칙이라 채널이 늘릴 수 없어요.')
+     +lockRow('열람 기록 보관',CFG.locked.retainYears+'년','개인정보보호법 및 보건소 관리·감독 점검표 기준이에요.'))
+
+   +secCard('시설','이 채널에 속한 복지관·경로당이에요. 프로그램 그룹의 범위를 정할 때 여기서 골라요.',
+     '<div id="st-sites" style="display:flex;flex-wrap:wrap;gap:6px"></div>',
+     '<div style="padding:12px 20px 18px"><button class="mb mbx" id="st-addsite">+ 시설 추가</button></div>');
+
+  var sb=$('#st-sites');
+  SITES.forEach(function(x){
+    var t=el('span','mpill');t.style.cssText='background:#F2F4F7;color:#475467;padding:5px 10px';
+    t.textContent=x;sb.appendChild(t)});
+  $('#st-addsite').addEventListener('click',function(){toast('시설 이름을 입력받아요')});
+  $('#st-form').value=CFG.form;
+
+  /* 보고 서식 미리보기 실시간 반영 */
+  function pv(){
+    $('#pv-r').textContent=$('#st-recv').value+' '+$('#st-recvt').value;
+    $('#pv-s').textContent=$('#st-send').value;
+    $('#pv-w').textContent=$('#st-writer').value}
+  ['st-recv','st-recvt','st-send','st-writer'].forEach(function(id){
+    $('#'+id).addEventListener('input',pv)});
+
+  /* 판정 기준 — 바꾸면 몇 명이 움직이는지 즉시 보여준다 */
+  function preview(){
+    var w=+$('#st-warn').value,r=+$('#st-risk').value;
+    if(!(w>0)||!(r>w)){
+      $('#st-pv').innerHTML=note('위험 기준은 경고 기준보다 커야 해요.','cr');return}
+    var nw=pCountLocal(function(p){return p.days>0&&p.last>w&&p.last<=r});
+    var nr=pCountLocal(function(p){return p.days>0&&p.last>r});
+    var na=pCountLocal(function(p){return p.days>0&&p.last<=w});
+    $('#st-pv').innerHTML=note('이 기준으로 바꾸면 — 최근 활동 <b>'+fmt(na)+'명</b> · '
+      +w+'일 무활동 <b>'+fmt(nw)+'명</b> · '+r+'일+ 무활동 <b>'+fmt(nr)+'명</b>'
+      +(nr!==M.inactive14()?'<br>위험군이 지금 '+fmt(M.inactive14())+'명에서 <b>'+fmt(nr)+'명</b>으로 바뀌어요. '
+        +'<b>오늘</b> 화면의 먼저 연락할 분들도 같이 바뀌어요.':''),
+      nr>M.inactive14()?'wa':'')}
+  function pCountLocal(f){var n=0;for(var i=0;i<PEOPLE.length;i++)if(f(PEOPLE[i]))n++;return n}
+  $('#st-warn').addEventListener('input',preview);
+  $('#st-risk').addEventListener('input',preview);
+  preview();
+
+  $('#st-req').addEventListener('click',function(){toast('바꿀 항목과 사유를 적어 운영팀에 보내요')});
+  $('#st-save').addEventListener('click',function(){
+    var w=+$('#st-warn').value,r=+$('#st-risk').value;
+    if(!(w>0)||!(r>w)){toast('위험 기준은 경고 기준보다 커야 해요','cr');return}
+    CFG.name=$('#st-name').value;CFG.recvOrg=$('#st-recv').value;CFG.recvTitle=$('#st-recvt').value;
+    CFG.sendOrg=$('#st-send').value;CFG.writer=$('#st-writer').value;CFG.docNo=$('#st-doc').value;
+    CFG.form=$('#st-form').value;CFG.warn=w;CFG.risk=r;
+    CFG.pushFrom=+$('#st-pf').value;CFG.pushTo=+$('#st-pt').value;
+    addAudit('채널 설정 변경','판정 기준 '+w+'/'+r+'일','운영 기준 조정');
+    toast('저장했어요. 판정 기준이 모든 화면에 반영됐어요','ok','실행 취소',null);
+    V.settings()})};
+
+/* ══════ 슈퍼 — 전 채널 프로그램 그룹 ══════
+   채널은 자기 그룹만 보고, 슈퍼는 전 채널을 가로질러 본다.
+   `by`(만든 주체)와 `승인 대기` 상태가 통제 지점이다. */
+var agFil='';
+V.allgroups=function(){
+  var h=$('#v-allgroups');
+  var chans=[];GROUPS.forEach(function(g){if(chans.indexOf(g.ch)<0)chans.push(g.ch)});
+  var list=groupTree(GROUPS.filter(function(g){return !agFil||g.ch===agFil}));
+  var noOwner=GROUPS.filter(function(g){return !g.owner&&!g.ghost&&g.st!=='종료'});
+  h.innerHTML=ph('프로그램 그룹 (전 채널)','모든 채널의 그룹을 여기서 만들고 주관리자를 지정해요.',
+    '<button class="mb mbp" id="ag-new">새 그룹 만들기</button>')
+   +note('<b>그룹은 원메딕스만 만들어요.</b> 만들면서 주관리자를 지정하고, 그 사람의 이메일로 계정이 발급돼요. '
+     +'이후 주관리자가 부관리자를 초대해서 운영해요.','in')
+   +(noOwner.length?note('<b>주관리자가 없는 그룹 '+noOwner.length+'개.</b> '
+     +noOwner.map(function(g){return g.name+'('+g.ch+')'}).join(', ')
+     +' — 아무도 운영하지 않는 상태예요.','cr'):'')
+   +kpi([['전체 그룹',fmt(GROUPS.filter(function(g){return !g.ghost}).length),'개'],
+         ['진행 중',fmt(GROUPS.filter(function(g){return g.st==='진행 중'&&!g.ghost}).length),'개'],
+         ['주관리자 없음',fmt(noOwner.length),'개','','cr'],
+         ['채널 수',fmt(chans.length),'개']])
+   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="ag-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">그룹</th><th>채널</th><th>유형</th><th>주관리자</th><th>부관리자</th>'
+   +'<th class="num">대상자</th><th>상태</th><th style="padding-right:20px;text-align:right">관리</th>'
+   +'</tr></thead><tbody id="ag-tb"></tbody></table></div></div>';
+  $('#ag-new').addEventListener('click',openNewGroup);
+  var f=$('#ag-f');
+  [''].concat(chans).forEach(function(c){
+    var b=el('button','mchip'+(agFil===c?' on':''),c||'전체 채널');
+    b.addEventListener('click',function(){agFil=c;V.allgroups()});f.appendChild(b)});
+  var tb=$('#ag-tb');tb.innerHTML='';
+  list.forEach(function(g){
+    var d=groupDepth(g);
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:'+(20+d*22)+'px">'
+      +(d?'<span style="color:#D0D5DD;margin-right:6px">└</span>':'')
+      +'<b'+(g.ghost?' style="color:#667085"':'')+'>'+esc(g.name)+'</b>'
+      +'<div class="mcap">'+g.sites.join(' · ')+'</div></td>'
+     +'<td class="mt" style="color:#475467">'+esc(g.ch)+'</td>'
+     +'<td>'+(g.ghost?'<span style="color:#98A2B3">—</span>':pill(KIND[g.kind][0],g.kind==='fixed'?'nu':'in'))+'</td>'
+     +'<td>'+(g.owner?'<b style="font-weight:600">'+esc(g.owner)+'</b>'
+        :(g.ghost?'<span style="color:#98A2B3">—</span>':pill('미지정','cr')))+'</td>'
+     +'<td class="mt" style="color:#475467">'+(g.subs&&g.subs.length?g.subs.join(', ')
+        :'<span style="color:#98A2B3">없음</span>')+'</td>'
+     +'<td class="num mt">'+(g.n?fmt(g.n):'—')+'</td>'
+     +'<td>'+pill(g.st,g.k)+'</td>'
+     +'<td style="padding-right:20px;text-align:right"></td>';
+    var act=tr.lastChild;
+    if(!g.ghost){
+      var a1=el('button','mb mbx',g.owner?'주관리자 변경':'주관리자 지정');
+      if(!g.owner)a1.className='mb mbp mbx';
+      a1.addEventListener('click',function(){openAssignOwner(g)});act.appendChild(a1);
+      if(g.kind==='fixed'&&g.st==='진행 중'){
+        var a2=el('button','mb mbx','기수 종료');a2.style.marginLeft='6px';
+        a2.addEventListener('click',function(){openEndTerm(g)});act.appendChild(a2)}}
+    tb.appendChild(tr)});
+  h.insertAdjacentHTML('beforeend',
+    note('<b>그룹은 계층이에요.</b> 남동구 경로당 아래 구월동 경로당, 그 아래 걷기·게임 챌린지처럼 '
+     +'큰 단위에서 얼마든지 쪼개져요. 리포트도 상위에서 합치고 하위로 분해해서 뽑을 수 있어요.'))};
+
+/* 주관리자 지정 — 계정이 없으면 이메일로 초대 계정을 만든다 */
+function openAssignOwner(g){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  var cands=OPERATORS.filter(function(o){return o.ch===g.ch&&o.st!=='휴면'&&!o.sys});
+  b.innerHTML='<p class="mcap"><b>'+esc(g.name)+'</b>('+esc(g.ch)+')의 주관리자를 정해요. '
+   +'주관리자는 이 그룹의 모든 기능을 쓰고 부관리자를 초대할 수 있어요.</p>'
+   +'<div><span class="flab">기존 운영자에서 고르기</span>'
+   +'<select class="mfld" id="ao-p" style="width:100%"><option value="">— 새로 초대할게요 —</option>'
+   +cands.map(function(o){return '<option>'+esc(o.name)+'</option>'}).join('')
+   +'</select></div>'
+   +'<div id="ao-new"><span class="flab">새로 초대 — 이메일 <span style="color:#B42318">*</span></span>'
+   +'<input class="mfld" id="ao-e" style="width:100%" placeholder="name@namdong.go.kr">'
+   +'<div class="mcap" style="margin-top:5px">이 주소로 초대 메일이 가고, 비밀번호를 정하면 계정이 만들어져요.</div></div>';
+  $('#ao-p',b).addEventListener('change',function(){
+    $('#ao-new',b).style.display=this.value?'none':'block'});
+  modalBox(g.owner?'주관리자 변경':'주관리자 지정',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','지정');
+  ok.addEventListener('click',function(){
+    var pick=$('#ao-p').value,mail=$('#ao-e')?$('#ao-e').value.trim():'';
+    if(!pick&&!mail){$('#ao-e').classList.add('err');return}
+    g.owner=pick?pick.split(' (')[0]:mail.split('@')[0];
+    if(!pick)OPERATORS.push({id:'o'+(OPERATORS.length+1),name:g.owner,ch:g.ch,sys:0,
+      last:'—',st:'초대됨',stK:'in'});
+    closeAll();V.allgroups();
+    toast(g.name+'의 주관리자를 '+g.owner+'(으)로 지정했어요','ok')});
+  f.appendChild(ok)}
+
+/* 기수 종료 — 종료해도 데이터는 남긴다. 리포트를 나중에 다시 뽑아야 하니까 (B4) */
+function openEndTerm(g){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>'+esc(g.name)+'</b>을(를) 종료해요. 대상자 <b>'+fmt(g.n)+'명</b>의 '
+   +'앱에서 이 그룹 프로그램이 내려가고 <b>기본 화면</b>으로 바뀌어요.</p>'
+   +note('<b>기록은 지우지 않아요.</b> 종료 뒤에도 이 기수의 월간 리포트를 언제든 다시 뽑을 수 있어요. '
+     +'보건소가 지난 연도 자료를 요청하는 경우가 있어서요.')
+   +note('종료하면 채널의 <b>월간 리포트</b> 화면에 <b>다음 기수로 이월 신청</b>이 열려요. '
+     +'이월은 신청까지만 자동이고, <b>승인은 한 사람씩 따로</b> 해야 해요.','in')
+   +'<label class="chk"><input type="checkbox" id="et-ok" style="accent-color:#13BD7E;width:15px;height:15px">'
+   +'<span>위 내용을 확인했어요</span></label>';
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='확인에 체크해야 종료할 수 있어요.';b.appendChild(err);
+  modalBox('기수 종료',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbd','종료하기');
+  ok.addEventListener('click',function(){
+    if(!$('#et-ok').checked){err.style.display='block';return}
+    g.st='종료';g.k='nu';g.active=0;
+    closeAll();V.allgroups();
+    toast(g.name+'을(를) 종료했어요. 채널 리포트에서 이월 신청이 열렸어요','ok')});
+  f.appendChild(ok)}
+
+/* ══════ 슈퍼 — 미그룹 회원 ══════
+   어느 채널 그룹에도 안 속한 B2C 사용자. 채널에는 이 명단이 보이지 않는다.
+   합류하면 그때부터의 기록만 채널이 볼 수 있다 (C3). */
+var UNGROUPED=[
+ {n:'조*민',join:'2026-08-19',via:'otp',days:14,last:'오늘',apply:'남동구 3기 대기',k:'wa'},
+ {n:'배*수',join:'2026-08-11',via:'otp',days:22,last:'어제',apply:'—',k:''},
+ {n:'신*라',join:'2026-07-28',via:'맬리초대',days:41,last:'3일 전',apply:'남동구 3기 거절',k:'cr'},
+ {n:'권*호',join:'2026-07-02',via:'otp',days:63,last:'오늘',apply:'—',k:''},
+ {n:'문*경',join:'2026-06-15',via:'맬리초대',days:78,last:'12일 전',apply:'부평구 1기 대기',k:'wa'},
+ {n:'황*진',join:'2026-05-30',via:'otp',days:9,last:'44일 전',apply:'—',k:''}];
+var ugFil='';
+V.ungrouped=function(){
+  var h=$('#v-ungrouped');
+  var list=UNGROUPED.filter(function(u){return !ugFil||(ugFil==='apply'?u.apply!=='—':u.apply==='—')});
+  h.innerHTML=ph('미그룹 회원','앱은 쓰는데 아직 어느 그룹에도 안 속한 분들이에요.',
+    '<button class="mb mbp" id="ug-assign">그룹에 배정</button>')
+   +note('<b>이 명단은 채널에 보이지 않아요.</b> 채널이 볼 수 있는 건 자기 그룹에 소속된 사람뿐이에요. '
+     +'미그룹은 원메딕스만 봅니다.','in')
+   +note('<b>합류해도 그 전 기록은 넘어가지 않아요.</b> 그룹에 배정하면 <b>배정한 날부터</b>의 활동만 채널이 볼 수 있어요. '
+     +'미그룹 기간의 활동·건강 기록은 채널 화면에서 잠깁니다 — 참여자 상세 달력에서 빗금으로 막혀 있어요.','wa')
+   +kpi([['미그룹 회원',fmt(133),'명'],
+         ['그중 신청한 사람',fmt(UNGROUPED.filter(function(u){return u.apply!=='—'}).length*22),'명','승인 대기·거절 상태','wa'],
+         ['기본 프로그램 이용',fmt(96),'명'],
+         ['30일+ 무활동',fmt(37),'명','','wa']])
+   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="ug-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">이름</th><th>가입일</th><th>가입 경로</th>'
+   +'<th class="num">활동일</th><th>최근 활동</th><th>신청 이력</th>'
+   +'<th style="padding-right:20px;text-align:right">관리</th></tr></thead><tbody id="ug-tb"></tbody></table></div></div>';
+  $('#ug-assign').addEventListener('click',function(){toast('배정할 그룹을 고르는 창이 열려요')});
+  var f=$('#ug-f');
+  [['','전체'],['apply','신청한 사람'],['none','신청 안 한 사람']].forEach(function(x){
+    var b=el('button','mchip'+(ugFil===x[0]?' on':''),x[1]);
+    b.addEventListener('click',function(){ugFil=x[0];V.ungrouped()});f.appendChild(b)});
+  var tb=$('#ug-tb');tb.innerHTML='';
+  list.forEach(function(u){
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:20px"><b>'+esc(u.n)+'</b></td>'
+     +'<td class="mt" style="color:#475467">'+u.join+'</td>'
+     +'<td>'+pill(u.via==='otp'?'일반가입':u.via,'nu')+'</td>'
+     +'<td class="num mt">'+u.days+'</td>'
+     +'<td class="mt" style="color:#667085">'+u.last+'</td>'
+     +'<td>'+(u.apply==='—'?'<span style="color:#98A2B3">없음</span>':pill(u.apply,u.k))+'</td>'
+     +'<td style="padding-right:20px;text-align:right"></td>';
+    var b2=el('button','mb mbx','그룹 배정');
+    b2.addEventListener('click',function(){
+      toast(u.n+'님을 배정하면 오늘부터의 기록만 채널이 볼 수 있어요')});
+    tr.lastChild.appendChild(b2);
+    tb.appendChild(tr)});
+  h.insertAdjacentHTML('beforeend',
+    note('<b>왜 이렇게 하나요.</b> 미그룹 기간은 본인이 개인 자격으로 쓴 기간이에요. '
+     +'그때의 건강 기록까지 채널(지자체·병원)이 소급해서 보게 되면 수집 목적을 벗어납니다. '
+     +'합류 시점을 경계로 끊는 게 안전해요.'))};
+
+/* ══════ 슈퍼 — 코호트 분석 ══════
+   잔존율 매트릭스는 여기에만 둔다. 채널은 같은 데이터를 쉬운 막대로 본다. */
+var cohFil='all';
+V.cohort=function(){
+  var h=$('#v-cohort');
+  var keys=Object.keys(COHORTS);
+  var rows=[];
+  if(cohFil==='all'){
+    keys.forEach(function(k){var g=groupById(k);
+      COHORTS[k].forEach(function(c){rows.push({g:g.name,ch:g.ch,c:c})})});
+  }else{var g=groupById(cohFil);COHORTS[cohFil].forEach(function(c){rows.push({g:g.name,ch:g.ch,c:c})})}
+  function hc(v){
+    if(!v)return '<td style="text-align:center;color:#D0D5DD">–</td>';
+    var c=v>=60?['#ECFDF3','#067647']:v>=30?['#FFFAEB','#B54708']:['#FEF3F2','#B42318'];
+    return '<td style="text-align:center"><span style="display:block;margin:4px 0;padding:8px 0;border-radius:6px;background:'
+      +c[0]+';color:'+c[1]+';font-weight:700;font-variant-numeric:tabular-nums">'+v.toFixed(1)+'%</span></td>'}
+  /* 기수형 vs 상시형 12주 잔존 비교 — 이게 이 화면의 결론이다 */
+  function last(c){var v=c[3].filter(function(x){return x>0});return v.length?v[v.length-1]:0}
+  var fx=[],rl=[];
+  keys.forEach(function(k){var g=groupById(k);
+    COHORTS[k].forEach(function(c){(g.kind==='fixed'?fx:rl).push(last(c))})});
+  var avg=function(a){return a.length?a.reduce(function(x,y){return x+y},0)/a.length:0};
+  h.innerHTML=ph('코호트 분석','언제 시작한 사람이 얼마나 남는지를 그룹별로 봐요.')
+   +note('<b>이 화면은 슈퍼어드민 전용이에요.</b> 채널관리자에게는 같은 데이터를 '
+     +'<b>활동 현황 → 참여 지속</b>에서 "지금 몇 명 남았나" 막대로 보여줘요. '
+     +'코호트 매트릭스는 현장에서 읽기 어려운 형식이라 여기에만 뒀어요.','in')
+   +kpi([['기수형 평균 잔존',avg(fx).toFixed(1),'%','전원 같은 날 시작','wa'],
+         ['상시형 평균 잔존',avg(rl).toFixed(1),'%','각자 등록일이 1일차','ok'],
+         ['분석 대상 그룹',fmt(keys.length),'개'],['코호트 수',fmt(rows.length),'개']])
+   +note('<b>상시형이 기수형보다 잔존이 높습니다.</b> 기수형은 개강 첫 주를 놓친 사람이 그대로 무너지는데, '
+     +'상시형은 각자 등록일이 1일차라 그 손실이 없어요. 중간 합류가 잦은 채널에는 상시형을 권하세요.')
+   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="coh-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">그룹</th><th>시작 시점</th><th class="num">인원</th>'
+   +COH_COLS.map(function(x){return '<th style="text-align:center">'+x+'</th>'}).join('')
+   +'</tr></thead><tbody id="coh-tb"></tbody></table></div></div>';
+  var f=$('#coh-f');
+  [['all','전체']].concat(keys.map(function(k){return [k,groupById(k).name]})).forEach(function(x){
+    var b=el('button','mchip'+(cohFil===x[0]?' on':''),x[1]);
+    b.addEventListener('click',function(){cohFil=x[0];V.cohort()});f.appendChild(b)});
+  var tb=$('#coh-tb');tb.innerHTML='';
+  var prev=null;
+  rows.forEach(function(r){
+    var newG=r.g!==prev;prev=r.g;
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:20px">'+(newG?'<b>'+esc(r.g)+'</b><div class="mcap">'+esc(r.ch)+'</div>':'')+'</td>'
+     +'<td><b style="font-weight:600">'+r.c[0]+'</b> <span class="mcap">'+r.c[1]+'</span></td>'
+     +'<td class="num mt" style="color:#667085">'+r.c[2]+'명</td>'
+     +r.c[3].map(hc).join('');
+    tb.appendChild(tr)})};
+
+/* ══════ 슈퍼 — 운영자 관리 ══════ */
+V.operators=function(){
+  var h=$('#v-operators');
+  var dormant=OPERATORS.filter(function(o){return o.st==='휴면'});
+  var owners={};OPERATORS.forEach(function(o){
+    if(assignments(o.name).some(function(a){return a.role==='owner'}))owners[o.name]=1});
+  h.innerHTML=ph('운영자 관리','그룹·기관마다 주관리자와 부관리자를 따로 정해요.',
+    '<button class="mb mbp" id="op-new">운영자 초대</button>')
+   +note('<b>역할은 계정이 아니라 자리에 붙어요.</b> 한 사람이 A그룹에서는 주관리자, B그룹에서는 부관리자일 수 있어요. '
+     +'그래서 아래 <b>권한</b> 칸은 그 사람이 가진 자리들을 모아서 보여줘요.','in')
+   +kpi([['전체 운영자',fmt(OPERATORS.length),'명'],
+         ['주관리자 자리를 가진 사람',fmt(Object.keys(owners).length),'명'],
+         ['휴면 계정',fmt(dormant.length),'명','60일 넘게 미접속','wa'],
+         ['주관리자 없는 그룹',fmt(M.noOwnerGroup()),'개','아무도 운영 안 해요','cr']])
+   +'<div class="mc" style="overflow:hidden">'+chead('권한 3단계')
+   +'<div style="padding:0 20px 18px"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:0">권한</th><th>범위</th><th>개인정보 원문</th>'
+   +'<th>탈퇴·승인·거절</th><th>계정 관리</th></tr></thead><tbody>'
+   +'<tr><td style="padding-left:0">'+pill('주관리자','ok')+'</td><td>맡은 그룹·기관의 모든 기능</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">부관리자 초대</td></tr>'
+   +'<tr><td style="padding-left:0">'+pill('부관리자','nu')+'</td><td>열어준 메뉴만</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#98A2B3">없음</td></tr>'
+   +'<tr><td style="padding-left:0">'+pill('시스템관리자','in')+'</td><td>전 채널 · 원메딕스</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">주·부 초대/삭제/수정</td></tr>'
+   +'</tbody></table></div></div></div>'
+   +note('<b>권한 이전은 그 자리의 부관리자에게만 됩니다.</b> 주관리자가 이동하면 받을 사람이 먼저 '
+     +'그 그룹의 부관리자로 초대돼 있어야 해요. <b>부관리자가 없는 자리는 이전이 막혀요.</b> '
+     +'넘긴 사람은 부관리자로 남아서 과거 상담 이력이 끊기지 않아요.','in')
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">이름</th><th>소속 채널</th><th>권한</th><th>맡은 자리</th>'
+   +'<th>마지막 접속</th><th>상태</th><th style="padding-right:20px;text-align:right">관리</th>'
+   +'</tr></thead><tbody id="op-tb"></tbody></table></div></div>';
+  $('#op-new').addEventListener('click',function(){toast('이메일을 입력받아 초대 메일을 보내요')});
+  var tb=$('#op-tb');tb.innerHTML='';
+  OPERATORS.forEach(function(o){
+    var as=assignments(o.name);
+    var nOwn=as.filter(function(a){return a.role==='owner'}).length;
+    var nSub=as.filter(function(a){return a.role==='sub'}).length;
+    var roleCell=o.sys?pill('시스템관리자','in')
+      :(nOwn||nSub)?[nOwn?pill('주관리자 '+nOwn,'ok'):'',nSub?pill('부관리자 '+nSub,'nu'):'']
+         .filter(Boolean).join(' ')
+      :'<span style="color:#98A2B3">자리 없음</span>';
+    var seats=as.length?as.map(function(a){
+        return '<span class="mcap" style="display:inline-block;margin-right:8px">'
+          +(a.role==='owner'?'<b style="color:#067647">주</b>':'<span style="color:#667085">부</span>')
+          +' '+esc(a.name)+'</span>'}).join('')
+      :'<span style="color:#98A2B3">없음</span>';
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:20px"><b>'+esc(o.name)+'</b></td>'
+     +'<td class="mt" style="color:#475467">'+esc(o.ch)+'</td>'
+     +'<td>'+roleCell+'</td><td>'+seats+'</td>'
+     +'<td class="mt" style="color:'+(o.st==='휴면'?'#B54708':'#667085')+'">'+o.last+'</td>'
+     +'<td>'+pill(o.st,o.stK)+'</td><td style="padding-right:20px;text-align:right"></td>';
+    var act=tr.lastChild;
+    if(nOwn){
+      var mv=el('button','mb mbx','권한 이전');
+      mv.addEventListener('click',function(){openHandover(o)});act.appendChild(mv)}
+    var pm=el('button','mb mbx','권한');pm.style.marginLeft='6px';
+    pm.addEventListener('click',function(){toast(o.name+' 권한을 바꿔요')});act.appendChild(pm);
+    tb.appendChild(tr)})};
+
+/* 권한 이전 — 자리마다 따로. 그 자리의 부관리자가 없으면 그 줄만 막는다 (A5) */
+function openHandover(o){
+  var seats=assignments(o.name).filter(function(a){return a.role==='owner'});
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:12px';
+  b.appendChild(el('p','mcap','<b>'+esc(o.name)+'</b>님이 주관리자인 자리 '+seats.length+'개예요. '
+    +'넘길 자리를 고르고 받을 부관리자를 정해주세요. 상담방 담당과 과거 이력도 같이 넘어가요.'));
+  var picks={},blocked=0;
+  seats.forEach(function(a){
+    var cand=subsAt(a).filter(function(n){return n!==o.name});
+    var row=el('div');
+    row.style.cssText='border:1px solid #EAECF0;border-radius:8px;padding:11px 13px';
+    if(!cand.length){
+      blocked++;
+      row.style.background='#FEF3F2';row.style.borderColor='#FECDCA';
+      row.innerHTML='<div style="font-weight:600">'+esc(a.name)+'</div>'
+       +'<div class="mcap" style="margin-top:3px;color:#B42318">이 자리에 부관리자가 없어서 넘길 수 없어요. '
+       +'받을 분을 먼저 이 '+(a.kind==='group'?'그룹':'기관')+'의 부관리자로 초대해주세요.</div>';
+    }else{
+      row.innerHTML='<div style="font-weight:600;margin-bottom:7px">'+esc(a.name)+'</div>';
+      var sel=el('select','mfld');sel.style.width='100%';
+      sel.innerHTML='<option value="">넘기지 않음</option>'
+        +cand.map(function(n){return '<option>'+esc(n)+'</option>'}).join('');
+      sel.addEventListener('change',function(){picks[a.name]=this.value?{a:a,to:this.value}:null});
+      row.appendChild(sel)}
+    b.appendChild(row)});
+  if(blocked)b.appendChild(el('div',null,note('부관리자가 없는 자리 <b>'+blocked+'개</b>는 이번에 못 넘겨요. '
+    +'초대 후 다시 시도해주세요.','wa')));
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='넘길 자리를 하나 이상 골라주세요.';b.appendChild(err);
+  modalBox('권한 이전',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  if(blocked===seats.length){
+    var inv=el('button','mb mbp','부관리자 초대하기');
+    inv.addEventListener('click',function(){closeAll();toast('초대할 이메일을 입력받아요')});
+    f.appendChild(inv);return}
+  var ok=el('button','mb mbp','넘기기');
+  ok.addEventListener('click',function(){
+    var done=[];
+    Object.keys(picks).forEach(function(k){
+      var pk=picks[k];if(!pk)return;
+      var ref=pk.a.ref,to=pk.to;
+      ref.owner=to;
+      var i=ref.subs.indexOf(to);if(i>=0)ref.subs.splice(i,1);
+      if(ref.subs.indexOf(o.name)<0)ref.subs.push(o.name);
+      done.push(pk.a.name+' → '+to)});
+    if(!done.length){err.style.display='block';return}
+    addAudit('권한 이전',done.length+'개 자리',o.name+' 인사이동');
+    closeAll();V.operators();
+    toast(done.join(' · ')+' 넘겼어요','ok','실행 취소',null)});
+  f.appendChild(ok)}
+
+/* ══════ 수렴 설계 ══════ */
+var RSN_COMMON=['사용자 요청에 따른 정보 확인','환자 상담/고객 응대','이상 데이터 확인 (오류/누락 검증)','서비스 운영 이슈 대응',
+ '법적 요구 대응 (분쟁, 요청 등)','내부 감사 및 점검','회원 상담 중 본인 확인','기타 (직접 입력)'];
+var RSN_CARE=['미활동자 안부 연락','위험군 상담 연계','참여 신청 확인','보건소 공문 회신'];
+var PERM_PAIRS=[['MELI_MEMBERS','MELI_MANAGER_MEMBERS',0],['MELI_NOTICES','MELI_MANAGER_NOTICES',0],
+ ['MELI_NFC','MELI_MANAGER_NFC',0],['MELI_CHANNELS','MELI_MANAGER_INQUIRIES_CHANNELS',0],
+ ['MELI_CARE_MEMBERS','MELI_MANAGER_CARE_MEMBERS',1],['MELI_CARE_REPORT','MELI_MANAGER_CARE_REPORT',1],
+ ['MELI_PRIVACY_AUDIT','MELI_MANAGER_PRIVACY_AUDIT',1]];
+var DECISIONS=[
+ ['케어센터를 <span class="mcode">/manager/*</span> 시민으로 놓는다',
+  '맬리는 이미 <span class="mcode">MELI_MEMBERS</span> ↔ <span class="mcode">MELI_MANAGER_MEMBERS</span>처럼 슈퍼/채널이 권한코드 쌍으로 갈려 있어요. 케어센터를 별도 시스템이 아니라 <span class="mcode">feature: careCenter</span>를 가진 manager 표면으로 정의하면 합칠 때 라우트를 옮기지 않아도 돼요.'],
+ ['사이드바를 서버가 내려준다',
+  '왼쪽 메뉴는 하드코딩이 아니라 <span class="mcode">boMenu/tree</span> 스키마 객체를 렌더한 결과예요. <b>합치는 날 서버 응답만 갈아끼우면 화면 코드는 그대로</b>예요. 메뉴에 마우스를 올리면 경로와 권한코드가 보여요.'],
+ ['응답 봉투와 코드 필드를 맬리 규격으로',
+  '백엔드가 AppSync GraphQL이든 REST든, <b>화면이 먹는 모양</b>만 통일해두면 어댑터 한 겹으로 붙어요. 목록은 <span class="mcode">{result, totalCount, currentPage, pageSize, items}</span>, 코드값은 <span class="mcode">{value, label, refId}</span>.'],
+ ['개인정보 사유코드를 2층으로',
+  '맬리에 이미 확정돼 운영 중인 조회 사유 8종 위에 케어센터 전용 4종을 얹었어요. 그래야 <b>두 표면의 열람 기록이 한 표로 합쳐져요.</b> 참여자 명단에서 <b>원문 보기</b>를 눌러 확인해보세요.']];
+
+V.arch=function(){
+  var h=$('#v-arch');
+  var dec=DECISIONS.map(function(d,i){
+    return '<div style="display:grid;grid-template-columns:26px 1fr;gap:12px;align-items:start">'
+     +'<div style="width:24px;height:24px;border-radius:6px;background:#F2F4F7;color:#344054;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center">'+(i+1)+'</div>'
+     +'<div><div style="font-size:14px;font-weight:600">'+d[0]+'</div>'
+     +'<div class="mt" style="font-size:13px;color:#667085;margin-top:3px">'+d[1]+'</div></div></div>'}).join('');
+  var map=PERM_PAIRS.map(function(p){
+    return '<div class="maprow"><div><span class="mcode">'+p[0]+'</span></div>'
+     +'<div style="text-align:center;color:#D0D5DD">↔</div>'
+     +'<div><span class="mcode">'+p[1]+'</span>'+(p[2]?' '+pill('신규','in'):'')+'</div></div>'}).join('');
+  var rsn=function(t,arr,k){
+    return '<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+t+'</div>'
+     +'<div class="rsn">'+arr.map(function(x){return pill(x,k)}).join('')+'</div>'};
+  h.innerHTML=ph('수렴 설계','케어센터 채널어드민을 맬리 본서비스 어드민과 합치거나 느슨하게 연결하려면 지금 정해야 손이 덜 가는 것들이에요.')
+   +note('오른쪽 위 <b>채널관리자 / 슈퍼어드민</b>을 눌러보세요. 같은 코드가 메뉴 트리만 바꿔 두 표면으로 돌아요.','in')
+   +'<div class="mc">'+chead('지금 정할 것')+'<div style="padding:20px;display:flex;flex-direction:column;gap:18px">'+dec+'</div></div>'
+   +'<div class="mc">'+chead('권한코드 쌍')
+   +'<div class="mcap" style="padding:0 20px 10px">왼쪽은 맬리에 이미 있는 코드, 오른쪽은 케어센터에 붙일 코드예요</div>'
+   +'<div style="padding:0 20px 16px">'+map+'</div></div>'
+   +'<div class="mc">'+chead('메뉴 한 건의 모양')
+   +'<div class="mcap" style="padding:0 20px 12px">왼쪽 사이드바가 이 객체 배열을 렌더한 결과예요. 플래그 이름은 맬리 boMenu/tree와 같아요</div>'
+   +'<div style="padding:0 20px 20px"><pre class="mjson">{\n'
+   +'  <b>"menuId"</b>: "people",\n  <b>"label"</b>: "참여자",\n'
+   +'  <b>"page"</b>: <i>"/manager/care/participants"</i>,\n'
+   +'  <b>"feature"</b>: <i>"careCenter"</i>,          <s>// 합칠 때 이 값으로 그룹핑</s>\n'
+   +'  <b>"accessMode"</b>: "always",           <s>// always | readonly | external</s>\n'
+   +'  <b>"requiresSeat"</b>: false,\n'
+   +'  <b>"suspendBehavior"</b>: "hide",        <s>// 기수·계약 종료 시 동작</s>\n'
+   +'  <b>"isAccountPermissionRequired"</b>: true,\n'
+   +'  <b>"permission"</b>: <i>"MELI_MANAGER_CARE_MEMBERS"</i>\n}</pre>'
+   +note('<b>suspendBehavior</b>가 케어센터에도 그대로 쓸모 있어요. 기수가 끝나면 메뉴를 숨길지 읽기 전용으로 남길지가 지금은 코드에 흩어져 있는데, 이 플래그 하나로 모여요.')+'</div></div>'
+   +'<div class="mc">'+chead('개인정보 조회 사유 — 2층')
+   +'<div class="mcap" style="padding:0 20px 4px">공통 8종은 맬리 본서비스에서 이미 확정돼 운영 중이에요. 새로 만들지 않아요</div>'
+   +'<div style="padding:16px 20px 20px;display:flex;flex-direction:column;gap:16px">'
+   +rsn('공통 — 맬리 본서비스 확정 (그대로 사용)',RSN_COMMON,'')
+   +rsn('케어센터 전용 — 공통 위에 얹음',RSN_CARE,'in')
+   +note('문의 목록 응답에 <span class="mcode">memberNameMasked</span> / <span class="mcode">memberPhoneMasked</span> boolean이 실려 와요. <b>마스킹 여부가 서버 판단</b>이라는 뜻이고, 케어센터도 같은 구조로 가면 클라이언트가 원문을 들고 있다가 실수로 노출하는 경로가 사라져요.','in')
+   +'</div></div>'};
+
+/* ══════ 채널 현황 (슈퍼) ══════ */
+var CHANS=[
+ ['C-PRD-CARE-0001','인천 남동구 치매안심센터','인천광역시 남동구','care',6,0,822,625,'2026-12-31','운영중',''],
+ ['C-PRD-TEST-0001','대찬병원','의료법인 대찬의료재단','meli',3,6,43,2,'2030-10-31','운영중',''],
+ ['C-PRD-CARE-0002','부평구 치매안심센터','인천광역시 부평구','care',2,0,0,0,'2027-02-28','대기','in'],
+ ['C-PRD-TEST-0002','서울재활의원','서울재활의원','meli',1,0,5,1,'2026-09-30','운영중','wa']];
+V.channels=function(){
+  var h=$('#v-channels');
+  h.innerHTML=ph('채널 현황','원메딕스가 관리하는 전체 채널이에요.','<button class="mb" id="ch-dl">목록 내려받기</button>')
+   +note('<b>합쳐진 상태를 가정한 목록이에요.</b> 케어센터 채널과 맬리 제휴 채널이 한 표에 있고, 구분은 <span class="mcode">feature</span> 값 하나예요 — 슈퍼어드민은 둘 다 보고, 채널관리자는 자기 채널만 봐요.','in')
+   +kpi([['전체 채널','4','개'],['케어센터','2','개'],['맬리 재활','2','개'],['60일 내 계약 종료','1','개','서울재활의원 D-36','wa']])
+   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="ch-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">채널명(법인명)</th><th>서비스</th><th class="num">운영자</th><th class="num">소속 회원</th>'
+   +'<th class="num">NFC</th><th class="num">상담방</th><th>계약 종료</th><th style="padding-right:20px">상태</th>'
+   +'</tr></thead><tbody id="ch-tb"></tbody></table></div></div>';
+  $('#ch-dl').addEventListener('click',function(){toast('채널 목록을 내려받았어요','ok')});
+  var f=$('#ch-f');
+  ['전체','케어센터','맬리 재활'].forEach(function(k,i){
+    var b=el('button','mchip'+(i===0?' on':''),k);
+    b.addEventListener('click',function(){toast(k+' 조건을 적용했어요')});f.appendChild(b)});
+  f.appendChild(el('span','mcap',' · 계약 종료'));
+  ['D-30','D-14','D-Day'].forEach(function(k){
+    var b=el('button','mchip',k);
+    b.addEventListener('click',function(){toast(k+' 조건을 적용했어요')});f.appendChild(b)});
+  var tb=$('#ch-tb');tb.innerHTML='';
+  CHANS.forEach(function(c){
+    var end=new Date(c[8]+'T00:00:00'),dd=Math.round((end-new Date('2026-08-25T00:00:00'))/86400000);
+    var near=dd<=60;
+    tb.appendChild(el('tr',null,
+     '<td style="padding-left:20px"><b>'+c[1]+'</b><div class="mcap">'+c[2]+' · '+c[0]+'</div></td>'
+     +'<td>'+(c[3]==='care'?pill('케어센터','in'):pill('맬리 재활',''))+'</td>'
+     +'<td class="num mt">'+c[4]+'</td><td class="num mt">'+fmt(c[6])+'</td>'
+     +'<td class="num mt">'+(c[5]||'<span style="color:#98A2B3">—</span>')+'</td>'
+     +'<td class="num mt">'+(c[7]?fmt(c[7]):'<span style="color:#98A2B3">—</span>')+'</td>'
+     +'<td class="mt">'+c[8]+'<div class="mcap"'+(near?' style="color:#B54708;font-weight:600"':'')+'>D-'+fmt(dd)+'</div></td>'
+     +'<td style="padding-right:20px">'+pill(c[9],c[10])+'</td>'))})};
+
 /* ══════ init ══════ */
+$$('#sf-tog button').forEach(function(b){
+  b.addEventListener('click',function(){setSurface(b.dataset.s)})});
+$('#grp-btn').addEventListener('click',openGroupPicker);
 A.buildNav();
-Object.keys(V).forEach(function(k){});
 go('today');
 })(App);
 </script>
