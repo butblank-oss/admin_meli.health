@@ -40,6 +40,8 @@ button,input,select,textarea{font-family:inherit;letter-spacing:-0.011em}
 .kvform{display:grid;grid-template-columns:150px 1fr;gap:11px 14px;align-items:start}
 .kvform>label{font-size:13px;font-weight:500;color:#344054;padding-top:9px}
 .dcal button.lockd{background:repeating-linear-gradient(45deg,#F9FAFB,#F9FAFB 3px,#F2F4F7 3px,#F2F4F7 6px);color:#D0D5DD;cursor:not-allowed}
+.pcal .dy.edt{cursor:pointer}
+.pcal .dy.edt:hover{background:#F9FAFB;box-shadow:inset 0 0 0 1px #6BDCAF}
 .mnav.ext{color:#98A2B3}
 .mnav.ext:hover{background:#F9FAFB}
 #sf-tog button{height:26px;padding:0 10px;border-radius:6px;border:none;background:none;font:inherit;font-size:12.5px;font-weight:600;color:#98A2B3;cursor:pointer}
@@ -572,6 +574,10 @@ var COHORTS={
 var COH_COLS=['1주 후','2주 후','4주 후','8주 후','12주 후'];
 /* 4기 이월 — 리포트에서 신청하면 여기 쌓이고, 참여 신청에서 승인해야 참여자가 된다 (B4·C1) */
 var CARRY={done:false,n:0,at:'',from:'',to:''};
+/* 프로그램 일정 — 기본은 공식으로 만들고, 편집한 날만 여기 덮어쓴다 (B2).
+   주관리자는 편집 가능, 그 외는 확인만. 원메딕스(시스템관리자)가 대신 짜줄 수도 있다. */
+var SCHED={};
+function skey(y,m,d){return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2)}
 var curGroup='g3';
 function groupById(id){for(var i=0;i<GROUPS.length;i++)if(GROUPS[i].id===id)return GROUPS[i];return GROUPS[0]}
 function getGroup(){return curGroup}
@@ -785,7 +791,7 @@ manager:[
   {menuId:'consult',label:'상담실',     page:'/manager/care/consult',      perm:'MELI_MANAGER_CARE_CONSULT',  badge:'cr:4'}]],
  ['프로그램',[
   {menuId:'groups', label:'프로그램 그룹',page:'/manager/care/groups',      perm:'MELI_MANAGER_CARE_GROUPS',   badge:'n:4'},
-  {menuId:'sched',  label:'프로그램 일정',page:'/manager/care/schedule',   perm:'MELI_MANAGER_CARE_SCHEDULE', access:'readonly'},
+  {menuId:'sched',  label:'프로그램 일정',page:'/manager/care/schedule',   perm:'MELI_MANAGER_CARE_SCHEDULE'},
   {menuId:'quest',  label:'챌린지',     page:'/manager/care/quests',       perm:'MELI_MANAGER_CARE_QUESTS'}]],
  ['알림',[
   {menuId:'push',   label:'푸시 메시지', page:'/manager/care/push',        perm:'MELI_MANAGER_CARE_PUSH',     badge:'n:예약 4'}]],
@@ -843,6 +849,14 @@ function setSurface(s){
   go(s==='manager'?'today':'channels');
   toast(s==='manager'?'채널관리자 표면 — /manager 트리로 다시 그렸어요':'슈퍼어드민 표면 — 같은 코드, 다른 메뉴 트리예요');
 }
+function modalBox(title,body){
+  var m=$('#m-group');
+  if(!m){m=el('div','mask');m.id='m-group';m.innerHTML='<div class="modal sm"><h3></h3><div class="mbody"></div>'
+    +'<div class="mfoot"><button class="mb" data-close>닫기</button></div></div>';document.body.appendChild(m);
+    m.addEventListener('click',function(e){if(e.target===m||e.target.hasAttribute('data-close'))closeAll()})}
+  m.querySelector('h3').innerHTML=esc(title)+'<button class="x" data-close>✕</button>';
+  var mb=m.querySelector('.mbody');mb.innerHTML='';mb.appendChild(body);
+  open('m-group')}
 function refresh(){if(V[cur])V[cur]()}
 function go(p){
   cur=p;
@@ -857,8 +871,8 @@ function go(p){
   window.scrollTo(0,0)}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
  chead:chead,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
- open:open,closeAll:closeAll,go:go,buildNav:buildNav,setSurface:setSurface,V:V,refresh:refresh,
- GROUPS:GROUPS,SITES:SITES,KIND:KIND,SCOPE:SCOPE,CARRY:CARRY,groupById:groupById,getGroup:getGroup,putGroup:putGroup,OPERATORS:OPERATORS,CH_SELF:CH_SELF,
+ open:open,closeAll:closeAll,go:go,modalBox:modalBox,buildNav:buildNav,setSurface:setSurface,V:V,refresh:refresh,
+ GROUPS:GROUPS,SITES:SITES,KIND:KIND,SCOPE:SCOPE,CARRY:CARRY,SCHED:SCHED,skey:skey,groupById:groupById,getGroup:getGroup,putGroup:putGroup,OPERATORS:OPERATORS,CH_SELF:CH_SELF,
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,METRICS:METRICS,M:M,COHORTS:COHORTS,COH_COLS:COH_COLS,CFG:CFG,band:band,bandLabel:bandLabel,ROLES:ROLES,SITES_OWN:SITES_OWN,siteOwner:siteOwner,assignments:assignments,subsAt:subsAt,ownerOf:ownerOf,ownedBy:ownedBy,groupTree:groupTree,groupDepth:groupDepth,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,
@@ -1303,7 +1317,7 @@ A.openAchieve=openAchieve;A.openWithdraw=openWithdraw;A.statusPill=statusPill;A.
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
-    METRICS=A.METRICS,M=A.M,CFG=A.CFG,band=A.band,bandLabel=A.bandLabel,COHORTS=A.COHORTS,COH_COLS=A.COH_COLS,PEOPLE=A.PEOPLE,ownerOf=A.ownerOf,groupById=A.groupById,getGroup=A.getGroup,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
+    METRICS=A.METRICS,M=A.M,CFG=A.CFG,band=A.band,bandLabel=A.bandLabel,COHORTS=A.COHORTS,SCHED=A.SCHED,skey=A.skey,modalBox=A.modalBox,COH_COLS=A.COH_COLS,PEOPLE=A.PEOPLE,ownerOf=A.ownerOf,groupById=A.groupById,getGroup=A.getGroup,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,achieve=A.achieve,addAudit=A.addAudit,
     LT=A.LT,RT=A.RT,openPerson=A.openPerson,openAchieve=A.openAchieve,cnt=A.cnt;
 
@@ -1529,13 +1543,28 @@ function thread(r){
 
 /* ══════ 프로그램 일정 ══════ */
 var pcM={y:2026,m:8};
+/* 현재 사용자(김주무)가 지금 보는 그룹의 주관리자인지 — 편집 권한의 근거 */
+function canEditSched(){var g=groupById(getGroup());return g.owner==='김주무'}
+/* 그날 편성 — 저장된 게 있으면 그걸, 없으면 기본 공식 */
+function schedOf(y,m,dn,dow){
+  var k=skey(y,m,dn);
+  if(SCHED[k])return SCHED[k];
+  if(dow===0||dow===6)return null;
+  var t=dn*3+m;
+  return {br:BRAIN[t%BRAIN.length],ex:t%ROUT.length,mi:MIND[t%MIND.length],
+          as:(dn%9===3)?ASMT[t%ASMT.length]:''}}
 V.sched=function(){
-  var h=$('#v-sched');
-  h.innerHTML=ph('프로그램 일정','확인만 할 수 있어요. 바꿔야 하면 변경 요청을 보내주세요.','<button class="mb" data-modal="m-schedreq">일정 변경 요청</button>')
-   +note('채널관리자는 일정을 <b>확인만</b> 할 수 있어요. 변경 요청과 처리 결과는 기록에 남아요.','nu')
+  var h=$('#v-sched'),ed=canEditSched(),g=groupById(getGroup());
+  h.innerHTML=ph('프로그램 일정',ed?'참여자 앱에 언제 무엇이 나갈지 정해요.':'확인만 할 수 있어요. 바꿔야 하면 변경 요청을 보내주세요.',
+    ed?'<button class="mb" id="sc-tpl">템플릿 적용</button><button class="mb" data-modal="m-schedreq">변경 요청</button>'
+      :'<button class="mb" data-modal="m-schedreq">일정 변경 요청</button>')
+   +(ed?note('<b>'+esc(g.name)+'의 주관리자라 편집할 수 있어요.</b> 날짜를 누르면 그날 편성을 바꿔요. '
+       +'직접 짜기 부담되면 <b>템플릿 적용</b>으로 12주치를 한 번에 깔거나, 원메딕스에 요청하세요.','in')
+      :note('이 그룹의 <b>주관리자만</b> 일정을 바꿀 수 있어요. 지금은 확인만 가능해요. 변경 요청은 기록에 남아요.','nu'))
    +'<div class="mc" style="padding:20px"><div class="row" style="margin-bottom:16px">'
      +'<button class="pgn" id="sc-p">'+LT+'</button><span class="mh mt" style="min-width:116px;text-align:center">'+pcM.y+'년 '+pcM.m+'월</span>'
      +'<button class="pgn" id="sc-n">'+RT+'</button><button class="mb mbs" id="sc-t">오늘</button>'
+     +(ed?'<span class="mcap" style="margin-left:12px">날짜를 눌러 편성을 바꿔요</span>':'')
      +'<span class="lgd" style="margin-left:auto"><span><b style="background:#E7F9F1"></b>두뇌훈련</span>'
      +'<span><b style="background:#EFF8FF"></b>운동 <span style="color:#175CD3">눌러서 동작 보기</span></span>'
      +'<span><b style="background:#FFFAEB"></b>마음다루기</span><span><b style="background:#F4F3FF"></b>검사측정</span></span></div>'
@@ -1543,21 +1572,87 @@ V.sched=function(){
   $('#sc-p').addEventListener('click',function(){pcM.m--;if(pcM.m<1){pcM.m=12;pcM.y--}V.sched()});
   $('#sc-n').addEventListener('click',function(){pcM.m++;if(pcM.m>12){pcM.m=1;pcM.y++}V.sched()});
   $('#sc-t').addEventListener('click',function(){pcM={y:2026,m:8};V.sched()});
-  var g=$('#pc');
-  ['일','월','화','수','목','금','토'].forEach(function(d,ix){g.appendChild(el('div','dh'+(ix===0?' s':ix===6?' t':''),d))});
+  if($('#sc-tpl'))$('#sc-tpl').addEventListener('click',openTemplate);
+  var g2=$('#pc');
+  ['일','월','화','수','목','금','토'].forEach(function(d,ix){g2.appendChild(el('div','dh'+(ix===0?' s':ix===6?' t':''),d))});
   var first=new Date(pcM.y,pcM.m-1,1).getDay(),dim=new Date(pcM.y,pcM.m,0).getDate();
-  for(var k=0;k<first;k++)g.appendChild(el('div','dy off'));
+  for(var k=0;k<first;k++)g2.appendChild(el('div','dy off'));
   for(var dn=1;dn<=dim;dn++){(function(dn){
     var dow=(first+dn-1)%7,wk=dow===0||dow===6,tdy=(pcM.y===2026&&pcM.m===8&&dn===21);
-    var d=el('div','dy'+(wk?' off':'')+(tdy?' tdy':''));
-    d.appendChild(el('div','n',String(dn)));
-    if(!wk){var s=dn*3+pcM.m;
-      d.appendChild(el('div','it br',BRAIN[s%BRAIN.length]));
-      var ri=s%ROUT.length,b=el('button','it ex',ROUT[ri].n);
-      b.addEventListener('click',function(){showWorkout(ROUT[ri])});d.appendChild(b);
-      d.appendChild(el('div','it mi',MIND[s%MIND.length]));
-      if(dn%9===3)d.appendChild(el('div','it as',ASMT[s%ASMT.length]))}
-    g.appendChild(d)})(dn)}};
+    var edited=!!SCHED[skey(pcM.y,pcM.m,dn)];
+    var d=el('div','dy'+(wk?' off':'')+(tdy?' tdy':'')+(ed?' edt':''));
+    var nn=el('div','n',String(dn));
+    if(edited)nn.innerHTML=dn+' <span class="mcap" style="color:#077A50;font-weight:600">수정됨</span>';
+    d.appendChild(nn);
+    var sc=schedOf(pcM.y,pcM.m,dn,dow);
+    if(sc){
+      if(sc.br)d.appendChild(el('div','it br',sc.br));
+      if(sc.ex!=null){var b2=el('button','it ex',ROUT[sc.ex].n);
+        b2.addEventListener('click',function(e){e.stopPropagation();showWorkout(ROUT[sc.ex])});d.appendChild(b2)}
+      if(sc.mi)d.appendChild(el('div','it mi',sc.mi));
+      if(sc.as)d.appendChild(el('div','it as',sc.as));
+      if(!sc.br&&sc.ex==null&&!sc.mi&&!sc.as)
+        d.appendChild(el('div','mcap','휴강'));
+    }
+    if(ed&&!wk)d.addEventListener('click',function(){openDayEdit(pcM.y,pcM.m,dn,dow)});
+    g2.appendChild(d)})(dn)}};
+
+/* 하루 편성 편집 */
+function openDayEdit(y,m,dn,dow){
+  var sc=schedOf(y,m,dn,dow)||{br:'',ex:null,mi:'',as:''};
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  function sel(id,label,opts,cur,none){
+    return '<div><span class="flab">'+label+'</span><select class="mfld" id="'+id+'" style="width:100%">'
+     +'<option value="">'+none+'</option>'
+     +opts.map(function(o,i){var v=typeof o==='string'?o:o.n;
+       return '<option value="'+i+'"'+((typeof cur==='number'?cur===i:cur===v)?' selected':'')+'>'+esc(v)+'</option>'}).join('')
+     +'</select></div>'}
+  b.innerHTML='<p class="mcap">'+y+'년 '+m+'월 '+dn+'일 ('+'일월화수목금토'[dow]+') 편성이에요. 비우면 그날은 <b>휴강</b>이 돼요.</p>'
+   +sel('sd-br','두뇌훈련',BRAIN,sc.br,'없음')
+   +sel('sd-ex','운동',ROUT,sc.ex,'없음')
+   +sel('sd-mi','마음다루기',MIND,sc.mi,'없음')
+   +sel('sd-as','검사측정',ASMT,sc.as,'없음')
+   +'<label class="chk"><input type="checkbox" id="sd-rep" style="accent-color:#13BD7E;width:15px;height:15px">'
+   +'<span>이후 같은 요일에도 똑같이 적용 <span class="mcap">(12주치를 하나씩 고치지 않아도 돼요)</span></span></label>';
+  modalBox(m+'월 '+dn+'일 편성',b);
+  var f=$('#m-group .mfoot');
+  f.innerHTML='<button class="mb" data-close>취소</button>';
+  var rs=el('button','mb','기본값으로');
+  rs.addEventListener('click',function(){delete SCHED[skey(y,m,dn)];closeAll();V.sched();toast('기본 편성으로 되돌렸어요')});
+  f.appendChild(rs);
+  var ok=el('button','mb mbp','저장');
+  ok.addEventListener('click',function(){
+    var v=function(id){var x=$('#'+id).value;return x===''?null:+x};
+    var nb=v('sd-br'),ne=v('sd-ex'),nm=v('sd-mi'),na=v('sd-as');
+    var rec={br:nb==null?'':BRAIN[nb],ex:ne,mi:nm==null?'':MIND[nm],as:na==null?'':ASMT[na]};
+    SCHED[skey(y,m,dn)]=rec;
+    var n=1;
+    if($('#sd-rep').checked){
+      var d=new Date(y,m-1,dn);
+      for(var i=0;i<12;i++){d.setDate(d.getDate()+7);
+        SCHED[skey(d.getFullYear(),d.getMonth()+1,d.getDate())]={br:rec.br,ex:rec.ex,mi:rec.mi,as:rec.as};n++}}
+    addAudit('일정 변경',m+'/'+dn+(n>1?' 외 '+(n-1)+'일':''),'프로그램 편성 조정');
+    closeAll();V.sched();
+    toast(n>1?n+'일 편성을 바꿨어요':m+'월 '+dn+'일 편성을 바꿨어요','ok','실행 취소',null)});
+  f.appendChild(ok)}
+
+/* 템플릿 — 12주치를 한 번에 */
+function openTemplate(){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap">원메딕스가 만든 편성표예요. 적용하면 <b>이번 달부터 12주치</b>가 한 번에 깔려요. '
+   +'적용 후에도 날짜별로 고칠 수 있어요.</p>'
+   +'<div><span class="flab">템플릿</span><select class="mfld" id="tp-s" style="width:100%">'
+   +'<option>치매예방 표준 12주 (주 5일)</option><option>경증 인지저하 12주 (주 3일)</option>'
+   +'<option>경로당 상시형 (주 2일 · 종료 없음)</option></select></div>'
+   +note('이미 손으로 고친 날은 <b>덮어쓰지 않아요.</b> 템플릿은 비어 있는 날만 채워요.','in');
+  modalBox('템플릿 적용',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','적용');
+  ok.addEventListener('click',function(){
+    addAudit('일정 변경','12주 템플릿',$('#tp-s').value);
+    closeAll();toast('"'+$('#tp-s').value+'"을 적용했어요. 손으로 고친 날은 그대로 뒀어요','ok')});
+  f.appendChild(ok)}
+
 function showWorkout(rt){
   $('#wo-t').firstChild.textContent='세부 운동 · '+rt.n;
   $('#wo-b').innerHTML=kpi([['부위',rt.area,''],['난이도',rt.lv,''],['구성',rt.mv.length+'개 동작','약 '+rt.mv.length*2+'분']])
@@ -1645,7 +1740,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt,
-    setSurface=A.setSurface,refresh=A.refresh,GROUPS=A.GROUPS,SITES=A.SITES,KIND=A.KIND,SCOPE=A.SCOPE,CARRY=A.CARRY,
+    setSurface=A.setSurface,refresh=A.refresh,GROUPS=A.GROUPS,SITES=A.SITES,KIND=A.KIND,SCOPE=A.SCOPE,CARRY=A.CARRY,SCHED=A.SCHED,skey=A.skey,modalBox=A.modalBox,
     groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,
     OPERATORS=A.OPERATORS,CH_SELF=A.CH_SELF,CFG=A.CFG,M=A.M,band=A.band,bandLabel=A.bandLabel,
     COHORTS=A.COHORTS,COH_COLS=A.COH_COLS,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,siteOwner=A.siteOwner,assignments=A.assignments,subsAt=A.subsAt,ownerOf=A.ownerOf,ownedBy=A.ownedBy,groupTree=A.groupTree,groupDepth=A.groupDepth;
@@ -2092,14 +2187,6 @@ function openGroupPicker(){
     row.addEventListener('click',function(){setGroup(g.id);closeAll()});
     b.appendChild(row)});
   modalBox('그룹 바꾸기',b)}
-function modalBox(title,body){
-  var m=$('#m-group');
-  if(!m){m=el('div','mask');m.id='m-group';m.innerHTML='<div class="modal sm"><h3></h3><div class="mbody"></div>'
-    +'<div class="mfoot"><button class="mb" data-close>닫기</button></div></div>';document.body.appendChild(m);
-    m.addEventListener('click',function(e){if(e.target===m||e.target.hasAttribute('data-close'))closeAll()})}
-  m.querySelector('h3').innerHTML=esc(title)+'<button class="x" data-close>✕</button>';
-  var mb=m.querySelector('.mbody');mb.innerHTML='';mb.appendChild(body);
-  open('m-group')}
 
 V.groups=function(){
   var h=$('#v-groups');
