@@ -4,7 +4,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt,
-    CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
+    CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER,SENS_OPS=A.SENS_OPS,canSens=A.canSens,meOp=A.meOp;
 
 /* ══════ 푸시 메시지 목록 ══════ */
 var MSGS=[
@@ -498,18 +498,20 @@ V.chops=function(){
          ['주관리자 없는 그룹',fmt(M.noOwnerGroup()),'개','','cr']])
    +'<div class="mc" style="overflow:hidden">'+chead('권한 3단계')
    +'<div style="padding:0 20px 18px"><div class="scroll"><table class="mtb"><thead><tr>'
-   +'<th style="padding-left:0">권한</th><th>범위</th><th>개인정보 원문</th><th>탈퇴·승인·거절</th><th>계정 관리</th></tr></thead><tbody>'
+   +'<th style="padding-left:0">권한</th><th>범위</th><th>개인정보 원문</th><th>건강정보</th><th>탈퇴·승인·거절</th><th>계정 관리</th></tr></thead><tbody>'
    +'<tr><td style="padding-left:0">'+pill('주관리자','ok')+'</td><td>맡은 그룹·기관의 모든 기능</td>'
-   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">부관리자 초대</td></tr>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">부관리자 초대</td></tr>'
    +'<tr><td style="padding-left:0">'+pill('부관리자','nu')+'</td><td>열어준 메뉴만</td>'
-   +'<td>'+pill('가능','ok')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#98A2B3">없음</td></tr>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#98A2B3">없음</td></tr>'
    +'<tr><td style="padding-left:0">'+pill('시스템관리자','in')+'</td><td>전 채널 · 원메딕스</td>'
-   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">주·부 초대/삭제/수정</td></tr>'
-   +'</tbody></table></div></div></div>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">주·부 초대/삭제/수정</td></tr>'
+   +'</tbody></table></div>'
+   +'<p class="mcap" style="padding:0 0 4px">검사 점수·마음기록·증상기록은 <b>민감정보</b>라 역할과 별개로 '
+   +'좌석마다 따로 엽니다(법 제23조). 맬리도 같은 축으로, 의료진·특수 권한 계정만 봅니다.</p></div></div>'
    +note('<b>권한 이전은 그 자리의 부관리자에게만 됩니다.</b> 받을 사람이 먼저 그 그룹의 부관리자로 초대돼 있어야 하고, '
      +'<b>부관리자가 없는 자리는 이전이 막혀요.</b> 넘긴 사람은 부관리자로 남아서 과거 상담 이력이 끊기지 않아요.','in')
    +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr>'
-   +'<th style="padding-left:20px">이름</th><th>권한</th><th>맡은 자리</th>'
+   +'<th style="padding-left:20px">이름</th><th>권한</th><th>맡은 자리</th><th>건강정보</th>'
    +'<th>마지막 접속</th><th>상태</th><th style="padding-right:20px;text-align:right">관리</th>'
    +'</tr></thead><tbody id="co-tb"></tbody></table></div></div>'
    +'<div class="mc" style="overflow:hidden">'+chead('권한 변경 이력')
@@ -536,8 +538,19 @@ V.chops=function(){
       :'<span style="color:#98A2B3">없음</span>';
     var tr=el('tr');
     tr.innerHTML='<td style="padding-left:20px"><b>'+esc(o.name)+'</b></td><td>'+role+'</td><td>'+seats+'</td>'
+     +'<td class="sens"></td>'
      +'<td class="mt" style="color:'+(o.st==='휴면'?'#B54708':'#667085')+'">'+o.last+'</td>'
      +'<td>'+pill(o.st,o.stK)+'</td><td style="padding-right:20px;text-align:right"></td>';
+    var sc=tr.querySelector('.sens');
+    sc.innerHTML=(canSens(o.id)?pill('열림','ok'):'<span class="mcap">닫힘</span>')+' ';
+    var sb=el('button','mb mbx',canSens(o.id)?'닫기':'열기');sb.style.marginLeft='6px';
+    sb.addEventListener('click',function(){
+      var on=!canSens(o.id);
+      if(on)SENS_OPS[o.id]=1;else delete SENS_OPS[o.id];
+      addPermLog(on?'권한 부여':'권한 말소',o.name,'건강정보(민감정보) 열람 '+(on?'열림':'닫힘'));
+      addAudit('민감정보 권한 변경','1건','좌석 권한 조정',[o.name]);
+      V.chops();toast(o.name+' 님 건강정보 열람을 '+(on?'열었어요':'닫았어요'),'ok')});
+    sc.appendChild(sb);
     var act=tr.lastChild;
     if(nOwn){var b=el('button','mb mbx','권한 이전');
       b.addEventListener('click',function(){openHandover(o)});act.appendChild(b)}
@@ -671,7 +684,8 @@ V.audit=function(){
   H.innerHTML=ph('열람 기록','개인정보를 열람하거나 내려받은 이력이에요. '+CFG.locked.retainYears+'년간 보관돼요.',
     '<button class="mb" id="au-dl">점검표 증빙용 내려받기</button>')
    +note('민감정보를 처리하는 시스템이라 접속기록을 <b>'+CFG.locked.retainYears+'년</b> 보관해요. 일반 개인정보는 1년이에요. '
-     +'기록에는 <b>계정 · 일시 · 접속지 · 처리한 정보주체 · 수행업무</b>가 모두 남아요.','in')
+     +'기록에는 <b>계정 · 일시 · 접속지 · 처리한 정보주체 · 수행업무 · 사유</b>가 모두 남고, '
+     +'열람이 시간으로 끝나면 <b>열람만료</b>가 함께 남아요 — 언제까지 봤는지가 증빙이에요.','in')
    +kpi([['이번 달 열람',fmt(AUDIT.length),'건'],['명단 내려받기',fmt(dls.length),'회'],
          ['점검 안 한 다운로드',fmt(undone),'건',undone?'월 1회 점검이 필요해요':'모두 확인했어요',undone?'cr':'ok'],
          ['사유 없이 열람','0','건','사유는 반드시 남겨야 해요','ok']])
@@ -696,7 +710,7 @@ function auLog(B){
       auPager.page=1;V.audit()});f.appendChild(b)});
   var th=$('#au-th');
   th.innerHTML=sth('일시','t',auSort)+sth('담당자','w',auSort)+'<th>소속</th>'+sth('수행업무','a',auSort)
-   +'<th class="num">건수</th><th>처리한 정보주체</th><th>사유</th><th style="padding-right:20px">접속지</th>';
+   +'<th class="num">건수</th><th>처리한 정보주체</th><th>사유</th><th>상태</th><th style="padding-right:20px">접속지</th>';
   bindSort(th,auSort,function(){auPager.page=1;V.audit()});
   var list=AUDIT.filter(function(a){return !auFil.length||auFil.indexOf(a[4])>=0});
   list=sortBy(list,auSort,function(a,k){return k==='t'?a[0]:k==='w'?a[1]:a[4]});
@@ -710,6 +724,7 @@ function auLog(B){
      +'<td>'+a[4]+'</td><td class="num mt" style="color:#475467">'+a[5]+'</td>'
      +'<td class="mt" style="color:#475467;max-width:240px">'+cell+'</td>'
      +'<td style="color:#475467">'+a[6]+'</td>'
+     +'<td>'+(a[10]?pill(a[10],'nu'):'<span class="mcap">—</span>')+'</td>'
      +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+a[7]+'</td>');
     var more=tr.querySelector('.au-more');
     if(more)more.addEventListener('click',function(){

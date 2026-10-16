@@ -234,13 +234,15 @@ var TESTS=[{c:'gds-sf',n:'노인우울 (GDS-SF)',max:15,items:15,
    locked 는 법정·계약·시스템 제약이라 채널이 못 바꾼다 — 슈퍼에 변경 요청만 보낸다. */
 var CFG={
   name:'인천 남동구 치매안심센터', key:'C-PRD-CARE-0001',
+  /* 제품 구분자 — 맬리 회원 응답의 siteId 와 같은 자리. 합칠 때 한 테이블에 들어간다 */
+  siteId:'brainService',
   recvOrg:'인천남동구 보건소', recvTitle:'건강관리팀장',
   sendOrg:'㈜원메딕스인더스트리', writer:'김주무 주무관',
   docNo:'남동보건-{YYYY}-{NNN}', form:'남동구 보건소 표준 공문',
   warn:7, risk:14,
   pushFrom:9, pushTo:18,
   locked:{escalateDays:3, remaskSec:30, retainYears:2, idleMin:30,
-          dormantDays:60, permYears:3, pwMin:10, failLock:5, keepYears:3,
+          dormantDays:60, permYears:3, pwMin:10, failLock:5, lockMin:30, viewMonths:6, keepYears:3,
           contract:'2026-03-01 ~ 2026-12-31'}};
 
 /* ═══════════ 판정 기준 버전 ═══════════
@@ -328,6 +330,12 @@ var OPERATORS=[
  {id:'o3',name:'정미경',ch:CH_SELF,sys:0,last:'3일 전',st:'정상',stK:'nu'},
  {id:'o4',name:'최한나',ch:CH_SELF,sys:0,last:'62일 전',st:'휴면',stK:'wa'},
  {id:'o5',name:'이운영',ch:'전체 채널',sys:1,last:'오늘 08:03',st:'정상',stK:'nu'}];
+/* 민감정보(검사 점수·마음기록·증상기록) 열람은 따로 받는다.
+   맬리가 '의료진 또는 특수 권한 계정만' 으로 가른 것과 같은 축이다. */
+var SENS_OPS={o1:1,o5:1};            /* 김주무(주관리자) · 이운영(운영팀) */
+var ME='o1';
+function meOp(){for(var i=0;i<OPERATORS.length;i++)if(OPERATORS[i].id===ME)return OPERATORS[i];return OPERATORS[0]}
+function canSens(id){return !!SENS_OPS[id||ME]}
 function siteOwner(o){return (SITES_OWN[o]||{}).owner||null}
 function opChannel(name){
   for(var i=0;i<OPERATORS.length;i++)if(OPERATORS[i].name===name)return OPERATORS[i].ch;
@@ -525,9 +533,13 @@ var AUDIT=[
  ['2026-08-15 09:40','김주무','남동구 치매안심센터',0,'탈퇴 처리','3건','연락 두절','218.***.***.42',['한*순(1180)','노*식(3341)','강*례(8827)'],1]];
 function addAudit(act,tgt,reason,subjects){
   var d=new Date();
-  AUDIT.unshift(['2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),'김주무','남동구 치매안심센터',0,act,tgt,reason,'218.***.***.42',
-    subjects||['—'],0]);
-  if(V.audit)V.audit()}
+  var row=['2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),'김주무','남동구 치매안심센터',0,act,tgt,reason,'218.***.***.42',
+    subjects||['—'],0];
+  AUDIT.unshift(row);
+  if(V.audit)V.audit();
+  return row}
+/* 열람은 시간으로 끝난다. 끝난 사실도 남아야 '언제까지 봤나'가 증빙이 된다 */
+function expireAudit(row){if(!row)return;row[10]='열람만료';if(V.audit)V.audit()}
 /* 권한 변경 이력 — 열람 기록(2년)보다 1년 더(3년) 보관해야 해서 따로 쌓는다 */
 var PERMLOG=[
  {at:'2026-08-04 18:02',who:'이운영',act:'권한 부여',tgt:'최한나',detail:'간석동 경로당 주관리자'},
@@ -725,7 +737,7 @@ return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kp
  band:band,bandLabel:bandLabel,METRICS:METRICS,M:M,pCount:pCount,
  CH_SELF:CH_SELF,KIND:KIND,SCOPE:SCOPE,SITES:SITES,GROUPS:GROUPS,
  groupById:groupById,getGroup:getGroup,putGroup:putGroup,groupDepth:groupDepth,groupTree:groupTree,
- ROLES:ROLES,SITES_OWN:SITES_OWN,OPERATORS:OPERATORS,siteOwner:siteOwner,opChannel:opChannel,
+ ROLES:ROLES,SITES_OWN:SITES_OWN,OPERATORS:OPERATORS,SENS_OPS:SENS_OPS,meOp:meOp,canSens:canSens,expireAudit:expireAudit,siteOwner:siteOwner,opChannel:opChannel,
  assignments:assignments,ownedBy:ownedBy,subsAt:subsAt,ownerOf:ownerOf,canEditSched:canEditSched,
  SCHED:SCHED,skey:skey,CARRY:CARRY,PERMLOG:PERMLOG,addPermLog:addPermLog,
  SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox};

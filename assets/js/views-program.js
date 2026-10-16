@@ -123,7 +123,7 @@ function indTab(B){
        +'<td><span class="lnk">'+p.name+'</span></td><td class="mt" style="color:#475467">'+p.phone+'</td><td style="color:#475467">'+p.org+'</td>'
        +'<td class="num mt">'+fmt(p.score)+'</td><td class="num mt">'+p.rate+'%</td><td class="num mt">'+p.days+'</td><td class="num mt">'+p.streak+'</td>'
        +'<td class="num mt">'+p.mind+'</td><td class="num mt">'+p.symp+'</td><td class="num mt">'+fmt(p.step)+'</td>';
-      tr.addEventListener('click',function(){openPerson(p,'stats')});tb.appendChild(tr)});
+      tr.addEventListener('click',function(){A.askOpen(p,'stats')});tb.appendChild(tr)});
     iPager.render($('#i-pg'))}
   fill()}
 function defTab(B){
@@ -226,7 +226,7 @@ function thread(r){
    +'<div style="font-size:13.5px;font-weight:600">'+(r.mine?'김주무 (채널)':'이운영 (원메딕스)')+'</div>'
    +'<button class="mb mbs" style="margin-top:9px;width:100%" id="c-mv">'+(r.mine?'운영팀으로 이관':'담당 가져오기')+'</button></div>'
    +note('<b>영업일 3일</b> 넘게 답변이 없으면 운영팀에 자동으로 알림이 가요. 주말·공휴일은 세지 않아요.','nu');
-  $('#c-op').addEventListener('click',function(){openPerson(PEOPLE[11],'consult')});
+  $('#c-op').addEventListener('click',function(){A.askOpen(PEOPLE[11],'consult')});
   $('#c-mv').addEventListener('click',function(){var was=r.mine;r.mine=r.mine?0:1;r.st=r.mine?'open':'ops';V.consult();
     toast(was?'운영팀으로 이관했어요':'담당을 가져왔어요','ok','되돌리기',function(){r.mine=was;r.st=was?'open':'ops';V.consult()})})}
 
@@ -453,7 +453,19 @@ V.settings=function(){
      +lockRow('건강정보 보존기간',L.keepYears+'년','기수 종료 후 '+L.keepYears+'년이 지나면 파기 대상이 돼요. '
        +'<b>리포트용 집계는 남고 개인별 원본만 지워져요.</b>')
      +lockRow('비밀번호 규칙',L.pwMin+'자 이상 · 영문·숫자·기호 중 2종 이상','초대 수락할 때 적용돼요.')
-     +lockRow('로그인 실패 잠금',L.failLock+'회 연속 실패 시 계정 잠금','잠긴 계정은 주관리자나 원메딕스가 풀어줘요.')
+     +lockRow('로그인 실패 잠금',L.failLock+'회 연속 실패 시 '+L.lockMin+'분 잠금 · 자동 해제',
+       '맬리 본서비스와 같은 규격이에요. 잠금이 안 풀리면 주관리자나 원메딕스가 풀어줘요.')
+     +lockRow('로그인 2단계',' 비밀번호 + 계정 이메일로 받은 인증번호',
+       '맬리 본서비스와 같은 방식이에요. 비밀번호만으로는 들어올 수 없어요.')
+     +lockRow('열람 기간 제한','한 번 열람에 최근 '+L.viewMonths+'개월까지',
+       '열어줬다고 전 기간이 열리면 안 돼요. 그보다 이전 기록이 필요하면 사유를 다시 적고 범위를 넓혀 받아야 해요.')
+     +lockRow('건강정보 열람 권한','좌석마다 따로 부여 · 우리 채널 운영자에서 관리',
+       '검사 점수·마음기록·증상기록은 민감정보라 역할과 별개예요(법 제23조).')
+     +'</div></div>'
+   +'<div class="mc">'+chead('연계 정보')+'<div style="padding:4px 20px 18px">'
+     +lockRow('제품 구분자',CFG.siteId,
+       '맬리 본서비스와 같은 자리의 값이에요. 두 제품의 회원·열람 기록을 한 테이블에 둘 수 있어요.')
+     +lockRow('채널 키',CFG.key,'공문·리포트에 찍히는 값이에요.')
      +'</div></div>';
   var kind='policy';
   function paintKind(){$$('#st-kind .mb').forEach(function(x){

@@ -5,7 +5,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,moveRows=A.moveRows,assessHist=A.assessHist,
-    achieve=A.achieve,addAudit=A.addAudit,LT=A.LT,RT=A.RT,
+    achieve=A.achieve,addAudit=A.addAudit,expireAudit=A.expireAudit,canSens=A.canSens,meOp=A.meOp,LT=A.LT,RT=A.RT,
     CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 function cnt(f){return PEOPLE.filter(f).length}
 function statusPill(p){
@@ -77,7 +77,7 @@ V.today=function(){
     var tr=el('tr');
     tr.innerHTML='<td style="padding-left:20px"><span class="lnk">'+a[0]+'</span></td><td>'+pill(a[1],a[2])+' <span class="mcap" style="margin-left:4px">'+a[3]+'</span></td>'+
      '<td class="num mt" style="color:#667085">'+a[4]+'</td><td style="text-align:right;padding-right:20px"><button class="mb mbs">연락</button></td>';
-    tr.querySelector('.lnk').addEventListener('click',function(){openPerson(byId[a[5]],'today')});
+    tr.querySelector('.lnk').addEventListener('click',function(){askOpen(byId[a[5]],'today')});
     tr.querySelector('.mb').addEventListener('click',function(){toast(a[0]+'님에게 연락 메모를 남겼어요','ok','실행 취소',null)});
     $('#t-attn').appendChild(tr)})};
 
@@ -226,8 +226,24 @@ var REASON_COMMON=[
 var REASON_CARE=[
  ['CARE_OUTREACH','미활동자 안부 연락'],['CARE_RISK','위험군 상담 연계'],
  ['CARE_APPLY','참여 신청 확인'],['CARE_HEALTH_DOC','보건소 공문 회신']];
-var pdRev=false,pdReason='',revT=null;
+var pdRev=false,pdReason='',revT=null,revRow=null;
+/* 열람은 넷이 맞아야 열린다 — 동의 · 소속 · 권한 · 사유.
+   맬리는 여기에 '환자 본인의 NFC 태깅'까지 넣었다. 케어센터엔 태깅이 없으니 셋 + 사유다. */
+function openBlock(p){
+  if(p.consent.revoked)return ['동의를 철회하신 분이에요',
+    '열람과 처리를 멈춰야 해요. 철회일 '+p.consent.revoked+'. 다시 받으려면 앱에서 동의가 필요해요.'];
+  if(!p.consent.sensitive)return ['건강정보 별도 동의를 안 받았어요',
+    '검사 점수·마음기록은 민감정보라 별도 동의 없이는 볼 수 없어요(법 제23조). 동의 요청을 먼저 보내세요.'];
+  if(!canSens())return ['민감정보 열람 권한이 없어요',
+    meOp().name+' 님 좌석에는 건강정보 열람이 열려 있지 않아요. 우리 채널 운영자에서 주관리자가 열어줄 수 있어요.'];
+  return null}
 function askOpen(p,from){
+  var blk=openBlock(p);
+  if(blk){var bb=el('div');
+    bb.innerHTML='<p style="font-size:14px;font-weight:700;margin:0 0 6px">'+blk[0]+'</p>'
+     +'<p class="mcap" style="margin:0">'+blk[1]+'</p>';
+    var mm=modalBox('열람할 수 없어요',bb);
+    mm.querySelector('.mfoot').innerHTML='<button class="mb" data-close>닫기</button>';return}
   var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
   b.innerHTML='<p class="mcap">대상 <b style="color:#101828">'+esc(p.name)+'</b> · '+p.birth+'년생 · '+esc(p.org)+'<br>'
    +'사유는 열람 기록에 남고 보건소 점검 때 증빙으로 제출돼요. '
@@ -254,15 +270,17 @@ function askOpen(p,from){
     var v=$('#rv-r').value,et=$('#rv-e')?$('#rv-e').value.trim():'';
     if(!v||!$('#rv-ok2').checked||(v==='ETC'&&et.length<5)){err.style.display='block';return}
     pdRev=true;pdReason=$('#rv-r').selectedOptions[0].text;
-    addAudit('상세 열람','1건',pdReason,[p.name+'('+p.pin+')']);
+    revRow=addAudit('상세 열람','1건',pdReason,[p.name+'('+p.pin+')']);
     clearTimeout(revT);
-    revT=setTimeout(function(){pdRev=false;if(onPerson())V.person();
+    revT=setTimeout(function(){pdRev=false;expireAudit(revRow);revRow=null;
+      if(onPerson())V.person();
       toast('열람 시간이 지나 원문을 다시 가렸어요')},CFG.locked.remaskSec*1000);
     closeAll();openPerson(p,from)});
   f.appendChild(ok)}
 function onPerson(){var e=document.querySelector('.pane.on');return !!e&&e.dataset.pane==='person'}
 /* 세션 만료 시 상세의 원문도 닫는다 */
-window.__closeReveal=function(){if(pdRev){pdRev=false;clearTimeout(revT);if(onPerson())V.person()}};
+window.__closeReveal=function(){if(pdRev){pdRev=false;clearTimeout(revT);expireAudit(revRow);revRow=null;if(onPerson())V.person()}};
+A.askOpen=askOpen;   /* 상세로 가는 길은 여기 하나뿐이다 (P-4 예외 없음) */
 
 /* withdraw */
 var wdL=[],wdA=false;
@@ -293,7 +311,11 @@ $('#sr-go').addEventListener('click',function(){closeAll();toast('일정 변경�
 
 /* ══════ 참여자 상세 ══════ */
 var cP=null,pdTab='act',pdSel=null,pdM=null,backTo='people';
-var AMIN=new Date(2026,2,3),AMAX=new Date(2026,7,21);
+var AMAX=new Date(2026,7,21);
+/* 열람 범위 — 한 번 열었다고 전 기간이 열리면 안 된다. 승인된 범위에서 최근 N개월만.
+   맬리 닥터 대시보드가 6개월로 끊는 것과 같은 기준. */
+var AMIN=(function(){var d=new Date(AMAX);d.setMonth(d.getMonth()-CFG.locked.viewMonths);
+  var open=new Date(2026,2,3);return d>open?d:open})();
 function dstr(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
 function lastAct(p){var d=new Date(2026,7,21);if(p.last<=160)d.setDate(d.getDate()-p.last);return d}
 /* ═══ 동의 현황 ═══
@@ -430,7 +452,9 @@ function tabAct(p,box){
   box.innerHTML='<div style="padding:20px;display:grid;grid-template-columns:284px minmax(0,1fr);gap:18px">'
    +'<div style="display:flex;flex-direction:column"><div class="row" style="margin-bottom:14px">'
      +'<button type="button" class="pgn" id="am-p" aria-label="이전 달">'+LT+'</button><span class="mt" style="font-size:13.5px;font-weight:700;min-width:104px;text-align:center">'+pdM.y+'년 '+pdM.m+'월</span>'
-     +'<button type="button" class="pgn" id="am-n" aria-label="다음 달">'+RT+'</button><button class="mb mbs mbg" id="am-l" style="margin-left:auto">최근 활동일</button></div>'
+     +'<button type="button" class="pgn" id="am-n" aria-label="다음 달">'+RT+'</button>'
+     +'<span class="mcap" style="margin-left:10px">최근 '+CFG.locked.viewMonths+'개월만 열려요</span>'
+     +'<button class="mb mbs mbg" id="am-l" style="margin-left:auto">최근 활동일</button></div>'
      +'<div class="dcal" id="am-c"></div>'
      +'<div class="lgd" style="margin-top:14px"><span><b style="background:#F2F4F7"></b>0회</span><span><b style="background:#C6F2E0"></b>1–2</span><span><b style="background:#6BDCAF"></b>3–4</span><span><b style="background:#13BD7E"></b>5+</span></div>'
      +'<div id="am-f" style="margin-top:auto;padding:12px 14px;background:#F9FAFB;border-radius:8px;font-size:13px;color:#475467"></div></div>'
@@ -552,7 +576,7 @@ function openAchieve(p,q){
   for(var k=0;k<f;k++)g.appendChild(el('span','d out'));
   a.days.forEach(function(x){var d=el('span','d '+x.st,String(x.d));
     d.title=(q.ty==='attendance'?'활동 '+x.n+'회':fmt(x.steps)+'보')+(x.st==='hit'?' · 달성':x.st==='out'?' · 주말':' · 미달성');g.appendChild(d)});
-  $('#ac-p').onclick=function(){closeAll();openPerson(p,'questdetail')};
+  $('#ac-p').onclick=function(){closeAll();askOpen(p,'questdetail')};
   open('m-achieve')}
 A.openAchieve=openAchieve;A.openWithdraw=openWithdraw;A.statusPill=statusPill;A.cnt=cnt;
 })(App);
