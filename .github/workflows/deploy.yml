@@ -33,6 +33,10 @@ jobs:
           V="${GITHUB_SHA::8}"
           sed -i "s/\.js\"/.js?v=${V}\"/g; s/\.css\"/.css?v=${V}\"/g" index.html super/index.html
           grep -o 'v='"${V}" index.html | head -1
+      # docs/ 에는 맬리 보안 공백 분석이 들어 있다. 프로토타입만 올린다.
+      # (저장소 자체가 공개라 이것만으로 노출이 끝나지는 않는다 — README 참고)
+      - name: Keep docs off the public site
+        run: rm -rf docs .claude
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
