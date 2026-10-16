@@ -64,3 +64,26 @@
 /* 발송 규모 경고 — 클수록 붉게 */
 .reach{font-variant-numeric:tabular-nums;font-weight:700}
 .reach.big{color:#B42318}
+
+/* ── 좁은 화면 ────────────────────────────────────────────────
+   슈퍼는 사무실 데스크톱에서 쓰는 도구라 모바일을 따로 짜지 않는다.
+   다만 app.css 가 좁은 화면에서 사이드바를 숨기는데(채널은 하단 탭바로 대체),
+   슈퍼엔 탭바가 없어 메뉴가 통째로 사라진다. 사이드바를 상단 가로줄로 되살린다. */
+@media (max-width:860px){
+  .side{display:flex !important;position:static;width:auto;height:auto;
+    border-right:none;border-bottom:1px solid #EAECF0;
+    flex-direction:row;overflow-x:auto;scrollbar-width:none;padding:8px 10px;gap:4px}
+  .side::-webkit-scrollbar{display:none}
+  .side>nav{display:flex;flex-direction:row;gap:4px;width:auto}
+  .side .mgrp{display:none}
+  .side>div{display:none}
+  .mnav{flex:none;white-space:nowrap;height:36px;padding:0 12px;border-radius:999px;
+    border:1px solid #EAECF0;font-size:13px}
+  .mnav.on{border-color:#C3B5FD;background:#F5F3FF;color:#5B21B6}
+  .main{padding-bottom:24px}
+
+  /* 상단바 — 좁으면 제목과 계정만 남긴다 */
+  .top{height:54px;padding:0 12px;gap:8px}
+  .top .mpill,.top a.mb{display:none}
+  .top>span[style*="width:1px"]{display:none}
+}
