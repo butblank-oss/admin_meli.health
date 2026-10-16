@@ -427,12 +427,21 @@ V.person=function(){
       +'<span class="mdot" style="background:#F79009"></span>'
       +'<span style="flex:1;font-size:13.5px;color:#B54708">개인정보 원문을 보는 중이에요 · 사유 <b>'+esc(pdReason)+'</b>'
       +'<span class="mcap" style="display:block;margin-top:2px;color:#B54708">'+CFG.locked.remaskSec+'초 뒤 자동으로 가려져요. 이 열람은 기록에 남았어요.</span></span>'
-      +'<button class="mb mbx" id="pd-hide">지금 가리기</button></div>':'')
+      +'<button class="mb mbx" id="pd-hide">지금 가리기</button></div>'
+     /* 가린 뒤에도 다시 열 길을 남긴다. 없으면 목록으로 나갔다 들어와야 한다 */
+     :'<div class="mc" style="padding:13px 18px;display:flex;align-items:center;gap:12px">'
+      +'<span style="width:30px;height:30px;flex:none;border-radius:8px;background:#F2F4F7;color:#667085;display:flex;align-items:center;justify-content:center">'
+      +ico('lock',15)+'</span>'
+      +'<span style="flex:1;font-size:13.5px;color:#475467">이름과 연락처는 <b>가려 둔 상태</b>예요. '
+      +'<span class="mcap">원문이 필요하면 사유를 적고 다시 열 수 있어요 — 열람은 기록에 남아요.</span></span>'
+      +'<button class="mb mbx" id="pd-show">다시 열람하기</button></div>')
    +consentCard(p)
    +(p.days===0?'<div class="mc" id="pd-none"></div>':'<div class="mc" style="overflow:hidden"><div class="tabs" id="pd-tabs"></div><div id="pd-body"></div></div>');
   $('#pd-b').addEventListener('click',function(){go(backTo)});
   if($('#pd-hide'))$('#pd-hide').addEventListener('click',function(){
-    pdRev=false;clearTimeout(revT);V.person();toast('원문을 가렸어요')});
+    pdRev=false;clearTimeout(revT);expireAudit(revRow);revRow=null;V.person();toast('원문을 가렸어요')});
+  var sh=$('#pd-show');
+  if(sh)sh.addEventListener('click',function(){askOpen(p,backTo)});
   if($('#cs-req'))$('#cs-req').addEventListener('click',function(){
     toast(p.name+'님 앱으로 동의 요청을 보냈어요','ok')});
   if($('#cs-rv'))$('#cs-rv').addEventListener('click',function(){openRevoke(p)});
