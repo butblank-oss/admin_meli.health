@@ -258,10 +258,15 @@ V.anomaly=function(){
   h.innerHTML=ph('이상 열람 탐지','개인정보 유출은 대개 권한 있는 내부자에서 시작해요. 그래서 <b>열람 기록만</b> 감시합니다.',
      '<button class="mb" type="button" id="an-rules">판정 기준</button><button class="mb" type="button">증빙 내려받기</button>')
    +note('<b>운영팀은 개인정보 원문을 볼 수 없어요.</b> 감시하는 쪽이 감시 대상 권한을 함께 가지면 감사가 무의미해지기 때문입니다. 이 화면에서도 이름·전화번호는 나오지 않아요.','in')
-   +note('판정 기준 3종은 <b>2026-08-24 확정</b>됐어요(SP-2). 3개월 뒤 오탐률을 보고 조정합니다 — 오탐이 많으면 아무도 안 보게 돼요.','nu')
+   +note('<b>유출은 훔쳐 가는 것만이 아니에요.</b> 열어놓고 자리를 뜨는 것도 유출이에요. '
+     +'채널 어드민은 <b>'+(A.CFG&&A.CFG.locked?A.CFG.locked.remaskSec:30)+'초</b> 뒤 자동으로 다시 가리지만, '
+     +'그 전에 화면을 찍거나 적을 수 있어요. 그래서 <b>열람 시간</b>을 함께 봅니다.','wa')
+   +note('판정 기준 4종은 <b>2026-08-24 확정</b>됐어요(SP-2). 3개월 뒤 오탐률을 보고 조정합니다 — 오탐이 많으면 아무도 안 보게 돼요.','nu')
    +kpi([['확인 필요',String(op.length),'건','','cr'],
          ['이번 달 열람',fmt(AUDIT.length),'건','전 채널 합계'],
          ['원문 열람',fmt(AUDIT.filter(function(a){return a.act==='원문 열람'}).length),'건',''],
+         ['30분 넘게 열어둔 열람',fmt(AUDIT.filter(function(a){return a.act==='원문 열람'&&a.dur>=30}).length),'건',
+          '닫지 않고 둔 건 유출 위험이에요','wa'],
          ['사유 없이 열람','0','건','사유는 반드시 남아요','ok']])
    +'<div class="mc" style="overflow:hidden">'+chead('탐지된 이상 징후','<span class="mcap">최근 7일</span>')
      +'<div id="an-list"></div></div>'
@@ -290,7 +295,7 @@ V.anomaly=function(){
     var list=sortBy(AUDIT,aSort,function(x,k){return k==='t'?x.t:k==='ch'?chName(x.ch):k==='act'?x.act:x[k]||0});
     var th=$('#an-th');
     th.innerHTML=sth('일시','t',aSort)+sth('기관','ch',aSort)+'<th>담당자</th>'+sth('행위','act',aSort)
-      +sth('대상','n',aSort,1)+'<th>사유</th><th style="padding-right:20px">접속 위치</th>';
+      +sth('대상','n',aSort,1)+sth('열람 시간','dur',aSort,1)+'<th>사유</th><th style="padding-right:20px">접속 위치</th>';
     bindSort(th,aSort,function(){aPager.page=1;fill()});
     var rows=aPager.slice(list),tb=$('#an-tb');tb.innerHTML='';
     rows.forEach(function(x){
@@ -298,6 +303,7 @@ V.anomaly=function(){
       tb.appendChild(el('tr',null,'<td class="mt" style="padding-left:20px;color:'+(late?'#B42318':'#475467')+'">'+x.t+(late?' <span class="mcap" style="color:#B42318">심야</span>':'')+'</td>'
        +'<td>'+A.chChip(x.ch)+'</td><td style="font-weight:600">'+esc(x.who)+'</td>'
        +'<td>'+x.act+'</td><td class="num mt" style="color:'+(x.n>=50?'#B42318':'#475467')+'">'+fmt(x.n)+'</td>'
+       +'<td class="num mt" style="color:'+(x.dur>=30?'#B42318':'#98A2B3')+'">'+(x.act==='원문 열람'?x.dur+'분':'—')+'</td>'
        +'<td style="color:#475467">'+esc(x.reason)+'</td>'
        +'<td class="mt" style="color:#69707C;padding-right:20px">'+x.ip+'</td>'))});
     aPager.render($('#an-pg'))}
