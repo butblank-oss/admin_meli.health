@@ -262,3 +262,8 @@ h2.mh{font-size:16px;font-weight:700;letter-spacing:-0.024em;color:#101828}
 /* 화면 전환 시 제목으로 포커스를 옮기지만(스크린리더 안내용) 테두리는 보이지 않게 한다.
    프로그램이 옮긴 포커스라 사용자가 직접 이동한 게 아니기 때문. */
 h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
+
+/* 설정 폼 — 라벨/입력 2열 */
+.kvform{display:grid;grid-template-columns:156px 1fr;gap:11px 14px;align-items:start}
+.kvform>label{font-size:13px;font-weight:500;color:#344054;padding-top:9px}
+@media (max-width:720px){.kvform{grid-template-columns:1fr;gap:4px 0}.kvform>label{padding-top:10px}}

@@ -4,7 +4,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt,
-    CFG=A.CFG,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
+    CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 
 /* ══════ 푸시 메시지 목록 ══════ */
 var MSGS=[
@@ -64,7 +64,7 @@ V.push=function(){
 var nw={seg:'both',target:'act:14',title:'오늘은 가볍게 걷기만 해볼까요',
   bodyT:'{이름} 어르신, 오늘 10분만 걸어볼까요? 걷기 기록은 챌린지에도 함께 쌓여요.',
   land:'걷기 기록 화면',sched:'time',time:'오전 9:00',date:'2026-08-22'};
-var TGT=[['3기 전체','all',822],['14일+ 무활동','act:14',184],['활동 0일','act:0',198],
+var TGT=[['3기 전체','all',M.audience()],[bandLabel().risk,'act:14',M.inactive14()],['활동 0일','act:0',M.never()],
   ['우울·불면 주의 이상','risk',298],['챌린지 미참여','noq',272],['기관별 고르기','org',0]];
 function tgtPeople(){
   var t=nw.target;
@@ -330,6 +330,186 @@ function bulkSet(to){
 
 /* ══════ 열람 기록 ══════ */
 var auFil=[],auSort={key:'t',dir:-1},auPager=mkPager(function(){V.audit()});
+/* ══════ 우리 채널 운영자 ══════
+   한 운영자는 한 채널만. 그래서 자기 채널 사람만 보인다.
+   역할은 계정이 아니라 자리에 붙으므로 '권한'은 자리 수의 요약이다. */
+V.chops=function(){
+  var h=$('#v-chops');
+  var mine=OPERATORS.filter(function(o){return o.ch===CH_SELF});
+  var dormant=mine.filter(function(o){return o.st==='휴면'});
+  h.innerHTML=ph('우리 채널 운영자','주관리자가 부관리자를 초대할 수 있어요.',
+    '<button class="mb mbp" id="co-new">부관리자 초대</button>')
+   +note('<b>역할은 계정이 아니라 자리에 붙어요.</b> 한 사람이 A그룹에서는 주관리자, B그룹에서는 부관리자일 수 있어요. '
+     +'그리고 <b>한 사람은 한 채널만</b> 맡아요 — 다른 채널 운영자는 여기 안 보여요.','in')
+   +(dormant.length?note('<b>'+CFG.locked.dormantDays+'일 넘게 접속하지 않은 운영자가 '+dormant.length+'명 있어요.</b> '
+     +dormant.map(function(o){return o.name+'('+(ownedBy(o.name).length?ownedBy(o.name).join(', '):'자리 없음')+')'}).join(' · ')
+     +' — 전보·퇴직이면 <b>지체 없이</b> 권한을 넘기고 계정을 비활성해주세요.','cr'):'')
+   +kpi([['우리 채널 운영자',fmt(mine.length),'명'],
+         ['주관리자 자리를 가진 사람',fmt(mine.filter(function(o){return assignments(o.name).some(function(x){return x.role==='owner'})}).length),'명'],
+         ['휴면',fmt(dormant.length),'명',dormant.length?'권한 정리 필요':'','wa'],
+         ['주관리자 없는 그룹',fmt(M.noOwnerGroup()),'개','','cr']])
+   +'<div class="mc" style="overflow:hidden">'+chead('권한 3단계')
+   +'<div style="padding:0 20px 18px"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:0">권한</th><th>범위</th><th>개인정보 원문</th><th>탈퇴·승인·거절</th><th>계정 관리</th></tr></thead><tbody>'
+   +'<tr><td style="padding-left:0">'+pill('주관리자','ok')+'</td><td>맡은 그룹·기관의 모든 기능</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">부관리자 초대</td></tr>'
+   +'<tr><td style="padding-left:0">'+pill('부관리자','nu')+'</td><td>열어준 메뉴만</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#98A2B3">없음</td></tr>'
+   +'<tr><td style="padding-left:0">'+pill('시스템관리자','in')+'</td><td>전 채널 · 원메딕스</td>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">주·부 초대/삭제/수정</td></tr>'
+   +'</tbody></table></div></div></div>'
+   +note('<b>권한 이전은 그 자리의 부관리자에게만 됩니다.</b> 받을 사람이 먼저 그 그룹의 부관리자로 초대돼 있어야 하고, '
+     +'<b>부관리자가 없는 자리는 이전이 막혀요.</b> 넘긴 사람은 부관리자로 남아서 과거 상담 이력이 끊기지 않아요.','in')
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">이름</th><th>권한</th><th>맡은 자리</th>'
+   +'<th>마지막 접속</th><th>상태</th><th style="padding-right:20px;text-align:right">관리</th>'
+   +'</tr></thead><tbody id="co-tb"></tbody></table></div></div>'
+   +'<div class="mc" style="overflow:hidden">'+chead('권한 변경 이력')
+   +'<div class="mcap" style="padding:0 20px 10px">부여·변경·말소를 <b>'+CFG.locked.permYears+'년</b> 보관해요. '
+   +'열람 기록('+CFG.locked.retainYears+'년)과 기간이 달라서 따로 쌓아요.</div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">일시</th>'
+   +'<th>처리자</th><th>행위</th><th>대상</th><th style="padding-right:20px">내용</th></tr></thead><tbody>'
+   +PERMLOG.map(function(x){return '<tr><td class="mt" style="padding-left:20px;color:#475467">'+x.at+'</td>'
+     +'<td style="font-weight:600">'+esc(x.who)+'</td><td>'+pill(x.act,x.act==='계정 생성'?'in':'nu')+'</td>'
+     +'<td>'+esc(x.tgt)+'</td><td style="color:#475467;padding-right:20px">'+esc(x.detail)+'</td></tr>'}).join('')
+   +'</tbody></table></div></div>';
+  $('#co-new').addEventListener('click',function(){toast('이메일을 입력받아 부관리자 초대를 보내요')});
+  var tb=$('#co-tb');tb.innerHTML='';
+  mine.forEach(function(o){
+    var as=assignments(o.name);
+    var nOwn=as.filter(function(x){return x.role==='owner'}).length;
+    var nSub=as.filter(function(x){return x.role==='sub'}).length;
+    var role=(nOwn||nSub)?[nOwn?pill('주관리자 '+nOwn,'ok'):'',nSub?pill('부관리자 '+nSub,'nu'):''].filter(Boolean).join(' ')
+      :'<span style="color:#98A2B3">자리 없음</span>';
+    var seats=as.length?as.map(function(x){
+        return '<span class="mcap" style="display:inline-block;margin-right:8px">'
+          +(x.role==='owner'?'<b style="color:#067647">주</b>':'<span style="color:#667085">부</span>')
+          +' '+esc(x.name)+'</span>'}).join('')
+      :'<span style="color:#98A2B3">없음</span>';
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:20px"><b>'+esc(o.name)+'</b></td><td>'+role+'</td><td>'+seats+'</td>'
+     +'<td class="mt" style="color:'+(o.st==='휴면'?'#B54708':'#667085')+'">'+o.last+'</td>'
+     +'<td>'+pill(o.st,o.stK)+'</td><td style="padding-right:20px;text-align:right"></td>';
+    var act=tr.lastChild;
+    if(nOwn){var b=el('button','mb mbx','권한 이전');
+      b.addEventListener('click',function(){openHandover(o)});act.appendChild(b)}
+    if(o.st==='휴면'){var bl=el('button','mb mbd mbx','계정 비활성');bl.style.marginLeft='6px';
+      bl.addEventListener('click',function(){
+        o.st='비활성';o.stK='cr';
+        addPermLog('권한 말소',o.name,CFG.locked.dormantDays+'일 미접속 · 계정 비활성');
+        addAudit('계정 비활성','1건','휴면 계정 정리',[o.name]);
+        V.chops();toast(o.name+' 계정을 비활성했어요. 접속과 원문 열람이 막혀요','ok')});
+      act.appendChild(bl)}
+    tb.appendChild(tr)})};
+
+/* 권한 이전 — 자리마다 따로. 그 자리의 부관리자가 없으면 그 줄만 막는다. */
+function openHandover(o){
+  var seats=assignments(o.name).filter(function(a){return a.role==='owner'});
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:12px';
+  b.appendChild(el('p','mcap','<b>'+esc(o.name)+'</b>님이 주관리자인 자리 '+seats.length+'개예요. '
+    +'넘길 자리를 고르고 받을 부관리자를 정해주세요.'));
+  var picks={},blocked=0;
+  seats.forEach(function(a){
+    var cand=subsAt(a).filter(function(n){return n!==o.name});
+    var row=el('div');
+    row.style.cssText='border:1px solid #EAECF0;border-radius:8px;padding:11px 13px';
+    if(!cand.length){
+      blocked++;
+      row.style.background='#FEF3F2';row.style.borderColor='#FECDCA';
+      row.innerHTML='<div style="font-weight:600">'+esc(a.name)+'</div>'
+       +'<div class="mcap" style="margin-top:3px;color:#B42318">이 자리에 부관리자가 없어서 넘길 수 없어요. '
+       +'받을 분을 먼저 이 '+(a.kind==='group'?'그룹':'기관')+'의 부관리자로 초대해주세요.</div>';
+    }else{
+      row.innerHTML='<div style="font-weight:600;margin-bottom:7px">'+esc(a.name)+'</div>';
+      var sel=el('select','mfld');sel.style.width='100%';
+      sel.innerHTML='<option value="">넘기지 않음</option>'
+        +cand.map(function(n){return '<option>'+esc(n)+'</option>'}).join('');
+      sel.addEventListener('change',function(){picks[a.name]=this.value?{a:a,to:this.value}:null});
+      row.appendChild(sel)}
+    b.appendChild(row)});
+  if(blocked)b.appendChild(el('div',null,note('부관리자가 없는 자리 <b>'+blocked+'개</b>는 이번에 못 넘겨요.','wa')));
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='넘길 자리를 하나 이상 골라주세요.';b.appendChild(err);
+  var m=modalBox('권한 이전',b);
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  if(blocked===seats.length){
+    var inv=el('button','mb mbp','부관리자 초대하기');
+    inv.addEventListener('click',function(){closeAll();toast('초대할 이메일을 입력받아요')});
+    f.appendChild(inv);return}
+  var ok=el('button','mb mbp','넘기기');
+  ok.addEventListener('click',function(){
+    var done=[];
+    Object.keys(picks).forEach(function(k){
+      var pk=picks[k];if(!pk)return;
+      var ref=pk.a.ref,to=pk.to;
+      ref.owner=to;
+      var i=ref.subs.indexOf(to);if(i>=0)ref.subs.splice(i,1);
+      if(ref.subs.indexOf(o.name)<0)ref.subs.push(o.name);
+      done.push(pk.a.name+' → '+to)});
+    if(!done.length){err.style.display='block';return}
+    addAudit('권한 이전',done.length+'개 자리',o.name+' 인사이동');
+    done.forEach(function(d2){addPermLog('권한 이전',d2.split(' → ')[1],d2)});
+    closeAll();V.chops();
+    toast(done.join(' · ')+' 넘겼어요','ok','실행 취소',null)});
+  f.appendChild(ok)}
+
+/* ══════ 운영팀 문의 ══════
+   맬리 파트너의 '채널 문의' ↔ 슈퍼의 '채널 1:1 문의' 쌍을 그대로 따른다.
+   채널이 Own 에 속한 것(그룹 생성·콘텐츠·설정 잠금값)을 바꾸려면 여기로 온다. */
+var CXQ=[
+ {id:'q1',at:'2026-08-20 11:04',cat:'그룹 생성',t:'4기 개강일을 11월 2일로 잡아주세요',
+  st:'답변 완료',k:'ok',by:'김주무',ans:'11/2 개강으로 생성했어요. 신청 접수를 열어뒀습니다.'},
+ {id:'q2',at:'2026-08-18 15:22',cat:'설정 변경',t:'상담 자동 이관을 3일에서 5일로 늘려주세요',
+  st:'검토 중',k:'wa',by:'김주무',ans:''},
+ {id:'q3',at:'2026-08-11 09:40',cat:'콘텐츠',t:'경로당용 저강도 운동 편성이 필요해요',
+  st:'답변 완료',k:'ok',by:'정미경',ans:'저강도 템플릿을 추가했어요. 프로그램 일정에서 고르시면 돼요.'}];
+V.cx=function(){
+  var h=$('#v-cx');
+  var open2=CXQ.filter(function(q){return q.st!=='답변 완료'}).length;
+  h.innerHTML=ph('운영팀 문의','채널에서 못 바꾸는 건 여기로 요청해요.',
+    '<button class="mb mbp" id="cx-new">문의 보내기</button>')
+   +note('<b>그룹 만들기·콘텐츠 편성·잠긴 설정값</b>은 원메딕스가 관리해요(Own). '
+     +'여기로 보내면 운영팀 화면에 쌓이고, 처리 결과가 다시 여기로 와요.','in')
+   +kpi([['답변 기다리는 문의',fmt(open2),'건',open2?'':'모두 처리됐어요',open2?'wa':'ok'],
+         ['이번 달 보낸 문의',fmt(CXQ.length),'건'],
+         ['평균 회신','1.8','일'],['처리 완료',fmt(CXQ.length-open2),'건']])
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">보낸 날</th><th>분류</th><th>내용</th><th>보낸 사람</th>'
+   +'<th style="padding-right:20px">상태</th></tr></thead><tbody id="cx-tb"></tbody></table></div></div>';
+  $('#cx-new').addEventListener('click',openCx);
+  var tb=$('#cx-tb');tb.innerHTML='';
+  CXQ.forEach(function(q){
+    var tr=el('tr','clk');
+    tr.innerHTML='<td class="mt" style="padding-left:20px;color:#475467">'+q.at+'</td>'
+     +'<td>'+pill(q.cat,'nu')+'</td>'
+     +'<td><b style="font-weight:600">'+esc(q.t)+'</b>'
+       +(q.ans?'<div class="mcap" style="margin-top:3px;color:#067647">↳ '+esc(q.ans)+'</div>':'')+'</td>'
+     +'<td class="mt" style="color:#475467">'+esc(q.by)+'</td>'
+     +'<td style="padding-right:20px">'+pill(q.st,q.k)+'</td>';
+    tb.appendChild(tr)})};
+function openCx(){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<div><span class="flab">분류 <span style="color:#B42318">*</span></span>'
+   +'<select class="mfld" id="cx-c" style="width:100%">'
+   +'<option value="">고르세요</option><option>그룹 생성</option><option>콘텐츠</option>'
+   +'<option>설정 변경</option><option>계정·권한</option><option>오류 신고</option><option>기타</option></select></div>'
+   +'<div><span class="flab">내용 <span style="color:#B42318">*</span></span>'
+   +'<textarea class="mfld" id="cx-t" style="width:100%;height:92px;padding:9px 11px" '
+   +'placeholder="무엇을 어떻게 바꾸고 싶은지 적어주세요"></textarea></div>'
+   +note('문의와 처리 결과는 <b>열람 기록</b>에 남아요.','in');
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='분류와 내용을 모두 적어주세요.';b.appendChild(err);
+  var m=modalBox('운영팀에 문의 보내기',b);
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','보내기');
+  ok.addEventListener('click',function(){
+    var c=$('#cx-c').value,t=$('#cx-t').value.trim();
+    if(!c||!t){err.style.display='block';return}
+    CXQ.unshift({id:'q'+Date.now(),at:'2026-08-21 지금',cat:c,t:t,st:'접수됨',k:'in',by:'김주무',ans:''});
+    addAudit('운영팀 문의','1건',c+' · '+t.slice(0,20));
+    closeAll();V.cx();toast('문의를 보냈어요. 보통 2일 안에 회신돼요','ok')});
+  f.appendChild(ok)}
+
 V.audit=function(){
   var h=$('#v-audit');
   h.innerHTML=ph('열람 기록','개인정보를 열람하거나 내려받은 이력이에요. 2년간 보관돼요.','<button class="mb" id="au-dl">점검표 증빙용 내려받기</button>')

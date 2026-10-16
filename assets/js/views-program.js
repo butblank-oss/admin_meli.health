@@ -6,7 +6,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,achieve=A.achieve,addAudit=A.addAudit,
     LT=A.LT,RT=A.RT,openPerson=A.openPerson,openAchieve=A.openAchieve,cnt=A.cnt,
-    CFG=A.CFG,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
+    CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 
 /* ══════ 활동 현황 ══════ */
 var sTab='ret';
@@ -262,6 +262,140 @@ function showWorkout(rt){
 
 /* ══════ 챌린지 ══════ */
 var qSort={key:'n',dir:1},qFil=[],cQ=null,qdPager=mkPager(function(){V.questdetail()}),qdq='';
+/* ══════ 소속 프로그램 그룹 ══════
+   그룹은 계층이다 — 남동구 경로당 > 구월동 경로당 > 걷기 챌린지.
+   만드는 건 슈퍼(Own). 채널은 담당자 확인과 운영(Operate)만 한다. */
+V.groups=function(){
+  var h=$('#v-groups');
+  var mine=groupTree(GROUPS.filter(function(g){return g.ch===CH_SELF}));
+  h.innerHTML=ph('소속 프로그램 그룹','참여자를 묶는 단위예요. 큰 단위 아래로 얼마든지 나눠져요.')
+   +note('<b>승인은 이 그룹에 넣는 스위치예요.</b> 소속되면 그룹 프로그램이 앱에 보이고, 어디에도 안 속하면 <b>미그룹</b>으로 기본 화면이 보여요.','in')
+   +note('그룹을 만드는 건 원메딕스가 해요. 채널은 담당자 지정과 운영을 맡아요. 새 그룹이 필요하면 <b>운영팀 문의</b>로 요청해주세요.')
+   +kpi([['진행 중 그룹',fmt(mine.filter(function(g){return g.st==='진행 중'&&!g.ghost}).length),'개'],
+         ['신청 접수 중',fmt(mine.filter(function(g){return g.st==='신청 접수 중'}).length),'개'],
+         ['담당자 없는 그룹',fmt(M.noOwnerGroup()),'개','지정이 필요해요','cr'],
+         ['미그룹 참여자',fmt(133),'명','아직 어느 그룹에도 안 속해요','wa']])
+   +'<div class="mc" style="overflow:hidden">'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">그룹</th><th>유형</th><th>시작 기준</th><th>주관리자</th><th>부관리자</th>'
+   +'<th class="num">대상자</th><th class="num">이번 달 활동</th><th style="padding-right:20px">상태</th>'
+   +'</tr></thead><tbody id="g-tb"></tbody></table></div></div>';
+  var tb=$('#g-tb');tb.innerHTML='';
+  mine.forEach(function(g){
+    var on=g.id===getGroup(),d=groupDepth(g);
+    var tr=el('tr','clk'+(on?' sel':''));
+    tr.innerHTML='<td style="padding-left:'+(20+d*22)+'px">'
+      +(d?'<span style="color:#D0D5DD;margin-right:6px">└</span>':'')
+      +'<b'+(g.ghost?' style="color:#667085"':'')+'>'+esc(g.name)+'</b>'
+      +(on?' <span class="mpill" style="background:#E7F9F1;color:#065C3D">보는 중</span>':'')
+      +'<div class="mcap">'+g.sites.join(' · ')+'</div></td>'
+     +'<td>'+(g.ghost?'<span style="color:#98A2B3">—</span>':pill(KIND[g.kind][0],g.kind==='fixed'?'nu':'in'))+'</td>'
+     +'<td class="mt" style="color:#475467">'+g.anchor+'<div class="mcap">'+g.start+'</div></td>'
+     +'<td>'+(g.owner?'<b style="font-weight:600">'+esc(g.owner)+'</b>'
+        :(g.ghost?'<span style="color:#98A2B3">—</span>':pill('미지정','cr')))+'</td>'
+     +'<td class="mt" style="color:#475467">'+(g.subs&&g.subs.length?g.subs.join(', ')
+        :'<span style="color:#98A2B3">없음</span>')+'</td>'
+     +'<td class="num mt">'+(g.n?fmt(g.n):'—')+'</td>'
+     +'<td class="num mt">'+(g.active?fmt(g.active):'—')+'</td>'
+     +'<td style="padding-right:20px">'+pill(g.st,g.k)+'</td>';
+    if(!g.ghost)tr.addEventListener('click',function(){putGroup(g.id);V.groups();
+      toast(g.name+'(으)로 바꿨어요. 참여자·활동·리포트가 이 그룹 기준이에요')});
+    tb.appendChild(tr)});
+  h.insertAdjacentHTML('beforeend',
+    note('<b>기수형은 중간 합류에 약해요.</b> 3기 실측으로 개강 첫 주 시작자는 12주 뒤 <b>67.1%</b> 남는데 '
+     +'한 주만 늦으면 <b>22.4%</b>예요. 중간 합류가 잦은 경로당은 <b>상시형</b>이 맞아요 — 각자 등록일이 1일차라서요.','wa'))};
+
+/* ══════ 내 채널 정보 ══════
+   화면에 흩어져 있던 하드코딩을 모은다. 잠긴 항목은 숨기지 않고 이유와 함께 보여준다. */
+function lockRow(label,val,why){
+  return '<div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #F2F4F7">'
+   +'<div style="width:156px;flex:none"><span class="flab" style="margin:0">'+label+'</span></div>'
+   +'<div style="flex:1"><div style="color:#475467">'+val+'</div>'
+   +'<div class="mcap" style="margin-top:2px">'+why+'</div></div>'
+   +'<span class="mpill" style="background:#F2F4F7;color:#667085;flex:none">🔒 원메딕스</span></div>'}
+function fld(id,v){return '<input class="mfld" id="'+id+'" value="'+esc(v)+'" style="width:100%">'}
+V.settings=function(){
+  var h=$('#v-settings'),L=CFG.locked;
+  h.innerHTML=ph('내 채널 정보','이 채널의 기본값이에요. 리포트 공문과 화면 판정에 바로 반영돼요.',
+    '<button class="mb" id="st-req">변경 요청</button><button class="mb mbp" id="st-save">저장</button>')
+   +note('🔒 표시된 항목은 계약·법정·시스템 제약이라 채널에서 바꿀 수 없어요. 바꿔야 하면 <b>운영팀 문의</b>로 보내주세요.','in')
+   +'<div class="mc">'+chead('기본 정보')+'<div style="padding:4px 20px 18px">'
+     +'<div class="kvform"><label>기관명</label><div>'+fld('st-name',CFG.name)+'</div>'
+     +'<label>채널 ID</label><div class="mcap mt" style="padding-top:9px">'+CFG.key+'</div></div>'
+     +lockRow('계약 기간',L.contract,'계약서 기준이라 원메딕스가 관리해요. 종료 30일 전에 안내가 가요.')+'</div></div>'
+   +'<div class="mc">'+chead('보고 서식')
+     +'<div class="mcap" style="padding:0 20px 10px">월간 리포트 공문 머리말에 그대로 들어가요.</div>'
+     +'<div style="padding:0 20px 18px"><div class="kvform">'
+     +'<label>수신 기관</label><div>'+fld('st-recv',CFG.recvOrg)+'</div>'
+     +'<label>수신 직위</label><div>'+fld('st-recvt',CFG.recvTitle)+'</div>'
+     +'<label>발신 명의</label><div>'+fld('st-send',CFG.sendOrg)+'</div>'
+     +'<label>작성자</label><div>'+fld('st-writer',CFG.writer)+'</div>'
+     +'<label>문서번호</label><div>'+fld('st-doc',CFG.docNo)
+       +'<div class="mcap" style="margin-top:5px">{YYYY} 연도 · {NNN} 일련번호. 다음 번호는 <b>'
+       +CFG.docNo.replace('{YYYY}','2026').replace('{NNN}','014')+'</b>예요.</div></div>'
+     +'</div></div></div>'
+   +'<div class="mc">'+chead('활동 판정 기준')
+     +'<div class="mcap" style="padding:0 20px 10px">여기 숫자를 바꾸면 오늘·참여자·활동 현황이 <b>같이</b> 바뀌어요. 지표를 한 곳에서 계산하니까요.</div>'
+     +'<div style="padding:0 20px 8px"><div class="kvform">'
+     +'<label>경고 기준</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-warn" type="number" min="1" max="60" value="'+CFG.warn+'" style="width:88px"> 일 이상 무활동</div>'
+     +'<label>위험 기준</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-risk" type="number" min="2" max="90" value="'+CFG.risk+'" style="width:88px"> 일 이상 무활동</div>'
+     +'<label>과거 판정</label><div id="st-kind" style="display:flex;gap:8px">'
+       +'<button class="mb" data-k="policy" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+       +'<b>그대로 둔다</b><div class="mcap">정책 변경 · 오늘부터 적용</div></button>'
+       +'<button class="mb" data-k="fix" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+       +'<b>다시 판정한다</b><div class="mcap">오류 정정 · 과거까지 소급</div></button></div>'
+     +'</div></div><div style="padding:0 20px 18px" id="st-pv"></div></div>'
+   +'<div class="mc">'+chead('알림')+'<div style="padding:4px 20px 18px">'
+     +'<div class="kvform"><label>푸시 발송 시간</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-pf" type="number" min="0" max="23" value="'+CFG.pushFrom+'" style="width:76px"> 시 ~ '
+       +'<input class="mfld" id="st-pt" type="number" min="1" max="23" value="'+CFG.pushTo+'" style="width:76px"> 시</div></div>'
+     +lockRow('자동 로그아웃',L.idleMin+'분 동안 조작이 없으면 접속 차단',
+       '개인정보 보호법 안전성 확보조치 기준이에요. 열어둔 원문도 같이 닫혀요.')
+     +lockRow('상담 자동 이관',L.escalateDays+'일 무응답 시 운영팀으로 알림',
+       '담당자 1명 = 답변 권한 1명 구조라서 생긴 제약이에요. 구조가 바뀌면 열려요.')+'</div></div>'
+   +'<div class="mc">'+chead('개인정보')+'<div style="padding:4px 20px 18px">'
+     +lockRow('원문 자동 재마스킹',L.remaskSec+'초 후 다시 가림','열람 최소화 원칙이라 채널이 늘릴 수 없어요.')
+     +lockRow('열람 기록 보관',L.retainYears+'년','민감정보 처리 시스템 기준이에요. 일반 개인정보는 1년이에요.')
+     +lockRow('권한 변경 이력 보관',L.permYears+'년','부여·변경·말소 내역은 열람 기록보다 1년 더 보관해요.')
+     +lockRow('건강정보 보존기간',L.keepYears+'년','기수 종료 후 '+L.keepYears+'년이 지나면 파기 대상이 돼요. '
+       +'<b>리포트용 집계는 남고 개인별 원본만 지워져요.</b>')
+     +lockRow('비밀번호 규칙',L.pwMin+'자 이상 · 영문·숫자·기호 중 2종 이상','초대 수락할 때 적용돼요.')
+     +lockRow('로그인 실패 잠금',L.failLock+'회 연속 실패 시 계정 잠금','잠긴 계정은 주관리자나 원메딕스가 풀어줘요.')
+     +'</div></div>';
+  var kind='policy';
+  function paintKind(){$$('#st-kind .mb').forEach(function(x){
+    var on=x.dataset.k===kind;x.style.borderColor=on?'#6BDCAF':'#D0D5DD';x.style.background=on?'#E7F9F1':'#fff'})}
+  $$('#st-kind .mb').forEach(function(x){x.addEventListener('click',function(){kind=x.dataset.k;paintKind();preview()})});
+  function preview(){
+    var w=+$('#st-warn').value,r2=+$('#st-risk').value;
+    if(!(w>0)||!(r2>w)){$('#st-pv').innerHTML=note('위험 기준은 경고 기준보다 커야 해요.','cr');return}
+    var nw=pCount(function(p){return p.days>0&&p.last>w&&p.last<=r2});
+    var nr=pCount(function(p){return p.days>0&&p.last>r2});
+    var na=pCount(function(p){return p.days>0&&p.last<=w});
+    $('#st-pv').innerHTML=note('이 기준으로 바꾸면 — 최근 활동 <b>'+fmt(na)+'명</b> · '
+      +w+'일 무활동 <b>'+fmt(nw)+'명</b> · '+r2+'일+ 무활동 <b>'+fmt(nr)+'명</b>'
+      +(kind==='policy'
+        ? '<br><b>과거 판정은 그대로 둬요.</b> 이미 제출한 리포트 숫자가 바뀌지 않아요.'
+        : '<br><b>과거까지 다시 판정해요.</b> 이미 제출한 리포트의 숫자가 바뀝니다 — 오류 정정일 때만 고르세요.'),
+      kind==='fix'?'wa':'')}
+  $('#st-warn').addEventListener('input',preview);
+  $('#st-risk').addEventListener('input',preview);
+  paintKind();preview();
+  $('#st-req').addEventListener('click',function(){go('cx')});
+  $('#st-save').addEventListener('click',function(){
+    var w=+$('#st-warn').value,r2=+$('#st-risk').value;
+    if(!(w>0)||!(r2>w)){toast('위험 기준은 경고 기준보다 커야 해요','cr');return}
+    CFG.name=$('#st-name').value;CFG.recvOrg=$('#st-recv').value;CFG.recvTitle=$('#st-recvt').value;
+    CFG.sendOrg=$('#st-send').value;CFG.writer=$('#st-writer').value;CFG.docNo=$('#st-doc').value;
+    CFG.warn=w;CFG.risk=r2;CFG.pushFrom=+$('#st-pf').value;CFG.pushTo=+$('#st-pt').value;
+    pushRule('2026-08-21',w,r2,kind,kind==='policy'?'운영 기준 조정':'판정 오류 정정');
+    addAudit('채널 설정 변경','판정 기준 '+w+'/'+r2+'일',
+      kind==='policy'?'운영 기준 조정 · 과거 유지':'판정 오류 정정 · 과거 소급');
+    toast('저장했어요. '+(kind==='policy'?'과거 판정은 그대로예요':'과거까지 다시 판정했어요'),'ok');
+    V.settings()})};
+
 V.quest=function(){
   var h=$('#v-quest');
   h.innerHTML=ph('챌린지','확인만 할 수 있어요. 만들기·수정은 원메딕스 운영팀이 해요.')

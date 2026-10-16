@@ -6,7 +6,7 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,moveRows=A.moveRows,assessHist=A.assessHist,
     achieve=A.achieve,addAudit=A.addAudit,LT=A.LT,RT=A.RT,
-    CFG=A.CFG,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
+    CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 function cnt(f){return PEOPLE.filter(f).length}
 function statusPill(p){
   if(p.status==='withdrawn')return pill('회원탈퇴','cr');
@@ -23,9 +23,13 @@ V.today=function(){
   h.innerHTML=
    ph('오늘','2026년 8월 21일 목요일 · 3기 171일째',
      '<span class="mcap" style="margin-right:2px">기간</span><button class="mchip">오늘</button><button class="mchip">최근 7일</button><button class="mchip on">이번 달</button><button class="mchip">지난 달</button><button class="mb mbp" data-go="report" style="margin-left:8px">8월 리포트 만들기</button>')
-   +kpi([['3기 대상자','822','명','1기 230 · 2기 714'],['이번 주 활동자','191','명','전주보다 6명 늘었어요','','up'],
-         ['어제 활동','1,284','회','일평균 1,350회'],['14일+ 무활동','184','명','지난주보다 21명 늘었어요','wa'],
-         ['답변 대기 상담','4','건','가장 오래된 건 3일째','cr'],['처리 안 된 신청','111','건','가장 오래된 건 42일째','cr']])
+   /* 숫자도 라벨도 M·bandLabel 에서 온다. 여기서 세거나 적지 않는다. */
+   +kpi([['3기 대상자',fmt(M.audience()),'명','1기 230 · 2기 714'],
+         ['이번 주 활동자',fmt(M.weekActive()),'명','전주보다 6명 늘었어요','','up'],
+         ['어제 활동','1,284','회','일평균 1,350회'],
+         [bandLabel().risk,fmt(M.inactive14()),'명','지난주보다 21명 늘었어요','wa'],
+         ['답변 대기 상담',fmt(M.consultWaiting()),'건','가장 오래된 건 3일째','cr'],
+         ['처리 안 된 신청',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
    +'<div class="mc"><div style="padding:16px 20px 12px"><span class="mh">처리할 일</span></div><div id="t-todo"></div></div>'
    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px">'
    +'<div class="mc" style="padding:20px;display:flex;flex-direction:column">'
