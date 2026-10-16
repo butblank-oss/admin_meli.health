@@ -252,7 +252,9 @@ var CFG={
      오류 정정 → 소급 함. 애초에 틀린 값이었으므로.
 
    화면에서 이 둘을 구분해서 고르게 한다. */
+/* 이력이 하나뿐이면 '기준이 바뀌어도 과거 판정은 안 바뀐다'를 화면에서 보여줄 수가 없다 */
 var RULEVER=[
+  {from:'2025-09-01', warn:5, risk:10, kind:'policy', memo:'1·2기 기준'},
   {from:'2026-03-03', warn:7, risk:14, kind:'policy', memo:'3기 개강 기준'}];
 function ruleAt(dateStr){
   var r=RULEVER[0];
