@@ -188,6 +188,9 @@ document.addEventListener('keydown',function(e){
 document.addEventListener('click',function(e){
   var m=e.target.closest('[data-modal]');if(m)open(m.dataset.modal);
   if(e.target.closest('[data-close]')||e.target.classList.contains('mask'))closeAll();
+  var r=e.target.closest('.mtb.msum tbody tr');
+  if(r&&!e.target.closest('button,a,.cbx,.lnk')&&matchMedia('(max-width:860px)').matches){
+    var k=r.querySelector('.lnk');if(k){k.click();return}}
   var g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){closeAll();return}
@@ -622,17 +625,28 @@ function buildNav(){
       n.appendChild(b)})})}
 /* 좁은 화면에선 thead 가 숨고 행이 카드로 접힌다 — 각 칸 앞에 열 이름을 붙여 둔다.
    표마다 손으로 data-l 을 적지 않도록 thead 를 읽어 한 번에 찍는다. */
+/* 열 머리에 data-m 을 달면 그 표는 모바일에서 요약 카드로 바뀐다.
+   t=제목 · b=상태 배지 · m=보조 한 줄 · s=숫자 지표 · a=처리 버튼 · c=선택칸, 안 단 열은 숨는다. */
+function mroles(tr,spec){var a=spec.split(',');
+  [].forEach.call(tr.cells,function(c,i){if(a[i]&&a[i]!=='x')c.dataset.m=a[i]})}
 function labelCells(root){
   (root||document).querySelectorAll('table.mtb').forEach(function(t){
-    var hs=[].map.call(t.querySelectorAll('thead th'),function(h){
+    var ths=t.querySelectorAll('thead th');if(!ths.length)return;
+    var hs=[],rs=[],sum=false;
+    [].forEach.call(ths,function(h){
       var c=h.cloneNode(true);                     /* 정렬 안내는 스크린리더용 — 라벨에서 뺀다 */
       [].forEach.call(c.querySelectorAll('.sr'),function(x){x.remove()});
-      return c.textContent.trim()});
-    if(!hs.length)return;
+      hs.push(c.textContent.trim());rs.push(h.dataset.m||'');if(h.dataset.m)sum=true});
+    t.classList.toggle('msum',sum);
     [].forEach.call(t.querySelectorAll('tbody tr'),function(r){
       if(r.cells.length!==hs.length)return;        /* 빈 상태 등 colspan 행은 건너뛴다 */
+      var fm=1,fs=1;
       [].forEach.call(r.cells,function(c,i){
-        if(c.dataset.l===undefined&&hs[i])c.dataset.l=hs[i]})})})}
+        if(c.dataset.l===undefined&&hs[i])c.dataset.l=hs[i];
+        if(!rs[i]||c.classList.contains('m-'+rs[i]))return;
+        c.classList.add('m-'+rs[i]);               /* 묶음의 첫 칸만 구분점을 뺀다 */
+        if(rs[i]==='m'&&fm){c.classList.add('g1');fm=0}
+        if(rs[i]==='s'&&fs){c.classList.add('g1');fs=0}})})})}
 (function(){var m=document.getElementById('main');if(!m)return;
   var q=0,mo=new MutationObserver(function(){if(q)return;q=1;
     requestAnimationFrame(function(){q=0;labelCells(m)})});
@@ -655,7 +669,7 @@ function go(p){
   document.title=(TITLES[p]||'')+' · 맬리 케어센터 채널 어드민'}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
  chead:chead,ico:ico,shortcuts:shortcuts,area:area,donut:donut,bindTabs:bindTabs,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
- open:open,closeAll:closeAll,go:go,labelCells:labelCells,buildNav:buildNav,V:V,
+ open:open,closeAll:closeAll,go:go,labelCells:labelCells,mroles:mroles,buildNav:buildNav,V:V,
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,

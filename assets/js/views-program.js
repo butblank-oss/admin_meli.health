@@ -186,7 +186,10 @@ V.consult=function(){
     b.innerHTML='<span class="r1">'+r.n+' '+pl+'<span class="t">'+r.t+'</span></span><span class="r2">'+(r.last||'아직 대화가 없어요')+'</span>';
     b.setAttribute('aria-selected',cRoom===r?'true':'false');
     b.setAttribute('role','option');b.type='button';
-    b.addEventListener('click',function(){cRoom=r;V.consult()});rl.appendChild(b)});
+    b.addEventListener('click',function(){cRoom=r;V.consult();
+      /* 좁은 화면에선 대화가 목록 아래에 있어서, 고른 뒤 거기로 데려다준다 */
+      if(matchMedia('(max-width:860px)').matches){var t=$('#c-msgs');if(t)t.scrollIntoView({block:'start',behavior:'smooth'})}});
+    rl.appendChild(b)});
   rl.setAttribute('role','listbox');rl.setAttribute('aria-label','상담 목록');
   thread(cRoom)};
 function thread(r){

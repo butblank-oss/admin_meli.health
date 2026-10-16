@@ -56,7 +56,7 @@ V.today=function(){
      +donut(bands,[M.audience(),'3기 대상자'])+'</div>'
    +'<div class="mc" style="overflow:hidden;display:flex;flex-direction:column">'
      +chead('먼저 연락해볼 분들','<span class="mcap">자동 선별</span>',{ic:'user',more:'people'})
-     +'<table class="mtb"><thead><tr><th style="padding-left:20px">이름</th><th>사유</th><th class="num">경과</th><th style="padding-right:20px"></th></tr></thead><tbody id="t-attn"></tbody></table>'
+     +'<table class="mtb"><thead><tr><th style="padding-left:20px" data-m="t">이름</th><th data-m="m">사유</th><th class="num" data-m="s">경과</th><th style="padding-right:20px" data-m="a"></th></tr></thead><tbody id="t-attn"></tbody></table>'
      +'<p class="mcap" style="padding:14px 20px;margin:auto 0 0">선별 기준은 활동 현황 → 판정 기준에서 바꿀 수 있어요.</p></div>'
    +'</div>';
 
@@ -133,6 +133,7 @@ V.people=function(keep){
    +sth('이름','name',pSort)+sth('PIN','pin',pSort,1)+'<th class="num">N</th><th>연락처</th>'+sth('생년','birth',pSort,1)
    +sth('기관','org',pSort)+'<th>상태</th>'+sth('활동일','days',pSort,1)+sth('수행률','rate',pSort,1)
    +sth('최근 이용','last',pSort)+'<th style="padding-right:20px">앱</th>';
+  A.mroles(thh,'x,t,x,x,m,x,m,b,s,s,s,x');   /* 모바일 카드: 이름·상태 · 연락처/기관 · 활동 지표 */
   bindSort(thh,pSort,function(){pPager.page=1;V.people(1)});
   $('#p-all').addEventListener('click',function(){var on=!allOn;pageRows.forEach(function(p){if(on)pSel[p.id]=1;else delete pSel[p.id]});if(!on)pAll=false;V.people(1)});
   var rows=pPager.slice(pList),tb=$('#p-tb');tb.innerHTML='';

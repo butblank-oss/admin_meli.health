@@ -350,6 +350,7 @@ V.apply=function(keep){
   th.innerHTML='<th style="width:50px;padding-left:20px"><span id="a-all">'+cbx(allOn?'on':someOn?'mx':'off','이 페이지 전체 선택')+'</span></th>'
    +sth('이름','name',aSort)+'<th>연락처</th>'+sth('주소','addr',aSort)+sth('경과','aged',aSort,1)
    +'<th>경로</th><th>상태</th><th>받는 중인 프로그램</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
+  A.mroles(th,'x,t,m,m,s,x,b,x,x,a');        /* 모바일 카드: 이름·상태 · 연락처/주소 · 경과 · 처리 */
   bindSort(th,aSort,function(){aPager.page=1;V.apply(1)});
   $('#a-all').addEventListener('click',function(){var on=!allOn;list.forEach(function(a){if(on)aSel[a.id]=1;else delete aSel[a.id]});V.apply(1)});
   var b=$('#a-bulk');

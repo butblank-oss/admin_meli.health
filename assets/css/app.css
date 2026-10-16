@@ -372,11 +372,14 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
     gap:3px;font-size:11.5px;text-align:center;border-radius:10px;line-height:1.25}
   .mnav .mbdg{position:static;margin:0}
   .main{padding:14px 12px 88px;gap:12px}
+  .gap>.note{order:5}            /* 늘 같은 경고는 목록을 밀어내지 않게 뒤로 */
 
   h1.ttl{font-size:21px}
   .ph{flex-direction:column;align-items:flex-start;gap:10px}
-  .ph .acts{width:100%;display:flex;gap:8px;flex-wrap:wrap}
-  .ph .acts .mb{flex:1;min-width:0;height:42px;justify-content:center}
+  .ph .acts{width:100%;display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .ph .acts::-webkit-scrollbar{display:none}
+  .ph .acts .mb{flex:none;height:38px}
+  .ph .acts .mb.mbp{flex:1;justify-content:center}
 
   /* 터치 영역 — 44px 바닥값 */
   .mb{height:42px;padding:0 14px}
@@ -386,22 +389,45 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   select.mfld,input.mfld{font-size:16px}
   .tab{height:44px;font-size:14px}
 
-  /* 지표 카드 — 2열 */
-  .kpi{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
-  .kpi>*{padding:13px 14px}
+  /* 지표 — 세로로 쌓으면 목록이 첫 화면에서 밀려난다. 가로로 훑게 둔다 */
+  .kpi{display:flex !important;overflow-x:auto;scrollbar-width:none}
+  .kpi::-webkit-scrollbar{display:none}
+  .kpi>*{flex:0 0 47%;padding:13px 14px}
+  .kpi>div:first-child{border-left:none}
+
+  /* 필터 칩도 한 줄로 훑는다 — 14개가 세로로 쌓이면 목록이 안 보인다 */
+  .row:has(>.mchip):not(:has(input)):not(:has(select)){
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .row:has(>.mchip):not(:has(input)):not(:has(select))::-webkit-scrollbar{display:none}
+  .mchip{flex:none}
 
   /* 표 → 카드 */
-  .mtb thead{display:none}
-  .mtb,.mtb tbody,.mtb tr,.mtb td{display:block;width:auto}
-  .mtb tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px;
-    border:1px solid #EAECF0;border-radius:10px;margin:0 0 10px;padding:12px 14px;background:#fff}
-  .mtb td:first-child{grid-column:1/-1}
-  .mtb td:empty{display:none}                /* 빈 칸은 한 줄을 잡아먹기만 한다 */
-  .mtb tr.sel{border-color:#6BDCAF;background:#F6FEFA}
-  .mtb td{border:none;padding:3px 0;height:auto;min-width:0;overflow-wrap:anywhere}
-  .mtb td.num,.mtb td[class*="num"]{text-align:left}
-  .mtb td[data-l]:before{content:attr(data-l) "\00a0\00a0";color:#98A2B3;font-size:12px;font-weight:600}
-  .scroll{overflow:visible}
+  /* 격자로 읽어야 뜻이 사는 표(코호트·히트맵)는 접지 않고 옆으로 민다 */
+  .mtb.msum thead{display:none}
+  .mtb.msum,.mtb.msum tbody,.mtb.msum tr,.mtb.msum td{display:block;width:auto}
+  .mtb.msum tr.sel{border-color:#6BDCAF;background:#F6FEFA}
+
+  /* ── data-m 을 단 표는 한 건 = 카드 한 장 ──
+     이름 한 줄 · 상태는 오른쪽 위 · 보조와 지표는 점으로 이어 흘린다 */
+  .mtb.msum tr{display:block;position:relative;padding:14px}
+  .mtb.msum td{display:none;padding:0 !important;border:none;height:auto;white-space:normal;
+    min-width:0;overflow-wrap:anywhere;text-align:left}   /* 표에 박아둔 좌우 여백을 푼다 */
+  .mtb.msum td:before{content:none}
+  .mtb.msum td.m-t{display:block;font-size:16px;font-weight:700;letter-spacing:-0.022em;
+    color:#101828;line-height:1.35;padding-right:84px}
+  .mtb.msum td.m-b{display:block;position:absolute;top:13px;right:14px}
+  .mtb.msum td.m-m,.mtb.msum td.m-s{display:inline;line-height:1.75}
+  .mtb.msum td.m-m{font-size:13.5px;color:#475467}
+  .mtb.msum td.m-s{font-size:12.5px;color:#98A2B3}
+  .mtb.msum td.m-m:before,.mtb.msum td.m-s:before{content:"·";margin:0 6px;color:#D0D5DD}
+  .mtb.msum td.m-s:before{content:"·\00a0" attr(data-l) "\00a0"}
+  .mtb.msum td.m-m.g1:before{content:none}
+  .mtb.msum td.m-s.g1:before{content:"\A" attr(data-l) "\00a0";white-space:pre}
+  .mtb.msum td.m-a{display:flex;gap:6px;margin-top:12px}
+  .mtb.msum td.m-a .mb{flex:1;height:40px;justify-content:center;padding:0 8px}
+  .mtb.msum td.m-a .mb:only-child{flex:0 0 auto;padding:0 20px}
+  .mtb.msum .lnk{color:inherit}
+  .msum .scroll,.scroll:has(.msum){overflow:visible}
   .pager{flex-wrap:wrap;gap:6px}
 
   /* 모달 — 하단 시트 */
@@ -421,6 +447,14 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .dwrap{flex-direction:column;gap:16px;padding:4px 14px 18px}
   .dlg{width:100%}
   .area{height:150px}
+  .chat{display:block;height:auto}
+  .rooms{border-right:none;border-bottom:1px solid #EAECF0;max-height:46vh;overflow-y:auto}
+  .cpn{display:none}                 /* 참여자 패널은 넓은 화면에서 */
+  /* 화면 안에서 인라인으로 짜 둔 2단·고정폭 그리드를 좁은 화면에선 한 줄로 편다.
+     쓰인 곳이 흩어져 있어 선택자로 한 번에 덮는 쪽이 짧다 */
+  [style*="repeat(2,minmax(0,1fr))"],[style*="repeat(4,minmax(0,1fr))"],
+  [style*="minmax(0,1fr) 340px"],[style*="320px minmax(0,1fr)"],
+  [style*="284px minmax(0,1fr)"]{grid-template-columns:minmax(0,1fr) !important}
   .kvform{grid-template-columns:1fr}
   .pcal{grid-template-columns:repeat(7,1fr);font-size:11px}
   .pcal .dy{min-height:64px;padding:4px}
