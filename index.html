@@ -61,6 +61,29 @@
 
 <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 
+<div class="mask" id="m-idle"><div class="modal sm">
+  <h3>곧 자동으로 로그아웃돼요</h3>
+  <div class="mbody">
+    <div class="note" style="background:#FFFAEB;color:#B54708"><span class="mdot" style="background:#F79009"></span>
+      <span><b id="idle-n">60</b>초 뒤에 접속이 끊겨요. 열어둔 개인정보 원문도 같이 닫혀요.</span></div>
+    <p class="mcap" style="margin:12px 0 0">자리를 비운 사이 화면이 열려 있지 않도록 한 조치예요.
+      개인정보 보호법 안전성 확보조치 기준에 따라 <b>채널이 끌 수 없어요.</b></p>
+  </div>
+  <div class="mfoot"><button class="mb" id="idle-out">지금 로그아웃</button>
+    <button class="mb mbp" id="idle-stay">계속 사용하기</button></div>
+</div></div>
+
+<div class="mask" id="m-locked"><div class="modal sm">
+  <h3>자동으로 로그아웃됐어요</h3>
+  <div class="mbody">
+    <p class="mcap">움직임이 없어서 접속이 끊겼어요. 열려 있던 개인정보 원문은 다시 가려졌어요.</p>
+    <div style="margin-top:13px"><span class="flab">비밀번호</span>
+      <input class="mfld" type="password" style="width:100%" value="••••••••"></div>
+  </div>
+  <div class="mfoot"><span class="mcap" id="lock-msg" style="margin-right:auto"></span>
+    <button class="mb mbp" id="lock-in">다시 로그인</button></div>
+</div></div>
+
 <div class="mask" id="m-withdraw"><div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="m-withdraw-h">
   <h3 id="m-withdraw-h" style="color:#B42318">탈퇴 처리<button class="x" type="button" data-close aria-label="닫기">✕</button></h3>
   <div class="mbody">

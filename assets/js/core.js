@@ -170,16 +170,150 @@ var TESTS=[{c:'gds-sf',n:'노인우울 (GDS-SF)',max:15,items:15,
  {c:'smcq',n:'기억감퇴 (SMCQ)',max:14,items:14,
   lv:function(s){return s<=5?['정상','ok']:['주의','wa']}}];
 
+/* ═══════════ 내 채널 정보 (설정) ═══════════
+   화면에 흩어져 하드코딩돼 있던 값을 한곳에 모은다.
+   locked 는 법정·계약·시스템 제약이라 채널이 못 바꾼다 — 슈퍼에 변경 요청만 보낸다. */
+var CFG={
+  name:'인천 남동구 치매안심센터', key:'C-PRD-CARE-0001',
+  recvOrg:'인천남동구 보건소', recvTitle:'건강관리팀장',
+  sendOrg:'㈜원메딕스인더스트리', writer:'김주무 주무관',
+  docNo:'남동보건-{YYYY}-{NNN}', form:'남동구 보건소 표준 공문',
+  warn:7, risk:14,
+  pushFrom:9, pushTo:18,
+  locked:{escalateDays:3, remaskSec:30, retainYears:2, idleMin:30,
+          dormantDays:60, permYears:3, pwMin:10, failLock:5, keepYears:3,
+          contract:'2026-03-01 ~ 2026-12-31'}};
+
+/* ═══════════ 판정 기준 버전 ═══════════
+   기준을 바꿔도 과거 판정을 덮어쓰지 않는다.
+   보건소에 이미 제출한 숫자가 나중에 달라지면 해명할 방법이 없고,
+   위험군 등급은 상담·연계 판단의 근거라서 사후 변경은 기록 조작에 가깝다.
+
+     정책 변경 → 소급 안 함. 적용 시작일 이후 판정만 새 기준.
+     오류 정정 → 소급 함. 애초에 틀린 값이었으므로.
+
+   화면에서 이 둘을 구분해서 고르게 한다. */
+var RULEVER=[
+  {from:'2026-03-03', warn:7, risk:14, kind:'policy', memo:'3기 개강 기준'}];
+function ruleAt(dateStr){
+  var r=RULEVER[0];
+  for(var i=0;i<RULEVER.length;i++) if(RULEVER[i].from<=dateStr) r=RULEVER[i];
+  return r}
+function ruleNow(){return {warn:CFG.warn, risk:CFG.risk}}
+function pushRule(from,warn,risk,kind,memo){
+  RULEVER.push({from:from,warn:warn,risk:risk,kind:kind,memo:memo});
+  RULEVER.sort(function(a,b){return a.from<b.from?-1:1})}
+
+/* 무활동 구간 — 키는 고정, 라벨은 현재 기준을 따라간다 */
+function band(p){return p.days===0?'none':p.last<=CFG.warn?'recent':p.last<=CFG.risk?'warn':'risk'}
+function bandLabel(){return {none:'무활동',recent:'최근 활동',
+  warn:CFG.warn+'일 무활동',risk:CFG.risk+'일+ 무활동'}}
+
+/* ═══════════ 프로그램 그룹 ═══════════
+   기수·상시반·코호트가 전부 이것의 인스턴스다. 계층으로 쪼개진다.
+     kind   fixed  = 전원 같은 날 시작(개강형). 늦게 들어오면 잔존이 무너진다.
+            rolling= 사람마다 등록일이 1일차(상시형). 병원 수술일 코호트도 여기.
+     scope  site | multi | district | city
+   생성은 슈퍼(Own). 채널은 담당자 지정과 운영(Operate)만 한다. */
+var CH_SELF='인천 남동구 치매안심센터';
+var KIND={fixed:['기수형','전원 같은 날 시작'],rolling:['상시형','등록일부터 개인별 시작']};
+var SCOPE={site:'시설 1곳',multi:'여러 시설',district:'구 전체',city:'시 전체'};
+var SITES=['남동구보건소','만수노인문화센터','남동구노인복지관','만월종합사회복지관',
+           '구월동 경로당','간석동 경로당','논현동 경로당'];
+var GROUPS=[
+ {id:'g3',parent:null,ch:CH_SELF,name:'3기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2026-03-03',
+  weeks:12,scope:'district',sites:['남동구 전체'],n:822,active:296,st:'진행 중',k:'ok',day:171,owner:'김주무',subs:['박선영']},
+ {id:'gj',parent:null,ch:CH_SELF,name:'남동구 경로당',kind:'rolling',anchor:'등록일',start:'2026-05-11',
+  weeks:0,scope:'district',sites:['경로당 3곳'],n:82,active:56,st:'진행 중',k:'ok',day:103,owner:'정미경',subs:[]},
+ {id:'gj1',parent:'gj',ch:CH_SELF,name:'구월동 경로당',kind:'rolling',anchor:'등록일',start:'2026-05-11',
+  weeks:0,scope:'site',sites:['구월동 경로당'],n:41,active:28,st:'진행 중',k:'ok',day:103,owner:'정미경',subs:[]},
+ {id:'gj1w',parent:'gj1',ch:CH_SELF,name:'걷기 챌린지',kind:'fixed',anchor:'개강일',start:'2026-08-01',
+  weeks:4,scope:'site',sites:['구월동 경로당'],n:41,active:22,st:'진행 중',k:'ok',day:39,owner:'정미경',subs:[]},
+ {id:'gj1g',parent:'gj1',ch:CH_SELF,name:'게임 챌린지',kind:'fixed',anchor:'개강일',start:'2026-09-01',
+  weeks:4,scope:'site',sites:['구월동 경로당'],n:0,active:0,st:'예정',k:'in',day:0,owner:null,subs:[]},
+ {id:'gj2',parent:'gj',ch:CH_SELF,name:'논현동 경로당',kind:'rolling',anchor:'등록일',start:'2026-08-04',
+  weeks:0,scope:'site',sites:['논현동 경로당'],n:18,active:15,st:'진행 중',k:'ok',day:18,owner:null,subs:[]},
+ {id:'gj3',parent:'gj',ch:CH_SELF,name:'간석동 경로당',kind:'rolling',anchor:'등록일',start:'2026-06-02',
+  weeks:0,scope:'site',sites:['간석동 경로당'],n:23,active:13,st:'진행 중',k:'ok',day:81,owner:'최한나',subs:[]},
+ {id:'g4',parent:null,ch:CH_SELF,name:'4기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2026-11-02',
+  weeks:12,scope:'district',sites:['남동구 전체'],n:0,active:0,st:'신청 접수 중',k:'in',day:0,owner:'김주무',subs:[]},
+ {id:'g2',parent:null,ch:CH_SELF,name:'2기 두뇌운동 치매예방교실',kind:'fixed',anchor:'개강일',start:'2025-03-04',
+  weeks:12,scope:'district',sites:['남동구 전체'],n:714,active:0,st:'종료',k:'nu',day:0,owner:'김주무',subs:[]},
+ {id:'gx',parent:null,ch:CH_SELF,name:'미그룹',kind:'rolling',anchor:'가입일',start:'—',
+  weeks:0,scope:'district',sites:['—'],n:133,active:44,st:'상시',k:'nu',day:0,owner:null,subs:[],ghost:1}];
+var curGroup='g3';
+function groupById(id){for(var i=0;i<GROUPS.length;i++)if(GROUPS[i].id===id)return GROUPS[i];return GROUPS[0]}
+function getGroup(){return curGroup}
+function putGroup(id){curGroup=id}
+function groupDepth(g){var d=0,x=g;while(x&&x.parent){x=groupById(x.parent);d++}return d}
+function groupTree(list){
+  var out=[],byP={};
+  list.forEach(function(g){(byP[g.parent||'_']=byP[g.parent||'_']||[]).push(g)});
+  (function walk(pid){(byP[pid]||[]).forEach(function(g){out.push(g);walk(g.id)})})('_');
+  return out}
+
+/* ═══════════ 권한 — 역할은 계정이 아니라 자리(사람 × 그룹·기관)에 붙는다 ═══════════
+   같은 사람이 A그룹 주관리자이면서 B그룹 부관리자일 수 있다.
+   한 운영자는 한 채널만 운영한다. */
+var ROLES={owner:['주관리자','ok'],sub:['부관리자','nu'],sys:['시스템관리자','in']};
+var SITES_OWN={'남동구보건소':{owner:'김주무',subs:['박선영']},
+  '만수노인문화센터':{owner:'박선영',subs:[]},
+  '남동구노인복지관':{owner:'박선영',subs:['최한나']},
+  '만월종합사회복지관':{owner:null,subs:[]},
+  '미배정':{owner:null,subs:[]}};
+var OPERATORS=[
+ {id:'o1',name:'김주무',ch:CH_SELF,sys:0,last:'오늘 09:12',st:'정상',stK:'nu'},
+ {id:'o2',name:'박선영',ch:CH_SELF,sys:0,last:'어제 17:40',st:'정상',stK:'nu'},
+ {id:'o3',name:'정미경',ch:CH_SELF,sys:0,last:'3일 전',st:'정상',stK:'nu'},
+ {id:'o4',name:'최한나',ch:CH_SELF,sys:0,last:'62일 전',st:'휴면',stK:'wa'},
+ {id:'o5',name:'이운영',ch:'전체 채널',sys:1,last:'오늘 08:03',st:'정상',stK:'nu'}];
+function siteOwner(o){return (SITES_OWN[o]||{}).owner||null}
+function opChannel(name){
+  for(var i=0;i<OPERATORS.length;i++)if(OPERATORS[i].name===name)return OPERATORS[i].ch;
+  return null}
+function assignments(name){
+  var out=[],ch=opChannel(name),all=(ch==='전체 채널');
+  GROUPS.forEach(function(g){
+    if(g.ghost)return;
+    if(!all&&ch&&g.ch!==ch)return;
+    if(g.owner===name)out.push({kind:'group',ref:g,name:g.name,role:'owner'});
+    else if((g.subs||[]).indexOf(name)>=0)out.push({kind:'group',ref:g,name:g.name,role:'sub'})});
+  Object.keys(SITES_OWN).forEach(function(k){
+    if(k==='미배정')return;
+    if(!all&&ch&&ch!==CH_SELF)return;
+    var o=SITES_OWN[k];
+    if(o.owner===name)out.push({kind:'site',ref:o,name:k,role:'owner'});
+    else if(o.subs.indexOf(name)>=0)out.push({kind:'site',ref:o,name:k,role:'sub'})});
+  return out}
+function ownedBy(name){return assignments(name).filter(function(a){return a.role==='owner'})
+  .map(function(a){return a.name})}
+function subsAt(a){return (a.kind==='group'?a.ref.subs:a.ref.subs)||[]}
+/* 참여자 담당자는 저장하지 않는다 — 기관 담당자, 없으면 소속 그룹 담당자에서 파생 */
+function ownerOf(p,g){return siteOwner(p.org)||(g&&g.owner)||null}
+function canEditSched(){var g=groupById(getGroup());return g.owner==='김주무'}
+
+/* 프로그램 일정 — 기본은 공식, 편집한 날만 덮어쓴다 */
+var SCHED={};
+function skey(y,m,d){return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2)}
+/* 4기 이월 — 리포트에서 신청하면 쌓이고, 참여 신청에서 승인해야 참여자가 된다 */
+var CARRY={done:false,n:0,at:'',from:'',to:''};
+
 var PEOPLE=[],byId={};
 for(var i=0;i<822;i++){(function(i){
   var r=function(k){return rnd(i*17+k)};
   var st=r(1)<0.976?'active':(r(2)<0.25?'dropped':'expired');
-  var days=Math.floor(Math.pow(r(3),2.6)*170),last=days===0?999:Math.floor(Math.pow(r(4),2)*160);
+  /* 실측 분포에 맞춘다 — 무활동 198 · 최근 활동 191 · 8~14일 249 · 14일+ 무활동 184.
+     곡선 하나로는 세 구간을 동시에 못 맞춰서 구간을 직접 배정한다. */
+  var days=Math.floor(Math.pow(r(3),3.6)*170),u=r(4);
+  var last=days===0?999
+    :u<0.306?Math.floor(u/0.306*7)
+    :u<0.705?7+Math.floor((u-0.306)/0.399*7)
+    :15+Math.floor((u-0.705)/0.295*145);
   var p={idx:i,id:'P'+(10000+i),sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
    tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
    pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
    sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
-   org:st==='active'?ORGS[Math.floor(r(12)*4)]:(r(13)<0.6?ORGS[Math.floor(r(12)*4)]:'미배정'),
+   org:r(13)<0.145?'미배정':ORGS[Math.floor(r(12)*4)],
    status:st,days:days,last:last,rate:days===0?0:Math.min(99,Math.round(Math.pow(r(15),1.4)*100)),
    app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)],
    score:Math.round(Math.pow(r(17),1.3)*1000),streak:Math.floor(Math.pow(r(18),2)*22),
@@ -189,11 +323,71 @@ for(var i=0;i<822;i++){(function(i){
   p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
   p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
   p.age=2026-p.birth;
+  /* 동의 — 민감정보는 다른 개인정보 동의와 '별도로' 받아야 한다(법 제23조①).
+     앱 가입 시 일괄 동의만 받은 케이스가 섞여 있다. 현실에 가깝고, 화면이 그걸 드러내야 한다. */
+  var cd=function(off){var d=new Date(2026,2,3);d.setDate(d.getDate()+off);
+    return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())};
+  var cv=r(29);
+  p.consent={service:cd(0),privacy:cd(0),
+    sensitive: cv<0.88?cd(0):null,
+    third:     cv<0.72?cd(0):null, revoked:null};
+  /* 그룹 합류일 — 이 날 이전은 미그룹 기간이라 채널이 볼 수 없다 */
+  var jw=r(28);
+  p.joinW=jw<0.60?0:jw<0.78?1:jw<0.88?2:jw<0.95?8:11;
+  p.joinG=new Date(2026,2,3+p.joinW*7);
   p.ageBand=p.age<60?'60대 미만':p.age<70?'60대':p.age<80?'70대':'80대 이상';
-  p.actBand=p.days===0?'무활동':p.last<=7?'최근 활동':p.last<=14?'7일+ 무활동':'14일+ 무활동';
+
   PEOPLE.push(p);byId[p.id]=p})(i)}
 
+/* ═══════════ 지표 — 단일 계산 지점 ═══════════
+   화면은 직접 세지 않는다. 전부 M.<키>() 로 가져간다.
+   같은 지표가 화면마다 다른 숫자를 내는 건 어드민 신뢰를 무너뜨리는 1순위 사고고,
+   원인은 언제나 "화면마다 따로 셌다"이다. 여기 없는 숫자는 화면에 쓰지 않는다.
+   판정 기준 탭이 이 배열을 렌더하므로 정의서와 화면이 어긋날 수 없다. */
+function pCount(f){var n=0;for(var i=0;i<PEOPLE.length;i++)if(f(PEOPLE[i]))n++;return n}
+var METRICS=[
+ {k:'audience',n:'대상자 수',d:'그룹에 배정된 전원',f:'audienceCount',use:'오늘 · 참여자 · 리포트',
+  c:function(){return PEOPLE.length}},
+ {k:'participant',n:'참여자 수',d:'해당 월 참여 상태 유지자',f:'participantCount',use:'리포트',
+  c:function(){return pCount(function(p){return p.status==='active'})}},
+ {k:'activist',n:'활동자 수',d:'해당 월 1회 이상 활동',f:'activistCount',use:'오늘 · 활동 현황 · 리포트',
+  c:function(){return pCount(function(p){return p.days>0&&p.last<=30})}},
+ {k:'weekActive',n:'최근 활동',d:'마지막 활동이 경고 기준일 이내',f:'weeklyActivistCount',use:'오늘 · 참여자',
+  c:function(){return pCount(function(p){return band(p)==='recent'})}},
+ {k:'inactive7',n:'경고 구간 무활동',d:'경고 기준 초과 ~ 위험 기준 이내',f:'inactive7Count',use:'참여자',
+  c:function(){return pCount(function(p){return band(p)==='warn'})}},
+ {k:'inactive14',n:'위험 구간 무활동',d:'위험 기준일 초과',f:'inactive14Count',use:'오늘 · 참여자 · 활동 현황',
+  c:function(){return pCount(function(p){return band(p)==='risk'})}},
+ {k:'never',n:'무활동',d:'가입 후 한 번도 활동 없음',f:'neverActiveCount',use:'참여자 · 리포트',
+  c:function(){return pCount(function(p){return p.days===0})}},
+ {k:'todayDone',n:'오늘 수행',d:'오늘 활동을 1회 이상 한 사람',f:'todayActivistCount',use:'오늘 · 참여자',
+  c:function(){return pCount(function(p){return p.todayN>0})}},
+ {k:'unassigned',n:'기관 미배정',d:'담당 복지관이 지정되지 않음',f:'unassignedCount',use:'참여자',
+  c:function(){return pCount(function(p){return p.org==='미배정'})}},
+ {k:'noSensitiveConsent',n:'민감정보 동의 없음',d:'건강정보 별도 동의를 받지 않은 참여자',f:'noSensitiveConsentCount',use:'참여자 · 오늘',
+  c:function(){return pCount(function(p){return !p.consent.sensitive&&!p.consent.revoked})}},
+ {k:'revoked',n:'동의 철회',d:'동의를 철회해 처리를 멈춰야 하는 참여자',f:'consentRevokedCount',use:'참여자',
+  c:function(){return pCount(function(p){return !!p.consent.revoked})}},
+ {k:'noOwnerGroup',n:'담당자 없는 그룹',d:'주관리자가 지정되지 않은 그룹',f:'ownerlessGroupCount',use:'프로그램 그룹 · 운영자',
+  c:function(){return GROUPS.filter(function(g){return !g.owner&&!g.ghost&&g.st!=='종료'}).length}},
+ {k:'noOwnerSite',n:'담당자 없는 기관',d:'기관 담당자가 지정되지 않음',f:'ownerlessSiteCount',use:'운영자',
+  c:function(){var n=0;for(var k in SITES_OWN)if(k!=='미배정'&&!SITES_OWN[k].owner)n++;return n}},
+ {k:'applyPending',n:'처리 안 된 신청',d:'승인·거절·보류 어느 것도 아닌 신청',f:'pendingApplyCount',use:'오늘 · 참여 신청',
+  c:function(){return 111}},
+ {k:'approvedNoApp',n:'승인 후 앱 미설치',d:'승인됐지만 앱에 가입하지 않음',f:'approvedNotJoinedCount',use:'오늘 · 참여 신청',
+  c:function(){return 37}},
+ {k:'consultWaiting',n:'답변 대기 상담',d:'참여자 마지막 발화 후 미답변',f:'unansweredRoomCount',use:'오늘 · 상담실',
+  c:function(){return 4}},
+ /* 값이 하나로 안 떨어지는 것 — 정의만 둔다 */
+ {n:'수행률',d:'추천받은 활동 중 수행 비율',f:'활동수 ÷ 추천수',use:'참여자 · 참여자 상세'},
+ {n:'랭킹 점수',d:'월 단위 총점 (최대 1000)',f:'600×(활동÷추천) + 400×(연속일÷추천일)',use:'참여자 상세'},
+ {n:'PIN',d:'전화 응대용 조회번호',f:'vocNumber',use:'참여자 · 상담실'},
+ {n:'무활동 판정',d:'마지막 활동 이후 경과일',f:'경고/위험 기준은 내 채널 정보에서',use:'오늘 · 참여자'}];
+var M={};METRICS.forEach(function(m){if(m.k)M[m.k]=m.c});
+
 function dayRec(p,d){
+  /* 그룹 합류 이전은 미그룹 기간. UI만 가리면 합계가 어긋나므로 소스에서 막는다. */
+  if(p.joinG&&d<p.joinG)return {acts:[],steps:0,mind:0,symp:0,locked:1};
   var doy=Math.floor((d-new Date(2026,0,1))/864e5),s=p.idx*991+doy*7;
   var dow=d.getDay(),wk=(dow===0||dow===6);
   var lastD=new Date(2026,7,21);lastD.setDate(lastD.getDate()-(p.last>900?9999:p.last));
@@ -255,19 +449,79 @@ for(var j=0;j<144;j++){(function(i){
    memo:st==='hold'?['주소 확인 필요','본인 확인 대기','기관 배정 협의 중'][Math.floor(r(7)*3)]:''};
   a.name=a.sur+'*'+a.end;a.phone='010-****-'+a.tail;APPS.push(a)})(j)}
 
+/* ═══════════ 접속기록 ═══════════
+   고시가 요구하는 5개 항목: 계정 · 접속일시 · 접속지 정보 · 처리한 정보주체 정보 · 수행업무.
+   [8]에 대상 정보주체 식별자를 남긴다 — 건수만 남기면 '누구를 봤는지'가 사라져 증빙이 안 된다.
+   [9]는 월간 점검 확인 여부. 민감정보 처리 시스템이라 2년 보관. */
 var AUDIT=[
- ['2026-08-21 14:22','김주무','남동구 치매안심센터',0,'원문 열람','1건','미활동자 안부 연락','218.***.***.42'],
- ['2026-08-21 09:10','김주무','남동구 치매안심센터',0,'명단 내려받기','184건','7월 보고자료 작성','218.***.***.42'],
- ['2026-08-20 16:47','이운영','원메딕스 운영팀',1,'원문 열람','1건','앱 오류 문의 회신','121.***.***.8'],
- ['2026-08-20 11:02','김주무','남동구 치매안심센터',0,'원문 열람','3건','우울 위험군 안부 확인','218.***.***.42'],
- ['2026-08-19 10:31','김주무','남동구 치매안심센터',0,'리포트 생성','7월분','보건소 제출','218.***.***.42'],
- ['2026-08-19 08:12','김주무','남동구 치매안심센터',0,'푸시 발송','147명','무활동 어르신 안내','218.***.***.42'],
- ['2026-08-18 15:55','김주무','남동구 치매안심센터',0,'신청자 명단 열람','111건','승인 검토','218.***.***.42'],
- ['2026-08-15 09:40','김주무','남동구 치매안심센터',0,'탈퇴 처리','3건','연락 두절','218.***.***.42']];
-function addAudit(act,tgt,reason){
+ ['2026-08-21 14:22','김주무','남동구 치매안심센터',0,'상세 열람','1건','미활동자 안부 연락','218.***.***.42',['안*순(5716)'],0],
+ ['2026-08-21 09:10','김주무','남동구 치매안심센터',0,'명단 내려받기','184건','7월 보고자료 작성','218.***.***.42',['14일+ 무활동 184명'],0],
+ ['2026-08-20 16:47','이운영','원메딕스 운영팀',1,'상세 열람','1건','앱 오류 문의 회신','121.***.***.8',['황*학(2727)'],1],
+ ['2026-08-20 11:02','김주무','남동구 치매안심센터',0,'상세 열람','3건','우울 위험군 안부 확인','218.***.***.42',['정*순(5716)','이*자(3341)','최*옥(4413)'],1],
+ ['2026-08-19 10:31','김주무','남동구 치매안심센터',0,'리포트 생성','7월분','보건소 제출','218.***.***.42',['집계값만 · 개별 식별 없음'],1],
+ ['2026-08-19 08:12','김주무','남동구 치매안심센터',0,'푸시 발송','147명','무활동 어르신 안내','218.***.***.42',['14일+ 무활동 147명'],1],
+ ['2026-08-18 15:55','김주무','남동구 치매안심센터',0,'신청자 명단 열람','111건','승인 검토','218.***.***.42',['대기 신청자 111명'],1],
+ ['2026-08-15 09:40','김주무','남동구 치매안심센터',0,'탈퇴 처리','3건','연락 두절','218.***.***.42',['한*순(1180)','노*식(3341)','강*례(8827)'],1]];
+function addAudit(act,tgt,reason,subjects){
   var d=new Date();
-  AUDIT.unshift(['2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),'김주무','남동구 치매안심센터',0,act,tgt,reason,'218.***.***.42']);
+  AUDIT.unshift(['2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),'김주무','남동구 치매안심센터',0,act,tgt,reason,'218.***.***.42',
+    subjects||['—'],0]);
   if(V.audit)V.audit()}
+/* 권한 변경 이력 — 열람 기록(2년)보다 1년 더(3년) 보관해야 해서 따로 쌓는다 */
+var PERMLOG=[
+ {at:'2026-08-04 18:02',who:'이운영',act:'권한 부여',tgt:'최한나',detail:'간석동 경로당 주관리자'},
+ {at:'2026-06-11 09:41',who:'김주무',act:'권한 부여',tgt:'박선영',detail:'3기 부관리자'},
+ {at:'2026-03-02 10:15',who:'이운영',act:'계정 생성',tgt:'김주무',detail:'남동구 주관리자 · 이메일 초대'}];
+function addPermLog(act,tgt,detail){
+  var d=new Date();
+  PERMLOG.unshift({at:'2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),
+    who:'김주무',act:act,tgt:tgt,detail:detail})}
+
+/* ═══════════ 세션 자동 로그아웃 ═══════════
+   취급자가 일정시간 업무처리를 하지 않으면 자동으로 접속을 차단한다(안전성 확보조치 기준).
+   주무관 자리는 민원인이 오가는 개방된 사무실이라 자리 비움이 실제 유출 경로다.
+   만료되면 열어둔 개인정보 원문도 같이 닫는다. */
+var SESS={t:null,warnT:null,onExpire:null,warnSec:60};
+function sessMs(){return (window.__idleTestSec?window.__idleTestSec:CFG.locked.idleMin*60)*1000}
+function sessReset(){
+  if(SESS.t)clearTimeout(SESS.t); if(SESS.warnT)clearTimeout(SESS.warnT);
+  closeIdleWarn();
+  var total=sessMs(),warn=Math.min(SESS.warnSec*1000,total/2);
+  SESS.warnT=setTimeout(function(){openIdleWarn(Math.round(warn/1000))},total-warn);
+  SESS.t=setTimeout(sessExpire,total)}
+function openIdleWarn(sec){
+  var m=$('#m-idle');if(!m)return;
+  m.classList.add('on');
+  var n=sec,lab=$('#idle-n');
+  (function tick(){ if(!m.classList.contains('on'))return;
+    if(lab)lab.textContent=n; if(n--<=0)return; setTimeout(tick,1000)})()}
+function closeIdleWarn(){var m=$('#m-idle');if(m)m.classList.remove('on')}
+function sessExpire(){
+  closeIdleWarn();
+  if(SESS.onExpire)SESS.onExpire();
+  var l=$('#m-locked'); if(l)l.classList.add('on')}
+function sessStart(){
+  if(!$('#m-idle'))return;
+  ['mousedown','keydown','wheel','touchstart'].forEach(function(e){
+    document.addEventListener(e,function(){
+      if($('#m-locked').classList.contains('on'))return;
+      if($('#m-idle').classList.contains('on'))return;
+      sessReset()},true)});
+  sessReset()}
+
+/* 공용 모달 — 여러 화면에서 쓴다 */
+function modalBox(title,body,maxw){
+  var m=$('#m-box');
+  if(!m){m=el('div','mask');m.id='m-box';
+    m.innerHTML='<div class="modal sm"><h3></h3><div class="mbody"></div>'
+     +'<div class="mfoot"><button class="mb" data-close>닫기</button></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(e){
+      if(e.target===m||e.target.hasAttribute('data-close'))closeAll()})}
+  if(maxw)m.querySelector('.modal').style.maxWidth=maxw+'px';
+  m.querySelector('h3').innerHTML=esc(title)+'<button class="x" data-close aria-label="닫기">✕</button>';
+  var mb=m.querySelector('.mbody');mb.innerHTML='';mb.appendChild(body);
+  open('m-box');return m}
 
 /* ═══ nav ═══ */
 /* ═══ 권한 축 — 소유 / 운영 / 조회 ═══
@@ -336,5 +590,13 @@ return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kp
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,
- cur:function(){return cur}};
+ cur:function(){return cur},
+ CFG:CFG,RULEVER:RULEVER,ruleAt:ruleAt,ruleNow:ruleNow,pushRule:pushRule,
+ band:band,bandLabel:bandLabel,METRICS:METRICS,M:M,pCount:pCount,
+ CH_SELF:CH_SELF,KIND:KIND,SCOPE:SCOPE,SITES:SITES,GROUPS:GROUPS,
+ groupById:groupById,getGroup:getGroup,putGroup:putGroup,groupDepth:groupDepth,groupTree:groupTree,
+ ROLES:ROLES,SITES_OWN:SITES_OWN,OPERATORS:OPERATORS,siteOwner:siteOwner,opChannel:opChannel,
+ assignments:assignments,ownedBy:ownedBy,subsAt:subsAt,ownerOf:ownerOf,canEditSched:canEditSched,
+ SCHED:SCHED,skey:skey,CARRY:CARRY,PERMLOG:PERMLOG,addPermLog:addPermLog,
+ SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox};
 })();

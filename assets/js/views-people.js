@@ -5,13 +5,14 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,moveRows=A.moveRows,assessHist=A.assessHist,
-    achieve=A.achieve,addAudit=A.addAudit,LT=A.LT,RT=A.RT;
+    achieve=A.achieve,addAudit=A.addAudit,LT=A.LT,RT=A.RT,
+    CFG=A.CFG,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 function cnt(f){return PEOPLE.filter(f).length}
 function statusPill(p){
   if(p.status==='withdrawn')return pill('회원탈퇴','cr');
   if(p.status==='dropped')return pill('중도포기','nu');
   if(p.status==='expired')return pill('만료','nu');
-  if(p.actBand==='14일+ 무활동')return pill('활동 중단','wa');
+  if(band(p)==='risk')return pill('활동 중단','wa');
   return pill('참여 중','nu')}
 
 /* ══════ 오늘 ══════ */
@@ -56,7 +57,7 @@ V.today=function(){
     $('#t-attn').appendChild(tr)})};
 
 /* ══════ 참여자 ══════ */
-var pf={st:[],org:[],act:[]},pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
+var pf={st:[],org:[],act:[],cs:[],mine:[]},pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
 V.people=function(keep){
   var h=$('#v-people');
   if(!keep){
@@ -74,14 +75,18 @@ V.people=function(keep){
     var CH=[['참여 중','st:active',cnt(function(p){return p.status==='active'})],['중도포기','st:dropped',cnt(function(p){return p.status==='dropped'})],
       ['만료','st:expired',cnt(function(p){return p.status==='expired'})],['회원탈퇴','st:withdrawn',cnt(function(p){return p.status==='withdrawn'})],['|',''],
     ].concat(ORGS.map(function(o){return [o,'org:'+o,cnt(function(p){return p.org===o})]})).concat([['|',''],
-      ['오늘 수행','act:today',cnt(function(p){return p.todayN>0})],['최근 활동','act:최근 활동',cnt(function(p){return p.actBand==='최근 활동'})],
-      ['7일+ 무활동','act:7일+ 무활동',cnt(function(p){return p.actBand==='7일+ 무활동'})],
-      ['14일+ 무활동','act:14일+ 무활동',cnt(function(p){return p.actBand==='14일+ 무활동'})],
-      ['무활동','act:무활동',cnt(function(p){return p.actBand==='무활동'})]]);
+      /* 오늘 화면과 같은 M을 쓴다. 화면마다 따로 세면 숫자가 갈린다. */
+      ['내 담당만','mine:1',cnt(function(p){return ownerOf(p,groupById(getGroup()))==='김주무'})],['|',''],
+      ['민감정보 동의 없음','cs:none',M.noSensitiveConsent()],['동의 철회','cs:rv',M.revoked()],['|',''],
+      ['오늘 수행','act:today',M.todayDone()],[bandLabel().recent,'act:recent',M.weekActive()],
+      [bandLabel().warn,'act:warn',M.inactive7()],
+      [bandLabel().risk,'act:risk',M.inactive14()],
+      [bandLabel().none,'act:none',M.never()]]);
     var cb=$('#p-chips');
     CH.forEach(function(c){
       if(c[0]==='|'){cb.appendChild(el('span','sep'));return}
-      var on=(c[1].indexOf('st:')===0&&pf.st.indexOf(c[1].slice(3))>=0)||(c[1].indexOf('org:')===0&&pf.org.indexOf(c[1].slice(4))>=0)||(c[1].indexOf('act:')===0&&pf.act.indexOf(c[1].slice(4))>=0);
+      var ct=c[1].slice(0,c[1].indexOf(':')),cvv=c[1].slice(c[1].indexOf(':')+1);
+      var on=(pf[ct]||[]).indexOf(cvv)>=0;
       var b=el('button','mchip'+(on?' on':''),esc(c[0])+(c[2]!=null?' <span class="c mt">'+fmt(c[2])+'</span>':''));
       b.dataset.v=c[1];
       b.addEventListener('click',function(){toggleChip(c[1])});cb.appendChild(b)});
@@ -131,7 +136,7 @@ V.people=function(keep){
   pPager.render($('#p-pg'));
   renderBulk()};
 function toggleChip(v){
-  var t=v.slice(0,v.indexOf(':')),val=v.slice(v.indexOf(':')+1),arr=pf[t==='st'?'st':t==='org'?'org':'act'];
+  var t=v.slice(0,v.indexOf(':')),val=v.slice(v.indexOf(':')+1),arr=pf[t]||pf.act;
   var i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else arr.push(val);
   pPager.page=1;V.people()}
 function filterP(){
@@ -139,7 +144,10 @@ function filterP(){
   return PEOPLE.filter(function(p){
     if(pf.st.length&&pf.st.indexOf(p.status)<0)return false;
     if(pf.org.length&&pf.org.indexOf(p.org)<0)return false;
-    if(pf.act.length&&!pf.act.some(function(v){return v==='today'?p.todayN>0:p.actBand===v}))return false;
+    if(pf.act.length&&!pf.act.some(function(v){return v==='today'?p.todayN>0:band(p)===v}))return false;
+    if(pf.cs.length&&!pf.cs.some(function(v){
+      return v==='none'?(!p.consent.sensitive&&!p.consent.revoked):!!p.consent.revoked}))return false;
+    if(pf.mine.length&&ownerOf(p,groupById(getGroup()))!=='김주무')return false;
     if(ab&&p.ageBand!==ab)return false;
     if(sx&&p.sex!==sx)return false;
     if(pq)return p.full.indexOf(pq)>=0||p.tail.indexOf(pq)>=0||p.pin.indexOf(pq)>=0;

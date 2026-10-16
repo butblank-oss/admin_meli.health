@@ -3,7 +3,8 @@
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
     brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
-    PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt;
+    PEOPLE=A.PEOPLE,APPS=A.APPS,AUDIT=A.AUDIT,addAudit=A.addAudit,LT=A.LT,RT=A.RT,cnt=A.cnt,
+    CFG=A.CFG,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 
 /* ══════ 푸시 메시지 목록 ══════ */
 var MSGS=[
@@ -67,7 +68,7 @@ var TGT=[['3기 전체','all',822],['14일+ 무활동','act:14',184],['활동 0�
   ['우울·불면 주의 이상','risk',298],['챌린지 미참여','noq',272],['기관별 고르기','org',0]];
 function tgtPeople(){
   var t=nw.target;
-  if(t==='act:14')return PEOPLE.filter(function(p){return p.actBand==='14일+ 무활동'});
+  if(t==='act:14')return PEOPLE.filter(function(p){return band(p)==='risk'});
   if(t==='act:0')return PEOPLE.filter(function(p){return p.days===0});
   if(t==='risk')return PEOPLE.filter(function(p){return p.idx%823<298});
   if(t==='noq')return PEOPLE.filter(function(p){return p.streak<3});
@@ -357,7 +358,34 @@ V.audit=function(){
   auPager.render($('#au-pg'))};
 
 /* ══════ init ══════ */
+/* 세션 만료 시 열려 있던 원문을 닫는다 */
+A.SESS.onExpire=function(){
+  $$('.mask.on').forEach(function(m){if(m.id!=='m-locked'&&m.id!=='m-idle')m.classList.remove('on')});
+  if(window.__closeReveal)window.__closeReveal();
+  if(V[A.cur()])V[A.cur()]()};
+if($('#idle-stay')){
+  $('#idle-stay').addEventListener('click',function(){A.sessReset();toast('세션을 연장했어요')});
+  $('#idle-out').addEventListener('click',function(){
+    if(A.SESS.onExpire)A.SESS.onExpire();
+    $('#m-idle').classList.remove('on');$('#m-locked').classList.add('on')});
+  var failN=0;
+  $('#lock-in').addEventListener('click',function(){
+    var v=$('#m-locked input').value;
+    if(v!=='••••••••'){                       /* 값을 바꿨으면 틀린 것으로 본다 */
+      failN++;
+      var left=A.CFG.locked.failLock-failN;
+      if(left<=0){
+        $('#lock-msg').innerHTML='<span style="color:#B42318;font-weight:600">계정이 잠겼어요. 주관리자에게 요청하세요</span>';
+        $('#lock-in').disabled=true;
+        addAudit('계정 잠금',A.CFG.locked.failLock+'회 실패','로그인 연속 실패',['김주무']);
+        return}
+      $('#lock-msg').innerHTML='<span style="color:#B42318">비밀번호가 달라요 · '+left+'회 남음</span>';
+      return}
+    failN=0;$('#lock-msg').textContent='';
+    $('#m-locked').classList.remove('on');A.sessReset();
+    addAudit('로그인','세션 재개','자동 로그아웃 후 재인증');
+    toast('다시 로그인했어요','ok')});
+  A.sessStart()}
 A.buildNav();
-Object.keys(V).forEach(function(k){});
 go('today');
 })(App);
