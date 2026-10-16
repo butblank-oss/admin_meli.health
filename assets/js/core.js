@@ -568,6 +568,23 @@ function buildNav(){
       b.addEventListener('click',function(){go(it[0])});
       b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go(it[0])}});
       n.appendChild(b)})})}
+/* 좁은 화면에선 thead 가 숨고 행이 카드로 접힌다 — 각 칸 앞에 열 이름을 붙여 둔다.
+   표마다 손으로 data-l 을 적지 않도록 thead 를 읽어 한 번에 찍는다. */
+function labelCells(root){
+  (root||document).querySelectorAll('table.mtb').forEach(function(t){
+    var hs=[].map.call(t.querySelectorAll('thead th'),function(h){
+      var c=h.cloneNode(true);                     /* 정렬 안내는 스크린리더용 — 라벨에서 뺀다 */
+      [].forEach.call(c.querySelectorAll('.sr'),function(x){x.remove()});
+      return c.textContent.trim()});
+    if(!hs.length)return;
+    [].forEach.call(t.querySelectorAll('tbody tr'),function(r){
+      if(r.cells.length!==hs.length)return;        /* 빈 상태 등 colspan 행은 건너뛴다 */
+      [].forEach.call(r.cells,function(c,i){
+        if(c.dataset.l===undefined&&hs[i])c.dataset.l=hs[i]})})})}
+(function(){var m=document.getElementById('main');if(!m)return;
+  var q=0,mo=new MutationObserver(function(){if(q)return;q=1;
+    requestAnimationFrame(function(){q=0;labelCells(m)})});
+  mo.observe(m,{childList:true,subtree:true})})();
 function go(p){
   cur=p;
   $$('.pane').forEach(function(e){e.classList.toggle('on',e.dataset.pane===p)});
@@ -586,7 +603,7 @@ function go(p){
   document.title=(TITLES[p]||'')+' · 맬리 케어센터 채널 어드민'}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
  chead:chead,bindTabs:bindTabs,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
- open:open,closeAll:closeAll,go:go,buildNav:buildNav,V:V,
+ open:open,closeAll:closeAll,go:go,labelCells:labelCells,buildNav:buildNav,V:V,
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,

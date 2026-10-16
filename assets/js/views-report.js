@@ -313,7 +313,8 @@ V.apply=function(keep){
        +'<div class="row" id="a-chips"></div></div>'
        +'<div class="bulk" id="a-bulk"></div>'
        +'<div class="scroll"><table class="mtb"><thead><tr id="a-th"></tr></thead><tbody id="a-tb"></tbody></table></div>'
-       +'<div id="a-empty"></div><div class="pager" id="a-pg"></div></div>';
+       +'<div id="a-empty"></div><div class="pager" id="a-pg"></div></div>'
+     +'<div id="a-done"></div>';
     $('#aq').value=aq;
     $('#aq').addEventListener('input',function(){aq=this.value;aPager.page=1;V.apply(1)});
     $('#aq-x').addEventListener('click',function(){aq='';aPager.page=1;V.apply()});
@@ -368,19 +369,104 @@ V.apply=function(keep){
       :a.st==='hold'?'<button class="mb mbx mbp ap">승인</button> <button class="mb mbx rj" style="color:#B42318">거절</button>'
       :'<button class="mb mbx rv2" style="color:#667085">되돌리기</button>';
     tr.innerHTML='<td style="padding-left:20px">'+cbx(aSel[a.id]?'on':'off',a.name+' 선택')+'</td>'
-     +'<td style="font-weight:600">'+a.name+'</td><td class="mt" style="color:#475467">'+a.phone+'</td>'
-     +'<td style="color:#475467">'+a.addr+'</td>'
-     +'<td class="num mt"'+(a.aged>30?' style="color:#B42318;font-weight:700"':'')+'>'+a.aged+'일</td>'
-     +'<td>'+viaCell(a)+'</td><td>'+pill(SP[0],SP[1])+'</td><td>'+progCell(a)+'</td>'
-     +'<td class="mcap">'+(a.memo||'—')+'</td>'
-     +'<td style="text-align:right;padding-right:20px">'+acts+'</td>';
+     +'<td style="font-weight:600;font-size:15px">'+a.name+'</td>'
+     +'<td class="mt" data-l="연락처" style="color:#475467">'+a.phone+'</td>'
+     +'<td data-l="주소" style="color:#475467">'+a.addr+'</td>'
+     +'<td class="num mt" data-l="경과"'+(a.aged>30?' style="color:#B42318;font-weight:700"':'')+'>'+a.aged+'일</td>'
+     +'<td data-l="경로">'+viaCell(a)+'</td><td data-l="상태">'+pill(SP[0],SP[1])+'</td>'
+     +'<td data-l="프로그램">'+progCell(a)+'</td>'
+     +'<td class="mcap" data-l="메모">'+(a.memo||'—')+'</td>'
+     +'<td class="acts-c" style="text-align:right;padding-right:20px">'+acts+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(aSel[a.id])delete aSel[a.id];else aSel[a.id]=1;V.apply(1)});
     function act(sel,to,label){var b2=tr.querySelector(sel);if(!b2)return;
-      b2.addEventListener('click',function(){var was=a.st;a.st=to;if(to!=='hold')a.memo=to==='rejected'?'중복 신청':'';V.apply(1);
-        toast(a.name+'님 신청을 '+label+'했어요','ok','되돌리기',function(){a.st=was;V.apply(1)})})}
+      b2.addEventListener('click',function(){
+        /* 거절은 사유 없이 못 한다 — 어르신께 나가는 문안이 사유에서 만들어진다 */
+        if(to==='rejected'){openReject(a);return}
+        var was=a.st,wm=a.memo;a.st=to;if(to==='approved')a.memo='';
+        markHandled(a,label);V.apply(1);
+        toast(a.name+'님 신청을 '+label+'했어요','ok','되돌리기',
+          function(){a.st=was;a.memo=wm;a.by='';V.apply(1)})})}
     act('.ap','approved','승인');act('.hd','hold','보류');act('.rj','rejected','거절');act('.rv2','pending','대기로 되돌리기');
     tb.appendChild(tr)});
-  aPager.render($('#a-pg'))};
+  aPager.render($('#a-pg'));
+  renderTodayDone()};
+/* 오늘 내가 처리 — 잘못 누른 걸 되돌리는 자리.
+   현장에서 폰으로 빠르게 처리하다 보면 반드시 생긴다. */
+function renderTodayDone(){
+  var box=$('#a-done');if(!box)return;
+  if(!TODAY_DONE.length){box.innerHTML='';return}
+  box.innerHTML='<div class="mc" style="overflow:hidden">'
+   +'<div class="row" style="padding:16px 20px 10px"><span class="mh">오늘 내가 처리</span>'
+   +'<span class="mcap mt" style="margin-left:auto">'+TODAY_DONE.length+'건 · 잘못 눌렀으면 여기서 되돌려요</span></div>'
+   +'<div class="scroll"><table class="mtb"><tbody id="ad-tb"></tbody></table></div></div>';
+  var tb=$('#ad-tb');
+  TODAY_DONE.slice(0,8).forEach(function(a){
+    var SP={pending:['대기','cr'],hold:['보류','wa'],approved:['승인','ok'],rejected:['반려','nu']}[a.st];
+    var tr=el('tr');
+    tr.innerHTML='<td style="padding-left:20px;font-weight:600">'+a.name+'</td>'
+     +'<td data-l="처리">'+pill(a.how||SP[0],SP[1])+'</td>'
+     +'<td class="mcap" data-l="사유">'+(a.memo||'—')+'</td>'
+     +'<td class="mcap" data-l="처리자">'+(a.by||'—')+' · '+(a.at||'')+'</td>'
+     +'<td style="text-align:right;padding-right:20px"><button class="mb mbx un">되돌리기</button></td>';
+    tr.querySelector('.un').addEventListener('click',function(){
+      a.st='pending';a.memo='';a.rcode='';a.by='';
+      TODAY_DONE=TODAY_DONE.filter(function(x){return x.id!==a.id});
+      addAudit('신청 되돌리기','1건',a.name+' 처리 취소');
+      V.apply(1);toast(a.name+'님을 대기로 되돌렸어요','ok')});
+    tb.appendChild(tr)})}
+/* ═══ 반려 사유 ═══
+   자유 문장이면 어르신께 나가는 문자가 매번 달라지고, 나중에 왜 반려했는지도 안 남는다.
+   사유 코드를 고정하고 문안 미리보기를 보여준다. 사유 없이는 반려할 수 없다. */
+var REJECT_REASONS=[
+ ['OUT_AREA','관내 주민이 아니에요','신청하신 교실은 인천 남동구에 사시는 분만 참여하실 수 있어요.'],
+ ['DUP','이미 신청하셨어요','같은 번호로 접수된 신청이 있어요. 먼저 접수된 건으로 진행됩니다.'],
+ ['NO_CONTACT','연락이 닿지 않았어요','알려주신 번호로 여러 번 연락드렸는데 통화가 어려웠어요.'],
+ ['NOT_SELF','본인 확인이 어려웠어요','본인 의사를 확인하지 못했어요. 다시 신청해 주시면 도와드릴게요.'],
+ ['ETC','기타 (직접 입력)','']];
+function markHandled(a,label){
+  a.by='김주무';a.at='2026-08-21 지금';a.how=label;
+  if(!TODAY_DONE.some(function(x){return x.id===a.id}))TODAY_DONE.unshift(a)}
+var TODAY_DONE=[];
+function openReject(a){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>'+esc(a.name)+'</b> · '+a.phone+' · '+esc(a.addr)+'</p>'
+   +'<div><span class="flab">반려 사유 <span style="color:#B42318">*</span></span>'
+   +'<select class="mfld" id="rj-r" style="width:100%"><option value="">고르세요</option>'
+   +REJECT_REASONS.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</select></div>'
+   +'<div id="rj-etc" style="display:none"><span class="flab">직접 입력 <span style="color:#B42318">*</span></span>'
+   +'<textarea class="mfld" id="rj-t" style="width:100%;height:60px;padding:9px 11px" '
+   +'placeholder="어르신께 그대로 나가는 문장이에요"></textarea></div>'
+   +'<div><span class="flab">어르신께 가는 문자</span>'
+   +'<div id="rj-pv" style="background:#F9FAFB;border:1px solid #EAECF0;border-radius:10px;padding:13px 15px;'
+   +'font-size:13.5px;color:#475467;line-height:1.65;min-height:76px">사유를 고르면 문안이 보여요.</div></div>';
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='사유를 골라야 반려할 수 있어요.';b.appendChild(err);
+  var m=modalBox('신청 반려',b);
+  function pv(){
+    var v=$('#rj-r').value,r=REJECT_REASONS.filter(function(x){return x[0]===v})[0];
+    $('#rj-etc').style.display=v==='ETC'?'block':'none';
+    var body=v==='ETC'?($('#rj-t').value.trim()||'(직접 입력한 사유가 여기 나와요)'):(r?r[2]:'');
+    $('#rj-pv').innerHTML=v?'<b>[두뇌운동 치매예방교실]</b><br>'+esc(a.name)+'님, 신청해 주셔서 고맙습니다.<br>'
+      +esc(body)+'<br><span class="mcap">문의 032-***-****</span>':'사유를 고르면 문안이 보여요.';
+    err.style.display='none'}
+  $('#rj-r').addEventListener('change',pv);
+  if($('#rj-t'))$('#rj-t').addEventListener('input',pv);
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbd','반려하고 문자 보내기');
+  ok.addEventListener('click',function(){
+    var v=$('#rj-r').value,t=$('#rj-t')?$('#rj-t').value.trim():'';
+    if(!v||(v==='ETC'&&!t)){err.style.display='block';return}
+    var r=REJECT_REASONS.filter(function(x){return x[0]===v})[0];
+    var was=a.st,wm=a.memo;
+    a.st='rejected';a.memo=v==='ETC'?t:r[1];a.rcode=v;
+    markHandled(a,'반려');
+    addAudit('신청 반려','1건',r[1],[a.name+'('+a.phone.slice(-4)+')']);
+    closeAll();V.apply(1);
+    toast(a.name+'님께 반려 문자를 보냈어요','ok','되돌리기',
+      function(){a.st=was;a.memo=wm;a.rcode='';a.by='';
+        TODAY_DONE=TODAY_DONE.filter(function(x){return x.id!==a.id});V.apply(1)})});
+  f.appendChild(ok)}
+
 function bulkSet(to){
   var ids=Object.keys(aSel),prev={};
   ids.forEach(function(id){var a=APPS.filter(function(x){return x.id===id})[0];if(a){prev[id]=a.st;a.st=to}});

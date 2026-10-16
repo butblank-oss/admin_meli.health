@@ -245,8 +245,9 @@ th .sw:hover{color:#101828}
   padding:10px 16px;border-radius:0 0 8px 0;font-size:13.5px;font-weight:600;text-decoration:none}
 .skip:focus{left:0}
 
-/* 데스크톱 전용 — 좁은 화면에서 레이아웃이 깨지는 대신 가로 스크롤로 원형 유지 */
-.app{min-width:1200px}
+/* 데스크톱이 기본, 모바일은 아래 미디어쿼리에서 따로 짠다.
+   현장에서 폰으로 승인·확인하는 일이 실제로 있어서 가로 스크롤로 떠넘기지 않는다. */
+.app{min-width:1024px}
 
 /* 화면에는 안 보이지만 스크린리더는 읽는 텍스트 */
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
@@ -295,3 +296,85 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 /* 편집 가능한 날 */
 .pcal .dy.edt{cursor:pointer}
 .pcal .dy.edt:hover{background:#F9FAFB;box-shadow:inset 0 0 0 1px #6BDCAF}
+
+
+/* ═══════════════ 모바일 ═══════════════
+   신청폼(어르신용)과 같은 결로 간다 — 큰 글씨, 큰 터치 영역, 하단 고정 액션.
+   주무관이 현장에서 폰으로 쓰는 상황을 전제한다.
+   표는 가로로 밀지 않고 카드로 바꾼다. 좁은 화면에서 표는 읽히지 않는다. */
+@media (max-width:860px){
+  .app{min-width:0}
+  .top{height:54px;padding:0 12px;gap:8px}
+  .top .mb{padding:0 8px}
+  .top-hide{display:none !important}
+  #gs{width:100%}
+  #gs-wrap{flex:1;margin-right:0}
+  #gs-res{width:calc(100vw - 24px);right:auto;left:0}
+
+  /* 사이드바를 하단 탭바로 — 엄지로 닿는 자리에 둔다 */
+  .mid{flex-direction:column}
+  .side{width:auto;border-right:none;border-top:1px solid #EAECF0;
+    position:fixed;left:0;right:0;bottom:0;top:auto;      /* 원본의 top:58px 를 푼다 */
+    height:auto;                                           /* 원본의 calc(100vh-58px) 해제 */
+    z-index:40;background:#fff;
+    flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:6px 8px;gap:4px;
+    box-shadow:0 -2px 12px rgba(16,24,40,.06);
+    padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+  .side>nav{display:flex;flex-direction:row;gap:4px;overflow-x:auto;overflow-y:hidden;
+    width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .side>nav::-webkit-scrollbar{display:none}
+  .side .mgrp{display:none}
+  .side>div{display:none}                  /* 갱신 안내 — 좁은 화면에선 자리를 뺏는다 */
+  .mnav{flex:none;height:auto;min-width:76px;padding:8px 10px;flex-direction:column;
+    gap:3px;font-size:11.5px;text-align:center;border-radius:10px;line-height:1.25}
+  .mnav .mbdg{position:static;margin:0}
+  .main{padding:14px 12px 88px;gap:12px}
+
+  h1.ttl{font-size:21px}
+  .ph{flex-direction:column;align-items:flex-start;gap:10px}
+  .ph .acts{width:100%;display:flex;gap:8px;flex-wrap:wrap}
+  .ph .acts .mb{flex:1;min-width:0;height:42px;justify-content:center}
+
+  /* 터치 영역 — 44px 바닥값 */
+  .mb{height:42px;padding:0 14px}
+  .mb.mbs,.mb.mbx{height:36px}
+  .mchip{height:38px;padding:0 13px;font-size:13px}
+  .mfld{height:44px;font-size:15px}      /* 16px 미만이면 iOS 가 확대한다 — 15px + 확대 방지 */
+  select.mfld,input.mfld{font-size:16px}
+  .tab{height:44px;font-size:14px}
+
+  /* 지표 카드 — 2열 */
+  .kpi{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .kpi>*{padding:13px 14px}
+
+  /* 표 → 카드 */
+  .mtb thead{display:none}
+  .mtb,.mtb tbody,.mtb tr,.mtb td{display:block;width:auto}
+  .mtb tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px;
+    border:1px solid #EAECF0;border-radius:10px;margin:0 0 10px;padding:12px 14px;background:#fff}
+  .mtb td:first-child{grid-column:1/-1}
+  .mtb td:empty{display:none}                /* 빈 칸은 한 줄을 잡아먹기만 한다 */
+  .mtb tr.sel{border-color:#6BDCAF;background:#F6FEFA}
+  .mtb td{border:none;padding:3px 0;height:auto}
+  .mtb td.num,.mtb td[class*="num"]{text-align:left}
+  .mtb td[data-l]:before{content:attr(data-l) "  ";color:#98A2B3;font-size:12px;font-weight:600}
+  .scroll{overflow:visible}
+  .pager{flex-wrap:wrap;gap:6px}
+
+  /* 모달 — 하단 시트 */
+  .mask{align-items:flex-end;padding:0}
+  .modal{max-width:100% !important;width:100%;border-radius:16px 16px 0 0;max-height:92vh}
+  .mfoot{position:sticky;bottom:0;background:#fff;border-top:1px solid #F2F4F7;
+    padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .mfoot .mb{flex:1;height:46px;justify-content:center}
+
+  .kvform{grid-template-columns:1fr}
+  .pcal{grid-template-columns:repeat(7,1fr);font-size:11px}
+  .pcal .dy{min-height:64px;padding:4px}
+  .pcal .it{font-size:10px;padding:2px 4px}
+  .dcal button{height:38px}
+}
+@media (max-width:520px){
+  .mnav{min-width:66px;font-size:11px;padding:8px 6px}
+  .kpi>*{padding:11px 12px}
+}
