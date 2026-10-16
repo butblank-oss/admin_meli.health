@@ -117,6 +117,49 @@ th .sw:hover{color:#101828}
 .brow{display:flex;align-items:center;gap:12px}
 .brow .l{width:120px;flex:none;font-size:13px;color:#475467;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .brow .v{width:62px;text-align:right;flex:none;font-size:13px;color:#475467;font-variant-numeric:tabular-nums}
+/* ── 카드 머리 ── */
+.ch{padding:16px 20px 12px;display:flex;align-items:center;gap:10px}
+.cico{width:28px;height:28px;flex:none;border-radius:9px;background:#ECFDF3;color:#077A50;
+  display:flex;align-items:center;justify-content:center}
+.chup{font-size:11.5px;color:#98A2B3}
+.chr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.mlink{background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:1px;
+  font:inherit;font-size:12.5px;font-weight:600;color:#69707C;padding:4px 2px;letter-spacing:-0.02em}
+.mlink:hover{color:#077A50}
+
+/* ── 바로가기 ── */
+.scut{display:flex;gap:4px;padding:12px 10px;overflow-x:auto;scrollbar-width:none}
+.scut::-webkit-scrollbar{display:none}
+.scut button{flex:1;min-width:84px;background:none;border:none;cursor:pointer;font:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:7px;padding:8px 4px;border-radius:10px}
+.scut button:hover{background:#F6FEFA}
+.scut .ci{width:44px;height:44px;border-radius:999px;background:#ECFDF3;color:#077A50;
+  display:flex;align-items:center;justify-content:center;position:relative}
+.scut .cl{font-size:12.5px;font-weight:600;color:#344054;letter-spacing:-0.02em;white-space:nowrap}
+.scut .cb{position:absolute;top:-2px;right:-6px;min-width:18px;height:18px;padding:0 5px;
+  border-radius:999px;background:#F04438;color:#fff;font-size:10.5px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+
+/* ── 면적 그래프 ── */
+.area{width:100%;height:176px;display:block}
+
+/* ── 도넛 ── */
+.dwrap{display:flex;align-items:center;gap:22px;padding:4px 20px 20px}
+.dnut{width:128px;height:128px;border-radius:999px;flex:none;position:relative}
+.dnut:after{content:'';position:absolute;inset:25px;border-radius:999px;background:#fff}
+.dnc{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px}
+.dnc b{font-size:22px;font-weight:700;letter-spacing:-0.03em;color:#101828}
+.dlg{display:flex;flex-direction:column;gap:10px;flex:1;min-width:0}
+.dlg>div{display:flex;align-items:center;gap:8px;font-size:13px;color:#475467}
+.dlg .lsw{width:9px;height:9px;border-radius:3px;flex:none}
+
+/* ── 벤토 — 카드 폭을 번갈아 두어 한 줄씩 쌓이는 느낌을 없앤다 ── */
+.bento{display:grid;gap:16px;align-items:start}
+.bento.wide{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.bento.narrow{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}
+@media (max-width:1180px){.bento.wide,.bento.narrow{grid-template-columns:minmax(0,1fr)}}
+
 .spark{display:flex;align-items:flex-end;gap:5px;height:80px}
 .spark i{flex:1;border-radius:3px;background:#13BD7E;min-height:2px}
 .spark i.wk{background:#EAECF0}
@@ -355,9 +398,9 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .mtb td:first-child{grid-column:1/-1}
   .mtb td:empty{display:none}                /* 빈 칸은 한 줄을 잡아먹기만 한다 */
   .mtb tr.sel{border-color:#6BDCAF;background:#F6FEFA}
-  .mtb td{border:none;padding:3px 0;height:auto}
+  .mtb td{border:none;padding:3px 0;height:auto;min-width:0;overflow-wrap:anywhere}
   .mtb td.num,.mtb td[class*="num"]{text-align:left}
-  .mtb td[data-l]:before{content:attr(data-l) "  ";color:#98A2B3;font-size:12px;font-weight:600}
+  .mtb td[data-l]:before{content:attr(data-l) "\00a0\00a0";color:#98A2B3;font-size:12px;font-weight:600}
   .scroll{overflow:visible}
   .pager{flex-wrap:wrap;gap:6px}
 
@@ -368,6 +411,16 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
     padding-bottom:calc(14px + env(safe-area-inset-bottom))}
   .mfoot .mb{flex:1;height:46px;justify-content:center}
 
+  .ch{padding:14px 14px 10px}
+  .ch .mh{flex:1;min-width:0}
+  .chup,.chr .mcap{display:none}      /* 좁은 화면에선 제목과 더보기만 남긴다 */
+  .scut{padding:10px 6px}
+  .scut button{min-width:72px;padding:8px 2px}
+  .scut .ci{width:40px;height:40px}
+  .scut .cl{font-size:11.5px}
+  .dwrap{flex-direction:column;gap:16px;padding:4px 14px 18px}
+  .dlg{width:100%}
+  .area{height:150px}
   .kvform{grid-template-columns:1fr}
   .pcal{grid-template-columns:repeat(7,1fr);font-size:11px}
   .pcal .dy{min-height:64px;padding:4px}

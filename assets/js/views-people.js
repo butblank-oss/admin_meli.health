@@ -1,7 +1,7 @@
 (function(A){
 "use strict";
 var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,note=A.note,kpi=A.kpi,cbx=A.cbx,
-    brow=A.brow,ph=A.ph,chead=A.chead,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
+    brow=A.brow,ph=A.ph,chead=A.chead,ico=A.ico,shortcuts=A.shortcuts,area=A.area,donut=A.donut,emptyBox=A.emptyBox,search=A.search,sth=A.sth,bindSort=A.bindSort,
     sortBy=A.sortBy,mkPager=A.mkPager,toast=A.toast,open=A.open,closeAll=A.closeAll,go=A.go,V=A.V,
     PEOPLE=A.PEOPLE,byId=A.byId,ORGS=A.ORGS,BRAIN=A.BRAIN,MIND=A.MIND,ASMT=A.ASMT,ROUT=A.ROUT,
     QUESTS=A.QUESTS,APPS=A.APPS,AUDIT=A.AUDIT,dayRec=A.dayRec,moveRows=A.moveRows,assessHist=A.assessHist,
@@ -18,8 +18,13 @@ function statusPill(p){
 /* ══════ 오늘 ══════ */
 V.today=function(){
   var h=$('#v-today');
-  var sp=[93,97,92,96,91,28,21,93,100,85,96,92,28,22].map(function(n,i){
-    return '<i class="'+([5,6,12,13].indexOf(i)>=0?'wk':'')+'" style="height:'+n+'%"></i>'}).join('');
+  /* 평일/주말 구분은 날짜에서 뽑는다 — 손으로 적으면 기수가 바뀔 때 어긋난다 */
+  var vals=[322,268,1210,1265,1188,1302,1245,336,281,1222,1276,1198,1310,1284],wk=[];
+  vals.forEach(function(_,i){var d=new Date(2026,7,8+i).getDay();if(d===0||d===6)wk.push(i)});
+  var bands=[['최근 활동','recent','#13BD7E'],[CFG.warn+'일 무활동','warn','#F79009'],
+             [CFG.risk+'일+ 무활동','risk','#F04438'],['무활동','none','#D0D5DD']]
+    .map(function(b){return [b[0],cnt(function(p){return band(p)===b[1]}),b[2]]});
+
   h.innerHTML=
    ph('오늘','2026년 8월 21일 목요일 · 3기 171일째',
      '<span class="mcap" style="margin-right:2px">기간</span><button class="mchip">오늘</button><button class="mchip">최근 7일</button><button class="mchip on">이번 달</button><button class="mchip">지난 달</button><button class="mb mbp" data-go="report" style="margin-left:8px">8월 리포트 만들기</button>')
@@ -30,26 +35,42 @@ V.today=function(){
          [bandLabel().risk,fmt(M.inactive14()),'명','지난주보다 21명 늘었어요','wa'],
          ['답변 대기 상담',fmt(M.consultWaiting()),'건','가장 오래된 건 3일째','cr'],
          ['처리 안 된 신청',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
-   +'<div class="mc"><div style="padding:16px 20px 12px"><span class="mh">처리할 일</span></div><div id="t-todo"></div></div>'
-   +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px">'
-   +'<div class="mc" style="padding:20px;display:flex;flex-direction:column">'
-     +'<div style="display:flex;align-items:baseline"><span class="mh">최근 2주 활동</span><span class="mcap" style="margin-left:auto">주말은 회색</span></div>'
-     +'<div class="spark" style="margin-top:24px">'+sp+'</div>'
-     +'<div class="mcap mt" style="display:flex;justify-content:space-between;margin-top:14px"><span>08-08</span><span>08-14</span><span>08-21</span></div>'
-     +'<p class="mcap" style="margin:24px 0 0;font-size:13px">추천 활동이 평일에만 있어서 주말 활동량이 평일의 <b style="color:#101828">27%</b>로 떨어져요.</p></div>'
-   +'<div class="mc" style="overflow:hidden;display:flex;flex-direction:column">'+chead('먼저 연락해볼 분들','<span class="mcap">자동 선별</span>')
+
+   +shortcuts([['todo','신청 승인','apply',fmt(M.applyPending())],['chat','상담 답변','consult',fmt(M.consultWaiting())],
+     ['bell','알림 보내기','push',''],['cal','일정','sched',''],
+     ['doc','보건소 리포트','report',''],['user','참여자 찾기','people',''],['list','열람 기록','audit','']])
+
+   +'<div class="bento wide">'
+   +'<div class="mc" style="display:flex;flex-direction:column">'
+     +chead('최근 2주 활동','<span class="mcap">회색은 주말</span>',{ic:'chart',at:'08-21 03:00 갱신',more:'stats'})
+     +'<div style="padding:0 20px">'+area(vals,wk)
+     +'<div class="mcap mt" style="display:flex;justify-content:space-between;margin-top:8px"><span>08-08</span><span>08-14</span><span>08-21</span></div></div>'
+     +'<p class="mcap" style="margin:16px 20px 20px;font-size:13px">추천 활동이 평일에만 있어서 주말 활동량이 평일의 <b style="color:#101828">27%</b>로 떨어져요.</p></div>'
+   +'<div class="mc" style="display:flex;flex-direction:column">'
+     +chead('처리할 일',null,{ic:'todo'})+'<div id="t-todo"></div></div>'
+   +'</div>'
+
+   +'<div class="bento narrow">'
+   +'<div class="mc" style="display:flex;flex-direction:column">'
+     +chead('활동 상태','',{ic:'pie',more:'people',moreLabel:'명단 보기'})
+     +donut(bands,[M.audience(),'3기 대상자'])+'</div>'
+   +'<div class="mc" style="overflow:hidden;display:flex;flex-direction:column">'
+     +chead('먼저 연락해볼 분들','<span class="mcap">자동 선별</span>',{ic:'user',more:'people'})
      +'<table class="mtb"><thead><tr><th style="padding-left:20px">이름</th><th>사유</th><th class="num">경과</th><th style="padding-right:20px"></th></tr></thead><tbody id="t-attn"></tbody></table>'
-     +'<p class="mcap" style="padding:14px 20px;margin:auto 0 0">선별 기준은 활동 현황 → 판정 기준에서 바꿀 수 있어요.</p></div></div>';
+     +'<p class="mcap" style="padding:14px 20px;margin:auto 0 0">선별 기준은 활동 현황 → 판정 기준에서 바꿀 수 있어요.</p></div>'
+   +'</div>';
+
   var TD=[['cr','참여 신청 111건이 대기 중이에요','이 중 27명은 이미 앱에 가입해서 활동하고 있어요','신청 목록 열기','apply',''],
    ['wa','답변을 기다리는 상담이 4건 있어요','가장 오래된 건 3일 지났어요. 영업일 3일이 넘으면 운영팀에 알림이 가요','상담실 열기','consult',''],
    ['ok','7월 보건소 제출 자료를 아직 안 만들었어요','6개 항목 중 5개는 자동으로 채워져요','리포트 만들기','report','mbp']];
   var tb=$('#t-todo');
   TD.forEach(function(t,ix){
     var c={cr:['#FEF3F2','#B42318'],wa:['#FFFAEB','#B54708'],ok:['#ECFDF3','#067647']}[t[0]];
-    var d=el('div');d.style.cssText='display:flex;align-items:center;gap:12px;padding:'+(ix===TD.length-1?'14px 20px 20px':'14px 20px')+';'+(ix?'border-top:1px solid #F2F4F7':'');
+    var d=el('div');d.style.cssText='display:flex;align-items:flex-start;gap:12px;padding:'+(ix===TD.length-1?'14px 20px 20px':'14px 20px')+';'+(ix?'border-top:1px solid #F2F4F7':'');
     d.innerHTML='<span style="width:34px;height:34px;flex:none;border-radius:8px;background:'+c[0]+';color:'+c[1]+';display:flex;align-items:center;justify-content:center">'+A.BANG+'</span>'+
-     '<span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:600">'+t[1]+'</span><span class="mcap" style="display:block;margin-top:2px">'+t[2]+'</span></span>'+
-     '<button class="mb '+t[5]+'" data-go="'+t[4]+'" style="margin-left:auto;flex:none">'+t[3]+'</button>';
+     '<span style="min-width:0;flex:1"><span style="display:block;font-size:13.5px;font-weight:600">'+t[1]+'</span>'+
+     '<span class="mcap" style="display:block;margin-top:2px">'+t[2]+'</span>'+
+     '<button class="mb mbs '+t[5]+'" data-go="'+t[4]+'" style="margin-top:9px">'+t[3]+'</button></span>';
     tb.appendChild(d)});
   [['정*순','우울 위험','cr','GDS-SF 11점','3일','P10007'],['황*학','활동 중단','wa','14일 무활동','14일','P10011'],
    ['이*자','불면 경계','wa','ISI-K 16점','6일','P10019'],['박*희','앱 미설치','cr','승인 후 미가입','37일','P10027']].forEach(function(a){

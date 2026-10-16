@@ -36,7 +36,59 @@ function cbx(s,label){return '<span class="cbx'+(s==='on'?' on':s==='mx'?' mx':'
 function brow(l,pct,v,cls,lw){return '<div class="brow"><span class="l"'+(lw?' style="width:'+lw+'"':'')+'>'+l+'</span><span class="bar"><i class="'+(cls||'')+'" style="width:'+pct+'%"></i></span><span class="v">'+v+'</span></div>'}
 function ph(title,sub,acts){return '<div class="ph"><div><h1 class="ttl">'+title+'</h1>'+(sub?'<div class="mcap mt" style="margin-top:5px">'+sub+'</div>':'')+'</div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>'}
 function card(inner,style){return '<div class="mc"'+(style?' style="'+style+'"':'')+'>'+inner+'</div>'}
-function chead(t,r){return '<div style="padding:16px 20px 12px;display:flex;align-items:center;gap:10px"><h2 class="mh">'+t+'</h2>'+(r?'<span style="margin-left:auto;display:flex;gap:8px;align-items:center">'+r+'</span>':'')+'</div>'}
+/* 카드 머리 — 아이콘 · 갱신 시각 · 더보기.  o 를 안 넘기면 예전 모양 그대로다. */
+var ICON={
+ todo:'<path d="M3.5 9.5 7 13l7.5-8"/>',
+ chart:'<path d="M3 15.5V9"/><path d="M8 15.5V3.5"/><path d="M13 15.5v-4"/>',
+ pie:'<circle cx="9" cy="9" r="6.5"/><path d="M9 2.5V9h6.5"/>',
+ user:'<circle cx="9" cy="6.2" r="3"/><path d="M3.5 15.5c0-3 2.5-4.8 5.5-4.8s5.5 1.8 5.5 4.8"/>',
+ bell:'<path d="M9 2.8a4.2 4.2 0 0 1 4.2 4.2c0 3.4 1.1 4.3 1.1 4.3H3.7s1.1-.9 1.1-4.3A4.2 4.2 0 0 1 9 2.8Z"/><path d="M7.3 14.2a1.8 1.8 0 0 0 3.4 0"/>',
+ doc:'<path d="M5 2.5h5l4 3.5v9.5H5z"/><path d="M10 2.5V6h4"/>',
+ chat:'<path d="M15 10.5c0 1.4-1.3 2.5-3 2.5H7.5L4 15.5V13c-1-.5-1.5-1.4-1.5-2.5v-4C2.5 5.1 3.8 4 5.5 4h6.5c1.7 0 3 1.1 3 2.5Z"/>',
+ cal:'<rect x="3" y="4" width="12" height="11.5" rx="2"/><path d="M3 7.5h12M6.5 2.5v3M11.5 2.5v3"/>',
+ plus:'<path d="M9 4v10M4 9h10"/>',
+ list:'<path d="M6.5 5.5h8M6.5 9h8M6.5 12.5h8M3.5 5.5h.01M3.5 9h.01M3.5 12.5h.01"/>'};
+function ico(k,sz){return '<svg width="'+(sz||15)+'" height="'+(sz||15)+'" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(ICON[k]||'')+'</svg>'}
+function chead(t,r,o){o=o||{};
+  return '<div class="ch">'+(o.ic?'<span class="cico">'+ico(o.ic)+'</span>':'')+'<h2 class="mh">'+t+'</h2>'+
+   (o.at?'<span class="chup mt">'+o.at+'</span>':'')+
+   ((r||o.more)?'<span class="chr">'+(r||'')+
+     (o.more?'<button class="mlink" data-go="'+o.more+'">'+(o.moreLabel||'더보기')+
+       '<svg width="11" height="11" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 11.5 9 7 14"/></svg></button>':'')+'</span>':'')+'</div>'}
+
+/* 자주 쓰는 동선은 메뉴를 뒤지지 않게 둥근 아이콘으로 앞에 꺼내 둔다 — [아이콘, 이름, 갈 곳, 배지] */
+function shortcuts(items){
+  return '<div class="mc"><div class="scut">'+items.map(function(x){
+    return '<button data-go="'+x[2]+'"><span class="ci">'+ico(x[0],20)+
+      (x[3]?'<span class="cb mt">'+x[3]+'</span>':'')+'</span><span class="cl">'+x[1]+'</span></button>'}).join('')+'</div></div>'}
+
+/* 면적 그래프 — 화면 폭에 맞춰 늘어나므로 점 대신 세로 눈금으로 끝을 표시한다 */
+function area(vals,marks,h){
+  var w=560;h=h||176;var mx=Math.max.apply(null,vals)*1.14,n=vals.length,pd=12;
+  var x=function(i){return pd+i*(w-pd*2)/(n-1)},y=function(v){return h-14-(v/mx)*(h-30)};
+  var ln=vals.map(function(v,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)}).join(' ');
+  var band=(marks||[]).map(function(i){return '<rect x="'+(x(i)-((w-pd*2)/(n-1))/2).toFixed(1)+'" y="0" width="'+((w-pd*2)/(n-1)).toFixed(1)+'" height="'+h+'" fill="#F2F4F7"/>'}).join('');
+  var e=n-1;
+  return '<svg class="area" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true">'+band+
+   '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#13BD7E" stop-opacity=".24"/><stop offset="1" stop-color="#13BD7E" stop-opacity="0"/></linearGradient></defs>'+
+   '<path d="'+ln+' L'+x(e).toFixed(1)+' '+h+' L'+x(0).toFixed(1)+' '+h+' Z" fill="url(#ag)"/>'+
+   '<path d="'+ln+'" fill="none" stroke="#13BD7E" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'+
+   '<path d="M'+x(e).toFixed(1)+' '+y(vals[e]).toFixed(1)+'V'+h+'" stroke="#13BD7E" stroke-width="1.4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>'+
+   '</svg>'}
+
+/* 도넛 — [이름, 값, 색] 배열 하나로 원과 범례를 함께 만든다 */
+function donut(parts,center){
+  var tot=0;parts.forEach(function(p){tot+=p[1]});
+  var acc=0,stops=parts.map(function(p){var a=acc/tot*360;acc+=p[1];
+    return p[2]+' '+a.toFixed(2)+'deg '+(acc/tot*360).toFixed(2)+'deg'}).join(',');
+  return '<div class="dwrap"><div class="dnut" style="background:conic-gradient('+stops+')">'+
+    '<span class="dnc"><b class="mt">'+fmt(center&&center[0]!==undefined?center[0]:tot)+'</b>'+
+    '<span class="mcap">'+((center&&center[1])||'전체')+'</span></span></div>'+
+   '<div class="dlg">'+parts.map(function(p){
+     return '<div><span class="lsw" style="background:'+p[2]+'"></span><span>'+p[0]+'</span>'+
+       '<b class="mt" style="margin-left:auto">'+fmt(p[1])+'</b>'+
+       '<span class="mcap mt" style="width:40px;text-align:right">'+(p[1]/tot*100).toFixed(1)+'%</span></div>'}).join('')+'</div></div>'}
+
 function emptyBox(t,d,btn){return '<div class="empty"><span class="mh">'+t+'</span>'+(d?'<span class="mcap">'+d+'</span>':'')+(btn?'<button class="mb" style="margin-top:4px">'+btn+'</button>':'')+'</div>'}
 function search(id,ph2,w){return '<span style="position:relative;display:inline-flex;align-items:center;width:'+(w||'300px')+'">'+
   '<span style="position:absolute;left:11px;color:#69707C;display:flex">'+SRCH+'</span>'+
@@ -602,7 +654,7 @@ function go(p){
   if(t){t.tabIndex=-1;t.focus({preventScroll:true})}
   document.title=(TITLES[p]||'')+' · 맬리 케어센터 채널 어드민'}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
- chead:chead,bindTabs:bindTabs,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
+ chead:chead,ico:ico,shortcuts:shortcuts,area:area,donut:donut,bindTabs:bindTabs,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
  open:open,closeAll:closeAll,go:go,labelCells:labelCells,buildNav:buildNav,V:V,
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
