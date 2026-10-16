@@ -267,3 +267,9 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 .kvform{display:grid;grid-template-columns:156px 1fr;gap:11px 14px;align-items:start}
 .kvform>label{font-size:13px;font-weight:500;color:#344054;padding-top:9px}
 @media (max-width:720px){.kvform{grid-template-columns:1fr;gap:4px 0}.kvform>label{padding-top:10px}}
+
+/* 미그룹 기간 — 그룹 합류 이전은 채널이 볼 수 없다 */
+.dcal button.lockd{background:repeating-linear-gradient(45deg,#F9FAFB,#F9FAFB 3px,#F2F4F7 3px,#F2F4F7 6px);
+  color:#D0D5DD;cursor:not-allowed}
+.mask-n.lnk2{cursor:pointer;border-bottom:1px dashed #D0D5DD}
+.mask-n.lnk2:hover{border-bottom-color:#13BD7E}

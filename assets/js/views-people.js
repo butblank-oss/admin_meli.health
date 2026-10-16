@@ -121,7 +121,7 @@ V.people=function(keep){
   rows.forEach(function(p){
     var tr=el('tr','clk'+(pSel[p.id]?' sel':''));
     tr.innerHTML='<td style="padding-left:20px">'+cbx(pSel[p.id]?'on':'off',p.name+' 선택')+'</td>'
-     +'<td><span class="mask-n" style="font-weight:600">'+p.name+'</span> <button class="mb mbx rv" style="margin-left:4px">보기</button></td>'
+     +'<td><span class="mask-n lnk2" style="font-weight:600">'+p.name+'</span></td>'
      +'<td class="num mt" style="color:#69707C">'+p.pin+'</td>'
      +'<td class="num">'+(p.todayN?'<span class="mpill" style="background:#E7F9F1;color:#065C3D">'+p.todayN+'</span>':'')+'</td>'
      +'<td class="mt mask-p" style="color:#475467">'+p.phone+'</td>'
@@ -131,11 +131,13 @@ V.people=function(keep){
      +'<td class="mt" style="color:#667085">'+(p.last>900?'—':p.last===0?'오늘':p.last+'일 전')+'</td>'
      +'<td class="mt" style="color:#69707C;padding-right:20px">'+p.app+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(pSel[p.id])delete pSel[p.id];else pSel[p.id]=1;pAll=false;V.people(1)});
-    tr.querySelector('.rv').addEventListener('click',function(e){e.stopPropagation();askReveal(p,tr)});
+
     var mn=tr.querySelector('.mask-n');
     mn.style.cursor='pointer';mn.title='누르면 원문이 보여요';
-    mn.addEventListener('click',function(e){e.stopPropagation();askReveal(p,tr)});
-    tr.addEventListener('click',function(e){if(!e.target.closest('button')&&!e.target.closest('.cbx'))openPerson(p,'people')});
+    /* 행을 누르면 사유를 받고 곧바로 상세가 열린다. 중간에 한 번 더 누르게 하지 않는다. */
+    if(mn)mn.addEventListener('click',function(e){e.stopPropagation();askOpen(p,'people')});
+    tr.addEventListener('click',function(e){
+      if(!e.target.closest('button')&&!e.target.closest('.cbx'))askOpen(p,'people')});
     tb.appendChild(tr)});
   pPager.render($('#p-pg'));
   renderBulk()};
@@ -190,16 +192,55 @@ function renderBulk(){
 /* 원문 보기 — 클릭 즉시 토글 (2026-08-24 사용자 결정으로 사유 입력 팝업 폐지).
    30초 자동 재마스킹과 열람 기록은 그대로 유지하고, 사유는 자동 기재한다.
    타이머는 행마다 따로 둔다 — 전역 하나면 두 행을 연속으로 열었을 때 첫 행이 안 가려진다. */
-function askReveal(p,tr){
-  if(tr.dataset.rev==='1'){hideRev(p,tr);return}
-  tr.querySelector('.mask-n').textContent=p.full;tr.querySelector('.mask-p').textContent=p.phoneFull;
-  tr.querySelector('.rv').textContent='가리기';tr.dataset.rev='1';tr.style.background='#FFFAEB';
-  addAudit('원문 열람','1건','목록에서 바로 보기');
-  toast('원문을 열었어요. 30초 뒤 자동으로 가려져요','wa');
-  tr._revT=setTimeout(function(){if(tr.dataset.rev==='1')hideRev(p,tr)},30000)}
-function hideRev(p,tr){clearTimeout(tr._revT);
-  tr.querySelector('.mask-n').textContent=p.name;tr.querySelector('.mask-p').textContent=p.phone;
-  tr.querySelector('.rv').textContent='보기';tr.dataset.rev='';tr.style.background=''}
+/* ═══ 상세 진입 = 열람 ═══
+   상세 화면은 검사 점수·건강 기록이 모두 보이는 곳이라 들어가는 것 자체가 열람이다.
+   그래서 진입할 때 사유를 받고, 받으면 바로 연다.
+   사유 코드는 맬리 본서비스에서 확정돼 운영 중인 공통 8종 + 케어센터 전용 4종. */
+var REASON_COMMON=[
+ ['USER_REQUEST','사용자 요청에 따른 정보 확인'],['CONSULT','환자 상담/고객 응대'],
+ ['DATA_ANOMALY','이상 데이터 확인 (오류/누락 검증)'],['OPS_ISSUE','서비스 운영 이슈 대응'],
+ ['LEGAL','법적 요구 대응 (분쟁, 요청 등)'],['INTERNAL_AUDIT','내부 감사 및 점검'],
+ ['IDENTITY_CHECK','회원 상담 중 본인 확인'],['ETC','기타 (직접 입력)']];
+var REASON_CARE=[
+ ['CARE_OUTREACH','미활동자 안부 연락'],['CARE_RISK','위험군 상담 연계'],
+ ['CARE_APPLY','참여 신청 확인'],['CARE_HEALTH_DOC','보건소 공문 회신']];
+var pdRev=false,pdReason='',revT=null;
+function askOpen(p,from){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap">대상 <b style="color:#101828">'+esc(p.name)+'</b> · '+p.birth+'년생 · '+esc(p.org)+'<br>'
+   +'사유는 열람 기록에 남고 보건소 점검 때 증빙으로 제출돼요. '
+   +CFG.locked.remaskSec+'초가 지나면 자동으로 다시 가려져요.</p>'
+   +'<div><span class="flab">조회 사유 <span style="color:#B42318">*</span></span>'
+   +'<select class="mfld" id="rv-r" style="width:100%"><option value="">사유를 선택하세요</option>'
+   +'<optgroup label="공통">'+REASON_COMMON.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</optgroup>'
+   +'<optgroup label="케어센터 전용">'+REASON_CARE.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</optgroup>'
+   +'</select></div>'
+   +'<div id="rv-etc" style="display:none"><span class="flab">상세 사유 <span style="color:#B42318">*</span></span>'
+   +'<textarea class="mfld" id="rv-e" style="width:100%;height:64px;padding:9px 11px" '
+   +'placeholder="어떤 업무로 원문이 필요한지 적어주세요"></textarea>'
+   +'<div class="mcap" style="margin-top:5px">직접 입력 사유는 5자 이상 적어야 해요.</div></div>'
+   +'<label class="chk"><input type="checkbox" id="rv-ok2" style="accent-color:#13BD7E;width:15px;height:15px">'
+   +'<span><b>[필수]</b> 업무 목적 외 조회하지 않겠습니다.</span></label>';
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='사유를 고르고 동의에 체크해야 열람할 수 있어요.';b.appendChild(err);
+  var m=modalBox('개인정보 열람 사유',b);
+  $('#rv-r').addEventListener('change',function(){
+    $('#rv-etc').style.display=this.value==='ETC'?'block':'none';err.style.display='none'});
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','열람하기');
+  ok.addEventListener('click',function(){
+    var v=$('#rv-r').value,et=$('#rv-e')?$('#rv-e').value.trim():'';
+    if(!v||!$('#rv-ok2').checked||(v==='ETC'&&et.length<5)){err.style.display='block';return}
+    pdRev=true;pdReason=$('#rv-r').selectedOptions[0].text;
+    addAudit('상세 열람','1건',pdReason,[p.name+'('+p.pin+')']);
+    clearTimeout(revT);
+    revT=setTimeout(function(){pdRev=false;if(onPerson())V.person();
+      toast('열람 시간이 지나 원문을 다시 가렸어요')},CFG.locked.remaskSec*1000);
+    closeAll();openPerson(p,from)});
+  f.appendChild(ok)}
+function onPerson(){var e=document.querySelector('.pane.on');return !!e&&e.dataset.pane==='person'}
+/* 세션 만료 시 상세의 원문도 닫는다 */
+window.__closeReveal=function(){if(pdRev){pdRev=false;clearTimeout(revT);if(onPerson())V.person()}};
 
 /* withdraw */
 var wdL=[],wdA=false;
@@ -233,16 +274,120 @@ var cP=null,pdTab='act',pdSel=null,pdM=null,backTo='people';
 var AMIN=new Date(2026,2,3),AMAX=new Date(2026,7,21);
 function dstr(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
 function lastAct(p){var d=new Date(2026,7,21);if(p.last<=160)d.setDate(d.getDate()-p.last);return d}
+/* ═══ 동의 현황 ═══
+   민감정보는 다른 개인정보 동의와 '별도로' 받아야 처리할 수 있다(법 제23조①).
+   동의는 앱에서 받고 어드민은 결과를 확인·철회한다. */
+var CONSENT_ITEMS=[
+ ['service','서비스 이용약관',0],['privacy','개인정보 수집·이용',0],
+ ['sensitive','<b>건강정보(민감정보) 별도 동의</b>',1],['third','제3자 제공',0]];
+function consentCard(p){
+  var c=p.consent,gone=!!c.revoked,miss=!c.sensitive&&!gone;
+  return '<div class="mc" style="overflow:hidden">'
+   +'<div class="row" style="padding:16px 20px 10px"><span class="mh">동의 현황</span>'
+   +'<span class="mcap mt" style="margin-left:auto">'
+   +(gone?'철회 '+c.revoked:miss?'민감정보 동의가 없어요':'모두 받았어요')+'</span></div>'
+   +(gone?note('<b>동의를 철회했어요.</b> 건강정보 처리를 멈춰야 해요. 그룹 소속이 해제되고 미그룹으로 전환됐어요.','cr')
+     :miss?note('<b>건강정보 별도 동의가 없습니다.</b> 민감정보는 다른 개인정보 동의와 <b>분리해서</b> 받아야 처리할 수 있어요'
+       +'(개인정보 보호법 제23조). 동의 없이 검사 점수·건강 기록을 다루면 과징금 대상이에요.','cr'):'')
+   +'<div style="padding:4px 20px 8px">'
+   +CONSENT_ITEMS.map(function(it){
+     var v=c[it[0]],ok=!!v&&!gone;
+     return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F2F4F7">'
+      +'<span style="flex:1;font-size:13.5px'+(it[2]?';font-weight:600':'')+'">'+it[1]+'</span>'
+      +'<span class="mcap mt" style="width:110px;color:#667085">'+(ok?v:'—')+'</span>'
+      +(ok?pill('동의','ok'):it[2]?pill('없음','cr'):pill('없음','nu'))+'</div>'}).join('')
+   +'</div>'
+   +'<div style="padding:12px 20px 16px;display:flex;gap:8px;align-items:center">'
+   +'<span class="mcap" style="flex:1">동의는 앱에서 받고 어드민은 결과를 확인해요. 여기서 철회를 처리할 수 있어요.</span>'
+   +(gone?'':'<button class="mb mbd mbx" id="cs-rv">동의 철회 처리</button>')
+   +'<button class="mb mbx" id="cs-req">동의 요청 보내기</button></div></div>'}
+function openRevoke(p){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>'+esc(p.name)+'</b>님의 건강정보 처리 동의를 철회해요.</p>'
+   +note('철회하면 <b>그룹 소속이 해제되고 미그룹으로 전환</b>돼요. 앱에는 기본 화면만 보이고, '
+     +'채널은 이분의 건강 기록을 더 이상 볼 수 없어요.','wa')
+   +note('<b>기록을 즉시 지우지는 않아요.</b> 접속기록처럼 법정 보관 의무가 있는 항목이 섞여 있어서, '
+     +'보존기간이 끝나는 대로 파기 대상에 올라가요.','in')
+   +'<div><span class="flab">철회 경로 <span style="color:#B42318">*</span></span>'
+   +'<select class="mfld" id="rvk-src" style="width:100%"><option value="">고르세요</option>'
+   +'<option>본인이 전화로 요청</option><option>본인이 방문해서 요청</option>'
+   +'<option>보호자 대리 요청</option><option>앱에서 직접 철회</option></select></div>'
+   +'<label class="chk"><input type="checkbox" id="rvk-ck" style="accent-color:#13BD7E;width:15px;height:15px">'
+   +'<span>철회 의사를 확인했고, 처리 결과를 본인에게 안내했어요</span></label>';
+  var err=el('div');err.style.cssText='font-size:12.5px;color:#B42318;display:none';
+  err.textContent='철회 경로를 고르고 확인에 체크해주세요.';b.appendChild(err);
+  var m=modalBox('동의 철회 처리',b);
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbd','철회 처리');
+  ok.addEventListener('click',function(){
+    if(!$('#rvk-src').value||!$('#rvk-ck').checked){err.style.display='block';return}
+    p.consent.revoked='2026-08-21';
+    addAudit('동의 철회','1건',$('#rvk-src').value,[p.name+'('+p.pin+')']);
+    closeAll();V.person();
+    toast(p.name+'님 동의를 철회 처리했어요. 미그룹으로 전환됐어요','ok')});
+  f.appendChild(ok)}
+
+/* ═══ 지난달 대비 ═══
+   한 번도 안 한 활동은 목록에서 지우지 않고 회색으로 남긴다 — 안 하고 있다는 것이 정보다.
+   좋아진 건 색을 쓰지 않는다. 색은 주의를 요하는 것에만. */
+function trendRows(p){
+  var r=function(k){return rnd(p.idx*31+k)};
+  return [['두뇌훈련',p.days>0,0],['상체·유연성 운동',p.days>0,4],['전신·지구력 운동',p.days>2,8],
+          ['마음다루기',p.mind>0,12],['걷기 기록',p.step>0,16],['증상 기록',p.symp>0,20]]
+   .map(function(b){
+    if(!b[1])return {n:b[0],none:true};
+    var k=b[2],pd=1+r(k)*4.5,cd=Math.max(1,pd+(r(k+1)-0.45)*2.2);
+    var pr=45+r(k+2)*45,cr=Math.max(5,Math.min(99,pr+(r(k+3)-0.45)*26));
+    return {n:b[0],pd:pd,cd:cd,pr:pr,cr:cr}})}
+function dlt(d,dp){
+  if(Math.abs(d)<0.05)return '<span class="mt" style="color:#98A2B3;font-size:12.5px;margin-left:5px">—</span>';
+  var down=d<0;
+  return '<span class="mt" style="font-size:12.5px;margin-left:5px;color:'+(down?'#B54708':'#667085')
+   +(down?';font-weight:600':'')+'">'+(down?'▼':'▲')+Math.abs(d).toFixed(dp)+'</span>'}
+function tabCmp(p,box){
+  var rows=trendRows(p),done=rows.filter(function(x){return !x.none});
+  if(!done.length){box.innerHTML=emptyBox('비교할 활동이 없어요','이번 달에도 지난달에도 기록된 활동이 없어요');return}
+  box.innerHTML='<div class="mcap" style="padding:14px 20px 0">한 번도 안 한 활동은 지우지 않고 회색으로 남겨요 — <b>안 하고 있다는 것이 정보</b>예요.</div>'
+   +'<div class="scroll"><table class="mtb"><thead>'
+   +'<tr><th rowspan="2" style="padding-left:20px;vertical-align:bottom">활동 유형</th>'
+   +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0">평균 난이도</th>'
+   +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0;padding-right:20px">수행률 (%)</th></tr>'
+   +'<tr><th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num">이번달</th>'
+   +'<th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num" style="padding-right:20px">이번달</th></tr></thead><tbody>'
+   +rows.map(function(x){
+     if(x.none)return '<tr style="color:#98A2B3"><td style="padding-left:20px">'+x.n+'</td>'
+      +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num">–</td>'
+      +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num" style="padding-right:20px">–</td></tr>';
+     return '<tr><td style="padding-left:20px">'+x.n+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pd.toFixed(1)+'</td>'
+      +'<td class="num mt">'+x.cd.toFixed(1)+dlt(x.cd-x.pd,1)+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pr.toFixed(1)+'</td>'
+      +'<td class="num mt" style="padding-right:20px">'+x.cr.toFixed(1)+dlt(x.cr-x.pr,1)+'</td></tr>'}).join('')
+   +'</tbody></table></div>'}
+
 function openPerson(p,from){cP=p;backTo=from||'people';pdTab='act';pdSel=null;pdM=null;go('person')}
 A.openPerson=openPerson;
 V.person=function(){
   var p=cP,h=$('#v-person');if(!p)return;
-  h.innerHTML=ph(p.name,p.birth+'년생 · '+p.sex+' · PIN '+p.pin+' · '+p.org,
+  h.innerHTML=ph(pdRev?p.full:p.name,
+    (pdRev?p.phoneFull+' · ':'')+p.birth+'년생 · 만 '+p.age+'세 · '+p.sex+' · PIN '+p.pin+' · '+p.org
+      +' · 담당 '+(ownerOf(p,groupById(getGroup()))||'미지정'),
     '<button class="mb" id="pd-b">‹ 목록</button><button class="mb" id="pd-e">정보 수정</button><button class="mb" id="pd-c">상담 열기</button><button class="mb mbd" id="pd-o">탈퇴 처리</button>')
    +kpi([['누적 활동일',p.days,'일'],['수행률',p.days?p.rate:'—',p.days?'%':''],['연속 출석',p.streak,'일'],
          ['랭킹 점수',fmt(p.score),'/ 1000'],['마음 기록',p.mind,'회'],['일평균 걸음',fmt(p.step),'보']])
+   +(pdRev?'<div class="mc" style="background:#FFFAEB;border-color:#FEDF89;padding:13px 18px;display:flex;align-items:center;gap:12px">'
+      +'<span class="mdot" style="background:#F79009"></span>'
+      +'<span style="flex:1;font-size:13.5px;color:#B54708">개인정보 원문을 보는 중이에요 · 사유 <b>'+esc(pdReason)+'</b>'
+      +'<span class="mcap" style="display:block;margin-top:2px;color:#B54708">'+CFG.locked.remaskSec+'초 뒤 자동으로 가려져요. 이 열람은 기록에 남았어요.</span></span>'
+      +'<button class="mb mbx" id="pd-hide">지금 가리기</button></div>':'')
+   +consentCard(p)
    +(p.days===0?'<div class="mc" id="pd-none"></div>':'<div class="mc" style="overflow:hidden"><div class="tabs" id="pd-tabs"></div><div id="pd-body"></div></div>');
   $('#pd-b').addEventListener('click',function(){go(backTo)});
+  if($('#pd-hide'))$('#pd-hide').addEventListener('click',function(){
+    pdRev=false;clearTimeout(revT);V.person();toast('원문을 가렸어요')});
+  if($('#cs-req'))$('#cs-req').addEventListener('click',function(){
+    toast(p.name+'님 앱으로 동의 요청을 보냈어요','ok')});
+  if($('#cs-rv'))$('#cs-rv').addEventListener('click',function(){openRevoke(p)});
   $('#pd-o').addEventListener('click',function(){openWithdraw([p])});
   $('#pd-c').addEventListener('click',function(){go('consult')});
   $('#pd-e').addEventListener('click',function(){$('#ed-n').value=p.full;$('#ed-b').value=p.birth;
@@ -250,12 +395,13 @@ V.person=function(){
   if(p.days===0){$('#pd-none').innerHTML=emptyBox('활동 기록이 없어요','가입 후 한 번도 활동하지 않았어요. 앱 설치·로그인 안내가 필요할 수 있어요','안내 메시지 보내기');
     $('#pd-none .mb').addEventListener('click',function(){toast(p.name+'님에게 설치 안내를 보냈어요','ok','실행 취소',null)});return}
   var tb=$('#pd-tabs');
-  [['act','활동 내역'],['chk','검사 이력'],['qst','챌린지 참여']].forEach(function(x){
+  [['act','활동 내역'],['cmp','지난달 대비'],['chk','검사 이력'],['qst','챌린지 참여']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',pdTab===x[0]?'true':'false');
     b.addEventListener('click',function(){pdTab=x[0];V.person()});tb.appendChild(b)});
   A.bindTabs(tb);
   var body=$('#pd-body');
-  if(pdTab==='act')tabAct(p,body);else if(pdTab==='chk')tabChk(p,body);else tabQst(p,body)};
+  if(pdTab==='act')tabAct(p,body);else if(pdTab==='cmp')tabCmp(p,body);
+  else if(pdTab==='chk')tabChk(p,body);else tabQst(p,body)};
 function tabAct(p,box){
   if(!pdSel)pdSel=lastAct(p);
   if(!pdM)pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};
@@ -274,13 +420,17 @@ function tabAct(p,box){
   for(var dn=1;dn<=dim;dn++){(function(dn){
     var d=new Date(pdM.y,pdM.m-1,dn),b=el('button',null,String(dn));
     if(d<AMIN||d>AMAX){b.disabled=true;g.appendChild(b);return}
+    if(p.joinG&&d<p.joinG){                    /* 미그룹 기간 — 채널이 볼 수 없다 */
+      b.disabled=true;b.className='lockd';
+      b.title=dstr(d)+' · 미그룹 기간이라 볼 수 없어요';g.appendChild(b);return}
     var n=dayRec(p,d).acts.length;
     if(n>0){mD++;mA+=n;var s=n>=5?['#13BD7E','#043528','700']:n>=3?['#6BDCAF','#043528','600']:['#C6F2E0','#065C3D','500'];
       b.style.background=s[0];b.style.color=s[1];b.style.fontWeight=s[2]}
     b.title=dstr(d)+' · 활동 '+n+'회';
     if(dstr(d)===dstr(pdSel))b.classList.add('on');
     b.addEventListener('click',function(){pdSel=d;V.person()});g.appendChild(b)})(dn)}
-  $('#am-f').innerHTML='이번 달 활동 <b class="mt" style="color:#101828">'+mD+'</b>일 · 총 <b class="mt" style="color:#101828">'+fmt(mA)+'</b>회';
+  $('#am-f').innerHTML='이번 달 활동 <b class="mt" style="color:#101828">'+mD+'</b>일 · 총 <b class="mt" style="color:#101828">'+fmt(mA)+'</b>회'
+   +(p.joinW?'<div class="mcap" style="margin-top:6px">'+dstr(p.joinG)+'에 합류했어요. 그 전은 <b>미그룹 기간</b>이라 볼 수 없어요.</div>':'');
   $('#am-p').addEventListener('click',function(){pdM.m--;if(pdM.m<1){pdM.m=12;pdM.y--}V.person()});
   $('#am-n').addEventListener('click',function(){pdM.m++;if(pdM.m>12){pdM.m=1;pdM.y++}V.person()});
   $('#am-l').addEventListener('click',function(){pdSel=lastAct(p);pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};V.person()});
@@ -320,7 +470,38 @@ function tabChk(p,box){
    +h.map(function(x){var lv=x.test.lv(x.score);
      var d=x.prev==null?'<span style="color:#69707C">첫 검사</span>':x.score<x.prev?'<span style="color:#067647;font-weight:600">▼ '+(x.prev-x.score)+' 호전</span>':x.score>x.prev?'<span style="color:#B42318;font-weight:600">▲ '+(x.score-x.prev)+'</span>':'<span style="color:#69707C">변화 없음</span>';
      return '<tr><td class="mt" style="padding-left:20px;color:#475467">'+x.date+' '+x.time+'</td><td>'+x.test.n+'</td><td class="num mt">'+x.score+'</td><td>'+pill(lv[0],lv[1])+'</td><td class="num mt" style="color:#69707C">'+(x.prev==null?'—':x.prev)+'</td><td style="padding-right:20px">'+d+'</td></tr>'}).join('')
-   +'</tbody></table></div>'}
+   +'</tbody></table></div>'+prePost(h)}
+/* 사전·사후 관찰. '개선'이 아니라 '관찰' — 프로그램이 원인이라고 주장하지 않는다.
+   TESTS 는 전부 증상 척도라 점수가 낮을수록 좋다. 만점이 척도마다 달라
+   막대 높이는 척도별 만점 기준으로 따로 재고, 색은 나빠진 경우에만 주의색을 쓴다. */
+function prePost(h){
+  var g={},order=[];
+  h.forEach(function(x){var n=x.test.n;
+    if(!g[n]){g[n]={n:n,t:x.test,first:x,last:x};order.push(n)}
+    if(x.date+x.time < g[n].first.date+g[n].first.time)g[n].first=x;
+    if(x.date+x.time > g[n].last.date+g[n].last.time)g[n].last=x});
+  var ks=order.filter(function(k){return g[k].first!==g[k].last});
+  if(!ks.length)return '<div class="mcap" style="padding:14px 20px 18px;border-top:1px solid #F2F4F7">검사가 한 번뿐이라 사전·사후를 비교할 수 없어요.</div>';
+  function bar(v,mx,bg,fg){
+    return '<div style="width:36px;border-radius:6px 6px 0 0;background:'+bg+';height:'+Math.max(4,v/mx*100)+'%;position:relative;display:flex;justify-content:center">'
+     +'<span class="mt" style="position:absolute;top:-19px;font-size:12px;font-weight:600;color:'+fg+'">'+v+'</span></div>'}
+  return '<div style="border-top:1px solid #F2F4F7;padding:18px 20px 20px">'
+   +'<span class="mh">점수 변화 관찰</span>'
+   +'<div class="mcap" style="margin-top:4px">첫 검사와 마지막 검사를 나란히 놓은 거예요. '
+   +'네 가지 모두 <b>점수가 낮을수록 좋아요.</b> 프로그램이 원인이라는 뜻은 아니에요.</div>'
+   +'<div style="display:flex;align-items:flex-start;gap:22px;margin-top:20px;padding:0 4px">'
+   +ks.map(function(k){var x=g[k],worse=x.last.score>x.first.score;
+     return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px">'
+      +'<div style="height:130px;display:flex;align-items:flex-end;gap:6px;justify-content:center;width:100%">'
+      +bar(x.first.score,x.t.max,'#EAECF0','#667085')
+      +bar(x.last.score,x.t.max,worse?'#F79009':'#13BD7E',worse?'#B54708':'#077A50')+'</div>'
+      +'<div class="mcap" style="text-align:center">'+x.n+'<br>만점 '+x.t.max+'</div></div>'}).join('')
+   +'</div>'
+   +'<div style="display:flex;gap:16px;margin-top:14px;font-size:12.5px;color:#667085;flex-wrap:wrap">'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#EAECF0;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사전 (첫 검사)</span>'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#13BD7E;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사후 — 낮아졌거나 그대로</span>'
+   +'<span><i style="width:10px;height:10px;border-radius:3px;background:#F79009;display:inline-block;margin-right:5px;vertical-align:-1px"></i>사후 — 높아짐 (확인 필요)</span>'
+   +'</div></div>'}
 function tabQst(p,box){
   box.innerHTML='<div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px" id="qz"></div>';
   QUESTS.filter(function(q){return q.st!=='예정'}).forEach(function(q){
