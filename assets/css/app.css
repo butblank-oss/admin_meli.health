@@ -501,14 +501,23 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .msgs{padding:14px;max-height:none;overflow:visible}
   /* 화면 안에서 인라인으로 짜 둔 2단·고정폭 그리드를 좁은 화면에선 한 줄로 편다.
      쓰인 곳이 흩어져 있어 선택자로 한 번에 덮는 쪽이 짧다 */
-  [style*="repeat(2,minmax(0,1fr))"]:not(.kpi),[style*="repeat(4,minmax(0,1fr))"]:not(.kpi),
+  [style*="repeat(2,minmax(0,1fr))"]:not(.kpi),
   [style*="minmax(0,1fr) 340px"],[style*="320px minmax(0,1fr)"],
   [style*="284px minmax(0,1fr)"]{grid-template-columns:minmax(0,1fr) !important}
+  /* 넉 줄짜리 지표는 1열로 접으면 네 화면이 된다 — 2×2 로 둔다 */
+  [style*="repeat(4,minmax(0,1fr))"]:not(.kpi){grid-template-columns:repeat(2,minmax(0,1fr)) !important}
   .kvform{grid-template-columns:1fr}
   .pcal{grid-template-columns:repeat(7,1fr);font-size:11px}
   .pcal .dy{min-height:64px;padding:4px}
   .pcal .it{font-size:10px;padding:2px 4px}
   .dcal button{height:38px}
+
+  /* 하루 활동 한 줄 — 시각 칸이 94px 을 차지하면 제목이 '두뇌운동 치매예 / 방교실' 로 부서진다.
+     시각과 달성률을 한 줄에 올리고 제목은 아래에서 폭을 다 쓰게 한다 */
+  .fd{flex-wrap:wrap;gap:0 10px;padding:12px 14px}
+  .fd .t{width:auto;order:1}
+  .fd .p{order:2;margin-left:auto}
+  .fd .m{order:3;flex:1 0 100%;margin-top:5px}
 }
 @media (max-width:520px){
   .kpi>div{padding:9px 9px}

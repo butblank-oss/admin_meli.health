@@ -193,8 +193,8 @@ document.addEventListener('click',function(e){
   var m=e.target.closest('[data-modal]');if(m)open(m.dataset.modal);
   if(e.target.closest('[data-close]')||e.target.classList.contains('mask'))closeAll();
   var r=e.target.closest('.mtb.msum tbody tr');
-  if(r&&!e.target.closest('button,a,.cbx,.lnk')&&matchMedia('(max-width:860px)').matches){
-    var k=r.querySelector('.lnk');if(k){k.click();return}}
+  if(r&&!e.target.closest('button,a,.cbx,.lnk,.lnk2')&&matchMedia('(max-width:860px)').matches){
+    var k=r.querySelector('.lnk,.lnk2');if(k){k.click();return}}
   var g=e.target.closest('[data-go]');if(g){closeAll();go(g.dataset.go)}});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){closeAll();return}
@@ -685,9 +685,11 @@ function labelCells(root){
         c.classList.add('m-'+rs[i]);               /* 묶음의 첫 칸만 구분점을 뺀다 */
         if(rs[i]==='m'&&fm){c.classList.add('g1');fm=0}
         if(rs[i]==='s'&&fs){c.classList.add('g1');fs=0}})})})}
+/* rAF 는 화면이 가려지면 안 돈다. 그 사이 q 가 1 로 잠기면 관찰자가 영영 죽어
+   라벨이 다시는 안 붙는다. 가려져도 도는 setTimeout 을 쓴다. */
 (function(){var m=document.getElementById('main');if(!m)return;
   var q=0,mo=new MutationObserver(function(){if(q)return;q=1;
-    requestAnimationFrame(function(){q=0;labelCells(m)})});
+    setTimeout(function(){q=0;labelCells(m)},0)});
   mo.observe(m,{childList:true,subtree:true})})();
 function go(p){
   cur=p;
