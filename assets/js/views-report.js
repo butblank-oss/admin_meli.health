@@ -183,9 +183,54 @@ var RI=[[1,'월별 앱 업데이트 횟수','스토어 배포 건수와 버전�
  [4,'참여자 현황','연령·성별 분포, 기관별 배정',1,'getPathStat',0],
  [5,'운영 결과','유형별 수행량, 검사 점수, 위험군',1,'getChallengeOutcomes',0],
  [6,'기타 / 특이사항','장애·민원·현장 이슈',0,'수기 입력',1]];
+/* 이월 신청 — 자동인 건 '신청'까지다. 참여자가 되려면 한 명씩 승인해야 한다.
+   3기 종료 → 리포트에서 4기 신청으로 적재 → 참여 신청에서 건별 승인. */
+function openCarry(g){
+  var elig=Math.round(g.n*0.86),skip=g.n-elig;
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>'+esc(g.name)+'</b> 참여자를 <b>4기 두뇌운동 치매예방교실</b> 신청으로 넘겨요.</p>'
+   +'<div><span class="flab">넘길 대상</span>'
+   +'<div id="cy-k" style="display:flex;gap:8px;margin-top:2px">'
+   +'<button class="mb" data-k="act" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>활동 이력이 있는 분</b><div class="mcap">'+fmt(elig)+'명 · 한 번이라도 활동한 분</div></button>'
+   +'<button class="mb" data-k="all" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>전원</b><div class="mcap">'+fmt(g.n)+'명 · 활동 0일인 '+fmt(skip)+'명 포함</div></button></div></div>'
+   +note('넘기면 <b>참여 신청</b> 화면에 <b>3기 이월</b> 표시로 쌓여요. 거기서 승인해야 4기 참여자가 돼요. '
+     +'승인 전까지는 <b>미그룹</b> 상태라 기본 화면만 보여요.','in');
+  var kind='act';
+  function paint(){$$('#cy-k .mb',b).forEach(function(x){
+    var on=x.dataset.k===kind;x.style.borderColor=on?'#6BDCAF':'#D0D5DD';x.style.background=on?'#E7F9F1':'#fff'})}
+  $$('#cy-k .mb',b).forEach(function(x){x.addEventListener('click',function(){kind=x.dataset.k;paint()})});
+  paint();
+  var m=modalBox('4기로 이월 신청',b);
+  var f=m.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','신청 쌓기');
+  ok.addEventListener('click',function(){
+    var n=kind==='act'?elig:g.n;
+    CARRY.done=true;CARRY.n=n;CARRY.at='오늘';CARRY.from=g.name;CARRY.to='4기 두뇌운동 치매예방교실';
+    PEOPLE.slice(0,8).forEach(function(pp,i){
+      APPS.unshift({id:'C'+i,name:pp.name,tail:pp.tail,phone:pp.phone,
+        addr:'남동구 '+['구월동','만수동','논현동','간석동'][i%4],st:'pending',aged:0,
+        signed:'Y',memo:'',carry:20+i*7})});
+    addAudit('이월 신청',fmt(n)+'명',g.name+' → 4기');
+    closeAll();V.report();
+    toast(fmt(n)+'명을 4기 신청으로 넘겼어요. 승인은 참여 신청에서 하세요','ok')});
+  f.appendChild(ok)}
+
 V.report=function(){
-  var h=$('#v-report');
+  var h=$('#v-report'),cg=groupById(getGroup()),ended=cg.st==='종료';
   h.innerHTML=ph('월간 리포트','보건소 제출 자료 6종을 한 번에 만들어요.','<select class="mfld" aria-label="리포트 대상 월"><option>2026년 7월</option><option>2026년 6월</option></select>')
+   +(ended?(CARRY.done
+      ? note('<b>'+esc(CARRY.to)+' 이월 신청을 '+CARRY.at+'에 접수했어요.</b> '+fmt(CARRY.n)+'명이 신청 대기로 들어갔어요. '
+        +'<b>승인은 한 사람씩</b> 참여 신청 화면에서 하셔야 4기 참여자가 돼요.','ok')
+      : note('<b>'+esc(cg.name)+'이(가) 종료됐어요.</b> 이 기수 참여자를 다음 기수 신청으로 한 번에 넘길 수 있어요. '
+        +'넘겨도 바로 참여자가 되는 건 아니고 <b>승인을 거쳐야</b> 해요.','wa'))
+     :'')
+   +(ended?'<div class="mc" style="padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px">'
+      +'<div style="flex:1"><span class="mh">다음 기수로 이월 신청</span>'
+      +'<div class="mcap" style="margin-top:3px">'+esc(cg.name)+' 참여자를 4기 신청 대기로 쌓아요. 종료된 이 기수의 리포트는 계속 뽑을 수 있어요.</div></div>'
+      +'<button class="mb '+(CARRY.done?'':'mbp')+'" id="r-carry"'+(CARRY.done?' disabled':'')+'>'
+      +(CARRY.done?'신청 완료':'4기로 이월 신청')+'</button></div>':'')
    +'<div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start">'
    +'<div class="gap"><div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px 10px"><span class="mh">포함할 항목</span><span class="mcap mt" style="margin-left:auto" id="r-c"></span></div><div id="r-l"></div></div>'
      +'<div class="mc" style="padding:18px"><span class="mh">서식</span><select class="mfld" aria-label="공문 서식" style="width:100%;margin-top:10px"><option>남동구 보건소 표준 공문 (기본)</option><option>요약본 (2쪽)</option></select>'
@@ -203,6 +248,7 @@ V.report=function(){
      +'<span class="src'+(it[5]?' ms':'')+'">'+it[4]+'</span></span>';
     lab.addEventListener('click',function(){it[3]=it[3]?0:1;V.report()});L.appendChild(lab)});
   $('#r-c').textContent=RI.filter(function(x){return x[3]}).length+' / 6';
+  if($('#r-carry'))$('#r-carry').addEventListener('click',function(){openCarry(cg)});
   ['#r-hwp','#r-xls','#r-pdf'].forEach(function(s,i){$(s).addEventListener('click',function(){
     addAudit('리포트 생성','7월분','보건소 제출');toast(['한글 공문','엑셀 원자료','PDF'][i]+'을 내려받았어요','ok')})});
   var M='text-align:right;font-variant-numeric:tabular-nums';
@@ -219,7 +265,10 @@ V.report=function(){
    +(S[2]?'<h4>2. 위·수탁업체 관리·감독 점검표</h4>'+dt(['단계','점검 내용','판정','증빙'],[
       [['수집·이용'],['고유식별정보 미처리'],[pill('이행','ok')],['수집 항목 스키마']],
       [['관리'],['개인정보 암호화'],[pill('이행','ok')],['저장·전송 점검']],
-      [['관리'],['접속기록 보관·위변조 방지'],[pill('불이행','cr')],['기록 미수집']],
+      [['관리'],['접속기록 보관·위변조 방지'],[pill('이행','ok')],[CFG.locked.retainYears+'년 보관 · 해시 연결 검증']],
+      [['관리'],['접속기록 월 1회 점검'],[auAllChecked()?pill('이행','ok'):pill('불이행','cr')],
+        [auAllChecked()?'8월 점검 완료':'미점검 다운로드 있음']],
+      [['관리'],['취급자 자동 접속차단'],[pill('이행','ok')],[CFG.locked.idleMin+'분 유휴 시 차단']],
       [['관리'],['취급자 정기 교육'],[pill('수기 확인','wa')],['이수증 첨부']]])
      +'<p class="dn2">18개 중 시스템이 증빙할 수 있는 6개만 자동 판정해요.</p>':'')
    +(S[3]?'<h4>3. 운영 현황</h4>'+dt(['지표','7월','6월','증감'],[
@@ -238,6 +287,18 @@ V.report=function(){
 
 /* ══════ 참여 신청 ══════ */
 var aFil={st:['pending','hold'],sg:[],per:''},aSort={key:'aged',dir:-1},aPager=mkPager(function(){V.apply(1)}),aq='',aSel={};
+/* 승인 = 그룹 소속 스위치. 앱 가입 여부가 아니라 "지금 뭘 받고 있나"를 보여준다.
+   승인했는데 미설치 = 승인해줬는데 아무것도 못 받는 중 → 유일한 실제 액션 대상.
+   거절인데 가입함 = 기본 프로그램(미그룹) 이용 중 → 정상이므로 회색으로 조용히. */
+function viaCell(a){
+  return a.carry?pill('3기 이월','in')+'<div class="mcap">지난 기수 활동 '+a.carry+'일</div>'
+                :'<span class="mt" style="color:#667085">직접 신청</span>'}
+function progCell(a){
+  var g=groupById(getGroup());
+  if(a.st==='approved')return a.signed==='Y'
+    ? pill(g.name.length>14?g.name.slice(0,13)+'…':g.name,'ok')
+    : pill('없음 — 앱 미설치','cr');
+  return a.signed==='Y'?pill('미그룹','nu'):'<span style="color:#98A2B3">없음</span>'}
 V.apply=function(keep){
   var h=$('#v-apply');
   if(!keep){
@@ -287,7 +348,7 @@ V.apply=function(keep){
   var th=$('#a-th');
   th.innerHTML='<th style="width:50px;padding-left:20px"><span id="a-all">'+cbx(allOn?'on':someOn?'mx':'off','이 페이지 전체 선택')+'</span></th>'
    +sth('이름','name',aSort)+'<th>연락처</th>'+sth('주소','addr',aSort)+sth('경과','aged',aSort,1)
-   +'<th>상태</th><th>앱 가입</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
+   +'<th>경로</th><th>상태</th><th>받는 중인 프로그램</th><th>메모</th><th style="padding-right:20px;text-align:right">처리</th>';
   bindSort(th,aSort,function(){aPager.page=1;V.apply(1)});
   $('#a-all').addEventListener('click',function(){var on=!allOn;list.forEach(function(a){if(on)aSel[a.id]=1;else delete aSel[a.id]});V.apply(1)});
   var b=$('#a-bulk');
@@ -310,7 +371,7 @@ V.apply=function(keep){
      +'<td style="font-weight:600">'+a.name+'</td><td class="mt" style="color:#475467">'+a.phone+'</td>'
      +'<td style="color:#475467">'+a.addr+'</td>'
      +'<td class="num mt"'+(a.aged>30?' style="color:#B42318;font-weight:700"':'')+'>'+a.aged+'일</td>'
-     +'<td>'+pill(SP[0],SP[1])+'</td><td>'+pill(a.signed==='Y'?'가입함':'미가입',a.signed==='Y'?'ok':'nu')+'</td>'
+     +'<td>'+viaCell(a)+'</td><td>'+pill(SP[0],SP[1])+'</td><td>'+progCell(a)+'</td>'
      +'<td class="mcap">'+(a.memo||'—')+'</td>'
      +'<td style="text-align:right;padding-right:20px">'+acts+'</td>';
     tr.querySelector('.cbx').addEventListener('click',function(e){e.stopPropagation();if(aSel[a.id])delete aSel[a.id];else aSel[a.id]=1;V.apply(1)});
@@ -510,32 +571,164 @@ function openCx(){
     closeAll();V.cx();toast('문의를 보냈어요. 보통 2일 안에 회신돼요','ok')});
   f.appendChild(ok)}
 
+var auTab='log',auChk={};
+/* 점검표 판정의 근거 — 화면 상태가 그대로 증빙이 되게 */
+function auAllChecked(){
+  return AUDIT.filter(function(a){return /내려받기|다운로드/.test(a[4])})
+    .every(function(a){return a[9]||auChk[a[0]]})}
+A.auAllChecked=auAllChecked;
 V.audit=function(){
-  var h=$('#v-audit');
-  h.innerHTML=ph('열람 기록','개인정보를 열람하거나 내려받은 이력이에요. 2년간 보관돼요.','<button class="mb" id="au-dl">점검표 증빙용 내려받기</button>')
-   +note('보건소 관리·감독 점검표의 <b>접속기록 보관</b> 항목 증빙으로 그대로 제출할 수 있어요.','in')
-   +kpi([['이번 달 열람',fmt(AUDIT.length),'건'],['명단 내려받기','6','회'],['원문 열람','38','건'],
-         ['기록 안 된 열람','0','건','열람은 기록이 자동으로 남아요','ok']])
-   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="au-f"></div>'
-   +'<div class="scroll"><table class="mtb"><thead><tr id="au-th"></tr></thead><tbody id="au-tb"></tbody></table></div><div class="pager" id="au-pg"></div></div>';
+  var H=$('#v-audit');
+  var dls=AUDIT.filter(function(a){return /내려받기|다운로드/.test(a[4])});
+  var undone=dls.filter(function(a){return !a[9]&&!auChk[a[0]]}).length;
+  H.innerHTML=ph('열람 기록','개인정보를 열람하거나 내려받은 이력이에요. '+CFG.locked.retainYears+'년간 보관돼요.',
+    '<button class="mb" id="au-dl">점검표 증빙용 내려받기</button>')
+   +note('민감정보를 처리하는 시스템이라 접속기록을 <b>'+CFG.locked.retainYears+'년</b> 보관해요. 일반 개인정보는 1년이에요. '
+     +'기록에는 <b>계정 · 일시 · 접속지 · 처리한 정보주체 · 수행업무</b>가 모두 남아요.','in')
+   +kpi([['이번 달 열람',fmt(AUDIT.length),'건'],['명단 내려받기',fmt(dls.length),'회'],
+         ['점검 안 한 다운로드',fmt(undone),'건',undone?'월 1회 점검이 필요해요':'모두 확인했어요',undone?'cr':'ok'],
+         ['사유 없이 열람','0','건','사유는 반드시 남겨야 해요','ok']])
+   +'<div class="mc" style="overflow:hidden"><div class="tabs" id="au-tabs"></div><div id="au-body"></div></div>';
   $('#au-dl').addEventListener('click',function(){toast('증빙용 파일을 내려받았어요','ok')});
+  var tb=$('#au-tabs');
+  [['log','기록'],['chk','월간 점검'+(undone?' ('+undone+')':'')],['int','무결성']].forEach(function(x){
+    var b=el('button','tab',x[1]);b.setAttribute('aria-selected',auTab===x[0]?'true':'false');
+    b.addEventListener('click',function(){auTab=x[0];V.audit()});tb.appendChild(b)});
+  var B=$('#au-body');
+  if(auTab==='log')auLog(B); else if(auTab==='chk')auCheck(B,dls); else auIntegrity(B)};
+
+function auLog(B){
+  B.innerHTML='<div class="row" style="padding:16px 20px" id="au-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr id="au-th"></tr></thead><tbody id="au-tb"></tbody></table></div>'
+   +'<div class="pager" id="au-pg"></div>';
   var acts={};AUDIT.forEach(function(a){acts[a[4]]=(acts[a[4]]||0)+1});
   var f=$('#au-f');
   Object.keys(acts).forEach(function(k){
     var b=el('button','mchip'+(auFil.indexOf(k)>=0?' on':''),k+' <span class="c mt">'+acts[k]+'</span>');
-    b.addEventListener('click',function(){var i=auFil.indexOf(k);if(i>=0)auFil.splice(i,1);else auFil.push(k);auPager.page=1;V.audit()});f.appendChild(b)});
+    b.addEventListener('click',function(){var i=auFil.indexOf(k);if(i>=0)auFil.splice(i,1);else auFil.push(k);
+      auPager.page=1;V.audit()});f.appendChild(b)});
   var th=$('#au-th');
-  th.innerHTML=sth('일시','t',auSort)+sth('담당자','w',auSort)+'<th>소속</th>'+sth('행위','a',auSort)+'<th class="num">대상</th><th>사유</th><th style="padding-right:20px">접속 위치</th>';
+  th.innerHTML=sth('일시','t',auSort)+sth('담당자','w',auSort)+'<th>소속</th>'+sth('수행업무','a',auSort)
+   +'<th class="num">건수</th><th>처리한 정보주체</th><th>사유</th><th style="padding-right:20px">접속지</th>';
   bindSort(th,auSort,function(){auPager.page=1;V.audit()});
   var list=AUDIT.filter(function(a){return !auFil.length||auFil.indexOf(a[4])>=0});
   list=sortBy(list,auSort,function(a,k){return k==='t'?a[0]:k==='w'?a[1]:a[4]});
   var rows=auPager.slice(list),tb=$('#au-tb');tb.innerHTML='';
   rows.forEach(function(a){
-    tb.appendChild(el('tr',null,'<td class="mt" style="padding-left:20px;color:#475467">'+a[0]+'</td>'
+    var subj=a[8]||['—'];
+    var cell=subj.length===1?esc(subj[0])
+      :'<b style="font-weight:600">'+subj.length+'명</b> <button class="mb mbx au-more">보기</button>';
+    var tr=el('tr',null,'<td class="mt" style="padding-left:20px;color:#475467">'+a[0]+'</td>'
      +'<td style="font-weight:600">'+a[1]+'</td><td>'+(a[3]?pill(a[2],'in'):'<span style="color:#667085">'+a[2]+'</span>')+'</td>'
-     +'<td>'+a[4]+'</td><td class="num mt" style="color:#475467">'+a[5]+'</td><td style="color:#475467">'+a[6]+'</td>'
-     +'<td class="mt" style="color:#69707C;padding-right:20px">'+a[7]+'</td>'))});
-  auPager.render($('#au-pg'))};
+     +'<td>'+a[4]+'</td><td class="num mt" style="color:#475467">'+a[5]+'</td>'
+     +'<td class="mt" style="color:#475467;max-width:240px">'+cell+'</td>'
+     +'<td style="color:#475467">'+a[6]+'</td>'
+     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+a[7]+'</td>');
+    var more=tr.querySelector('.au-more');
+    if(more)more.addEventListener('click',function(){
+      var b2=el('div');b2.innerHTML='<p class="mcap">'+a[0]+' · '+a[4]+'</p>'
+        +'<div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">'
+        +subj.map(function(x){return '<div style="padding:8px 11px;background:#F9FAFB;border-radius:7px;font-size:13.5px">'+esc(x)+'</div>'}).join('')+'</div>';
+      modalBox('처리한 정보주체',b2)});
+    tb.appendChild(tr)});
+  auPager.render($('#au-pg'))}
+
+/* 월 1회 점검 — 보관만으로는 부족하고 점검 기록이 남아야 증빙이 된다 */
+function auCheck(B,dls){
+  B.innerHTML='<div class="mcap" style="padding:14px 20px 0">고시는 접속기록을 <b>월 1회 이상 점검</b>하고, '
+   +'특히 개인정보를 내려받은 건은 사유가 업무 목적에 맞는지 확인하라고 해요. 확인하면 점검자와 일시가 남아요.</div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">일시</th><th>담당자</th>'
+   +'<th>수행업무</th><th class="num">건수</th><th>사유</th><th>점검</th>'
+   +'<th style="padding-right:20px;text-align:right">확인</th></tr></thead><tbody id="ac-tb"></tbody></table></div>'
+   +'<div style="padding:16px 20px;border-top:1px solid #F2F4F7;display:flex;align-items:center;gap:12px">'
+   +'<span class="mcap" style="flex:1">8월 점검 담당 · 김주무 주무관</span>'
+   +'<button class="mb mbp" id="ac-done">8월 점검 완료 처리</button></div>';
+  var tb=$('#ac-tb');tb.innerHTML='';
+  if(!dls.length)tb.innerHTML='<tr><td colspan="7">'+emptyBox('이번 달 내려받기가 없어요','점검할 건이 없어요')+'</td></tr>';
+  dls.forEach(function(a){
+    var ok=a[9]||auChk[a[0]];
+    var tr=el('tr');
+    tr.innerHTML='<td class="mt" style="padding-left:20px;color:#475467">'+a[0]+'</td>'
+     +'<td style="font-weight:600">'+a[1]+'</td><td>'+a[4]+'</td>'
+     +'<td class="num mt">'+a[5]+'</td><td style="color:#475467">'+a[6]+'</td>'
+     +'<td>'+(ok?pill('확인함','ok'):pill('미점검','cr'))+'</td>'
+     +'<td style="padding-right:20px;text-align:right"></td>';
+    if(!ok){var b=el('button','mb mbx','사유 적정 확인');
+      b.addEventListener('click',function(){auChk[a[0]]=1;V.audit();toast('점검 기록을 남겼어요','ok')});
+      tr.lastChild.appendChild(b)}
+    else tr.lastChild.innerHTML='<span class="mcap">김주무 · 확인 완료</span>';
+    tb.appendChild(tr)});
+  $('#ac-done').addEventListener('click',function(){
+    dls.forEach(function(a){auChk[a[0]]=1});
+    addAudit('접속기록 점검',dls.length+'건','월 1회 정기 점검',['집계값만 · 개별 식별 없음']);
+    V.audit();toast('8월 점검을 완료했어요. 점검표 증빙에 들어가요','ok')})}
+
+/* 위·변조 방지 — 기록을 남기는 것만으로는 부족하다 */
+function auIntegrity(B){
+  B.innerHTML='<div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">'
+   +note('접속기록은 <b>남기는 것</b>만으로는 부족하고 <b>위·변조되지 않게 보관</b>해야 해요. '
+     +'어드민에서 기록을 지우거나 고칠 수 있으면 증빙 가치가 없어요.','in')
+   +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">점검 항목</th>'
+   +'<th>상태</th><th style="padding-right:20px">설명</th></tr></thead><tbody>'
+   +[['기록 수정·삭제 차단',1,'어드민에 수정·삭제 기능이 없어요. 읽기와 내려받기만 됩니다.'],
+     ['무결성 검증값 저장',1,'기록마다 해시를 저장하고 앞 기록과 연결해요. 중간을 지우면 검증이 깨져요.'],
+     ['최근 검증',1,'오늘 03:00 자동 검증 · 이상 없음'],
+     ['보관기간',1,CFG.locked.retainYears+'년 — 민감정보 처리 시스템 기준'],
+     ['백업 분리 보관',0,'서버 영역이에요. 인프라 담당 확인이 필요해요.']].map(function(x){
+     return '<tr><td style="padding-left:20px;font-weight:600">'+x[0]+'</td>'
+      +'<td>'+(x[1]?pill('이행','ok'):pill('미확인','nu'))+'</td>'
+      +'<td style="color:#475467;padding-right:20px">'+x[2]+'</td></tr>'}).join('')
+   +'</tbody></table></div>'
+   +'<p class="mcap">이 상태가 월간 리포트의 <b>관리·감독 점검표</b>에 그대로 들어가요.</p></div>'};
+
+/* ═══ 전역 검색 ═══
+   PIN 을 '전화 응대용 조회번호'로 정의해놓고 정작 어디서든 칠 곳이 없었다.
+   전화 받은 채로 메뉴를 들어가게 하지 않는다.
+   결과는 마스킹 상태로 보이고, 열려면 사유를 받는다 — 상세 진입과 같은 규칙. */
+function gsRun(q){
+  var box=$('#gs-res');if(!box)return;
+  q=(q||'').trim();
+  if(q.length<2){box.classList.remove('on');box.innerHTML='';return}
+  var low=q.toLowerCase();
+  var ppl=PEOPLE.filter(function(p){
+    return p.pin.indexOf(q)===0||p.tail.indexOf(q)===0||p.name.indexOf(q)>=0||p.full.indexOf(q)>=0}).slice(0,6);
+  var grp=GROUPS.filter(function(g){return !g.ghost&&g.ch===CH_SELF&&g.name.toLowerCase().indexOf(low)>=0}).slice(0,3);
+  box.innerHTML='';
+  if(!ppl.length&&!grp.length){
+    box.innerHTML='<div class="ge">‘'+esc(q)+'’으로 찾은 게 없어요<br>'
+      +'<span class="mcap">이름 · PIN · 전화 뒷자리로 찾을 수 있어요</span></div>';
+    box.classList.add('on');return}
+  if(ppl.length){
+    box.appendChild(el('div','gh','참여자 '+ppl.length));
+    ppl.forEach(function(p){
+      var b=el('button');b.type='button';
+      b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(p.name)+'</span>'
+        +'<span class="gm">PIN '+p.pin+' · '+p.phone+' · '+esc(p.org)+'</span></span>'
+        +pill(p.status==='active'?'참여 중':p.status==='dropped'?'중도포기':'만료',
+              p.status==='active'?'nu':p.status==='dropped'?'cr':'wa');
+      b.addEventListener('click',function(){gsClose();A.askOpen(p,'people')});
+      box.appendChild(b)})}
+  if(grp.length){
+    box.appendChild(el('div','gh','프로그램 그룹 '+grp.length));
+    grp.forEach(function(g){
+      var b=el('button');b.type='button';
+      b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(g.name)+'</span>'
+        +'<span class="gm">'+KIND[g.kind][0]+' · 대상자 '+fmt(g.n)+'명</span></span>'+pill(g.st,g.k);
+      b.addEventListener('click',function(){gsClose();putGroup(g.id);go('groups')});
+      box.appendChild(b)})}
+  box.classList.add('on')}
+function gsClose(){var b=$('#gs-res');if(b)b.classList.remove('on');var i=$('#gs');if(i)i.value=''}
+if($('#gs')){
+  $('#gs').addEventListener('input',function(){gsRun(this.value)});
+  $('#gs').addEventListener('keydown',function(e){
+    if(e.key==='Escape'){gsClose();this.blur()}
+    if(e.key==='Enter'){var b=$('#gs-res button');if(b)b.click()}});
+  document.addEventListener('mousedown',function(e){
+    if(!e.target.closest('#gs-wrap')){var r=$('#gs-res');if(r)r.classList.remove('on')}});
+  /* 어디서든 / 로 검색 */
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))){
+      e.preventDefault();$('#gs').focus()}})}
 
 /* ══════ init ══════ */
 /* 세션 만료 시 열려 있던 원문을 닫는다 */
