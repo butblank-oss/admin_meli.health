@@ -40,6 +40,18 @@ button,input,select,textarea{font-family:inherit;letter-spacing:-0.011em}
 .kvform{display:grid;grid-template-columns:150px 1fr;gap:11px 14px;align-items:start}
 .kvform>label{font-size:13px;font-weight:500;color:#344054;padding-top:9px}
 .dcal button.lockd{background:repeating-linear-gradient(45deg,#F9FAFB,#F9FAFB 3px,#F2F4F7 3px,#F2F4F7 6px);color:#D0D5DD;cursor:not-allowed}
+#gs::placeholder{color:#98A2B3}
+#gs:focus{border-color:#6BDCAF;background:rgba(255,255,255,.14)}
+#gs-res{position:absolute;top:38px;right:0;width:340px;background:#fff;border:1px solid #EAECF0;
+  border-radius:10px;box-shadow:0 8px 24px rgba(16,24,40,.14);overflow:hidden;display:none;z-index:60;max-height:380px;overflow-y:auto}
+#gs-res.on{display:block}
+#gs-res .gh{font-size:11.5px;font-weight:600;color:#98A2B3;padding:10px 14px 5px}
+#gs-res button{display:flex;width:100%;gap:10px;align-items:center;padding:9px 14px;background:none;border:none;
+  text-align:left;cursor:pointer;font:inherit}
+#gs-res button:hover{background:#F9FAFB}
+#gs-res .gn{font-size:13.5px;font-weight:600;color:#101828}
+#gs-res .gm{font-size:12px;color:#667085;margin-top:1px}
+#gs-res .ge{padding:18px 14px;font-size:13px;color:#667085;text-align:center}
 .pcal .dy.edt{cursor:pointer}
 .pcal .dy.edt:hover{background:#F9FAFB;box-shadow:inset 0 0 0 1px #6BDCAF}
 .mnav.ext{color:#98A2B3}
@@ -260,12 +272,17 @@ th .sw:hover{color:#101828}
     <button class="mb" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
     <span style="color:#475467;font-size:13px">›</span>
     <button class="mb" id="grp-btn" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">3기 두뇌운동 치매예방교실<span class="mt" id="grp-sub" style="font-size:12.5px;color:#98A2B3">기수형 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+    <div id="gs-wrap" style="margin-left:auto;position:relative;margin-right:4px">
+      <input id="gs" placeholder="이름 · PIN · 전화 뒷자리" autocomplete="off"
+        style="width:230px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.14);
+background:rgba(255,255,255,.08);color:#fff;padding:0 11px;font-size:13px;outline:none">
+      <div id="gs-res"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
       <div id="sf-tog" role="group" aria-label="표면 전환" style="display:flex;background:rgba(255,255,255,.08);border-radius:8px;padding:3px;gap:2px;margin-right:4px">
         <button data-s="manager" aria-pressed="true">채널관리자</button>
         <button data-s="admin" aria-pressed="false">슈퍼어드민</button>
       </div>
-      <button class="mb" id="top-idle" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">세션 시험</button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">도움말</button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px">3</span></button>
       <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;padding-left:6px"><span style="width:24px;height:24px;border-radius:999px;background:#13BD7E;color:#043528;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center">김</span>김주무<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
@@ -1030,7 +1047,7 @@ V.today=function(){
     $('#t-attn').appendChild(tr)})};
 
 /* ══════ 참여자 ══════ */
-var pf={st:[],org:[],act:[],cs:[]},pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
+var pf={st:[],org:[],act:[],cs:[],mine:[]},pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
 V.people=function(keep){
   var h=$('#v-people');
   if(!keep){
@@ -1049,6 +1066,7 @@ V.people=function(keep){
       ['만료','st:expired',cnt(function(p){return p.status==='expired'})],['회원탈퇴','st:withdrawn',cnt(function(p){return p.status==='withdrawn'})],['|',''],
     ].concat(ORGS.map(function(o){return [o,'org:'+o,cnt(function(p){return p.org===o})]})).concat([['|',''],
       /* 오늘 화면과 같은 M을 쓴다. 화면마다 따로 세면 숫자가 갈린다. */
+      ['내 담당만','mine:1',cnt(function(p){return ownerOf(p,groupById(getGroup()))==='김주무'})],['|',''],
       ['민감정보 동의 없음','cs:none',M.noSensitiveConsent()],['동의 철회','cs:rv',M.revoked()],['|',''],
       ['오늘 수행','act:today',M.todayDone()],[bandLabel().recent,'act:recent',M.weekActive()],
       [bandLabel().warn,'act:warn',M.inactive7()],
@@ -1057,7 +1075,8 @@ V.people=function(keep){
     var cb=$('#p-chips');
     CH.forEach(function(c){
       if(c[0]==='|'){cb.appendChild(el('span','sep'));return}
-      var on=(c[1].indexOf('st:')===0&&pf.st.indexOf(c[1].slice(3))>=0)||(c[1].indexOf('org:')===0&&pf.org.indexOf(c[1].slice(4))>=0)||(c[1].indexOf('act:')===0&&pf.act.indexOf(c[1].slice(4))>=0)||(c[1].indexOf('cs:')===0&&pf.cs.indexOf(c[1].slice(3))>=0);
+      var ct=c[1].slice(0,c[1].indexOf(':')),cvv=c[1].slice(c[1].indexOf(':')+1);
+      var on=(pf[ct]||[]).indexOf(cvv)>=0;
       var b=el('button','mchip'+(on?' on':''),esc(c[0])+(c[2]!=null?' <span class="c mt">'+fmt(c[2])+'</span>':''));
       b.dataset.v=c[1];
       b.addEventListener('click',function(){toggleChip(c[1])});cb.appendChild(b)});
@@ -1119,6 +1138,7 @@ function filterP(){
     if(pf.act.length&&!pf.act.some(function(v){return v==='today'?p.todayN>0:band(p)===v}))return false;
     if(pf.cs.length&&!pf.cs.some(function(v){
       return v==='none'?(!p.consent.sensitive&&!p.consent.revoked):!!p.consent.revoked}))return false;
+    if(pf.mine.length&&ownerOf(p,groupById(getGroup()))!=='김주무')return false;
     if(ab&&p.ageBand!==ab)return false;
     if(sx&&p.sex!==sx)return false;
     if(pq)return p.full.indexOf(pq)>=0||p.tail.indexOf(pq)>=0||p.pin.indexOf(pq)>=0;
@@ -1157,6 +1177,7 @@ function renderBulk(){
 var revC=null,revT=null;
 /* 상세 화면은 검사 점수·건강 기록이 모두 보이는 곳이라, 들어가는 것 자체가 열람이다.
    그래서 진입할 때 사유를 받고, 받으면 바로 연다. */
+A.askOpen=function(p,from){return askOpen(p,from)};
 function askOpen(p,from){
   revC={p:p,from:from||'people'};
   $('#rev-t').textContent=p.name+' · '+p.birth+'년생 · '+p.org;
@@ -1909,9 +1930,9 @@ var MSGS=[
  {id:'m2',when:'08-24 (일) 09:00',rel:'3일 뒤',t:'8월 걷기 챌린지가 시작돼요',memo:'챌린지 시작 안내',tgt:'3기 전체',n:785,how:'푸시 + 알림함',st:'예약됨',k:'in',tab:'sched'},
  {id:'m3',when:'08-25 (월) 10:00',rel:'4일 뒤',t:'이번 주 프로그램을 알려드려요',memo:'주간 안내 · 반복 발송',tgt:'남동구보건소',n:341,how:'푸시',st:'매주 월요일 반복',k:'nu',tab:'sched'},
  {id:'m4',when:'08-28 (목) 14:00',rel:'7일 뒤',t:'앱을 새로 받아주세요',memo:'구버전 업데이트 안내',tgt:'3개월 넘게 구버전 사용',n:32,how:'푸시',st:'대상 자동 갱신',k:'wa',tab:'sched'},
- {id:'s1',when:'08-19 (화) 09:00',rel:'2일 전',t:'오늘의 활동이 도착했어요',memo:'일일 안내',tgt:'3기 전체',n:781,how:'푸시 + 알림함',st:'열어봄 41.2%',k:'ok',tab:'sent'},
- {id:'s2',when:'08-14 (목) 09:00',rel:'7일 전',t:'이번 주도 함께해요',memo:'주간 안내',tgt:'남동구보건소',n:338,how:'푸시',st:'열어봄 36.8%',k:'ok',tab:'sent'},
- {id:'s3',when:'08-12 (화) 15:00',rel:'9일 전',t:'설문에 참여해 주세요',memo:'만족도 조사',tgt:'활동자 전체',n:294,how:'푸시 + 알림함',st:'열어봄 28.4%',k:'wa',tab:'sent'},
+ {id:'s1',when:'08-19 (화) 09:00',rel:'2일 전',t:'오늘의 활동이 도착했어요',memo:'일일 안내',tgt:'3기 전체',n:781,how:'푸시 + 알림함',st:'열어봄 41.2%',k:'ok',tab:'sent',open:322,retry:0},
+ {id:'s2',when:'08-14 (목) 09:00',rel:'7일 전',t:'이번 주도 함께해요',memo:'주간 안내',tgt:'남동구보건소',n:338,how:'푸시',st:'열어봄 36.8%',k:'ok',tab:'sent',open:124,retry:0},
+ {id:'s3',when:'08-12 (화) 15:00',rel:'9일 전',t:'설문에 참여해 주세요',memo:'만족도 조사',tgt:'활동자 전체',n:294,how:'푸시 + 알림함',st:'열어봄 28.4%',k:'wa',tab:'sent',open:83,retry:1},
  {id:'d1',when:'—',rel:'임시저장 08-20 14:20',t:'9월 프로그램 안내',memo:'작성 중',tgt:'3기 전체',n:822,how:'푸시 + 알림함',st:'임시저장',k:'nu',tab:'draft'},
  {id:'d2',when:'—',rel:'임시저장 08-18 11:05',t:'',memo:'제목 없음',tgt:'미지정',n:0,how:'—',st:'임시저장',k:'nu',tab:'draft'}];
 var mTab='sched',mSort={key:'when',dir:1};
@@ -1943,19 +1964,64 @@ V.push=function(){
   if(!list.length)$('#pu-empty .mb').addEventListener('click',function(){go('pushnew')});
   list.forEach(function(m){
     var tr=el('tr');
-    var acts=m.tab==='sent'?'<button class="mb mbx">성과 보기</button>':
+    var acts=m.tab==='sent'?'<button class="mb mbx rs">안 연 분께 다시</button>':
       '<button class="mb mbx ed">수정</button> <button class="mb mbx cn" style="color:#B42318">'+(m.tab==='draft'?'삭제':'취소')+'</button>';
     tr.innerHTML='<td style="padding-left:20px"><b class="mt" style="font-size:13px">'+m.when+'</b><span class="mcap" style="display:block;font-size:11.5px">'+m.rel+'</span></td>'
      +'<td><b style="font-weight:600">'+(m.t||'<span style="color:#98A2B3">제목 없음</span>')+'</b><span class="mcap" style="display:block;font-size:11.5px">'+m.memo+'</span></td>'
      +'<td style="color:#475467">'+m.tgt+'</td><td class="num mt">'+(m.n?fmt(m.n):'—')+'</td>'
      +'<td class="mcap">'+m.how+'</td><td>'+pill(m.st,m.k)+'</td>'
      +'<td style="text-align:right;padding-right:20px">'+acts+'</td>';
-    var e=tr.querySelector('.ed'),c=tr.querySelector('.cn');
+    var e=tr.querySelector('.ed'),c=tr.querySelector('.cn'),rs=tr.querySelector('.rs');
+    if(rs)rs.addEventListener('click',function(){openRetry(m)});
     if(e)e.addEventListener('click',function(){go('pushnew')});
     if(c)c.addEventListener('click',function(){
       var i=MSGS.indexOf(m);MSGS.splice(i,1);V.push();
       toast('“'+(m.t||'제목 없음')+'”을 '+(m.tab==='draft'?'삭제':'취소')+'했어요','ok','되돌리기',function(){MSGS.splice(i,0,m);V.push()})});
     tb.appendChild(tr)})};
+
+/* 보낸 뒤가 끊겨 있었다 — 열람률까지만 보이고 안 연 사람에게 다시 보낼 길이 없었다.
+   무활동자 관리가 목적인데 루프가 한 바퀴에서 멈추면 의미가 없다. */
+function openRetry(m){
+  var unread=m.n-(m.open||0),pct=m.n?Math.round((m.open||0)/m.n*100):0;
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap"><b>“'+esc(m.t)+'”</b> · '+m.when+'</p>'
+   +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'
+   +[['받은 사람',fmt(m.n),''],['열어봄',fmt(m.open||0),pct+'%'],['안 열어봄',fmt(unread),(100-pct)+'%']]
+     .map(function(x,i){return '<div style="background:'+(i===2?'#FFFAEB':'#F9FAFB')+';border-radius:8px;padding:12px 13px">'
+       +'<div class="mcap">'+x[0]+'</div><div class="mt" style="font-size:20px;font-weight:700;letter-spacing:-.03em;margin-top:2px;color:'
+       +(i===2?'#B54708':'#101828')+'">'+x[1]+'<span style="font-size:11.5px;color:#98A2B3;font-weight:600;margin-left:3px">'+x[2]+'</span></div></div>'}).join('')
+   +'</div>'
+   +(m.retry?note('이미 <b>'+m.retry+'번</b> 다시 보냈어요. 반복 발송은 피로도를 올려요 — 전화나 방문이 나을 수 있어요.','wa'):'')
+   +'<div><span class="flab">다시 보낼 대상</span>'
+   +'<div id="rt-k" style="display:flex;gap:8px;margin-top:2px">'
+   +'<button class="mb" data-k="all" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>안 연 분 전체</b><div class="mcap">'+fmt(unread)+'명</div></button>'
+   +'<button class="mb" data-k="act" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
+   +'<b>안 열고 활동도 없는 분</b><div class="mcap">'+fmt(Math.round(unread*0.42))+'명 · 더 급해요</div></button></div></div>'
+   +'<div><span class="flab">보낼 시각</span><select class="mfld" id="rt-w" style="width:100%">'
+   +'<option>내일 오전 9시 (열람률이 가장 높아요)</option><option>오늘 오후 2시</option><option>모레 오전 9시</option></select></div>'
+   +note('알림을 끈 분께는 가지 않아요. 같은 내용이 두 번 가는 게 부담이면 문구를 바꿔서 보내세요.','in');
+  var kind='all';
+  function paint(){$$('#rt-k .mb',b).forEach(function(x){
+    var on=x.dataset.k===kind;x.style.borderColor=on?'#6BDCAF':'#D0D5DD';x.style.background=on?'#E7F9F1':'#fff'})}
+  $$('#rt-k .mb',b).forEach(function(x){x.addEventListener('click',function(){kind=x.dataset.k;paint()})});
+  paint();
+  modalBox('안 연 분께 다시 보내기',b);
+  var f=$('#m-group .mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ed=el('button','mb','문구 바꿔서');
+  ed.addEventListener('click',function(){closeAll();go('pushnew');toast('이전 내용을 불러왔어요. 문구만 바꾸면 돼요')});
+  f.appendChild(ed);
+  var ok=el('button','mb mbp','그대로 예약');
+  ok.addEventListener('click',function(){
+    var n=kind==='all'?unread:Math.round(unread*0.42);
+    m.retry=(m.retry||0)+1;
+    MSGS.unshift({id:'r'+Date.now(),when:'08-22 (금) 09:00',rel:'내일',t:m.t,
+      memo:'재발송 · '+m.memo,tgt:'“'+m.t+'” 안 열어본 분',n:n,how:m.how,st:'예약됨',k:'in',tab:'sched'});
+    addAudit('푸시 발송',fmt(n)+'명','미열람 재발송 · '+m.t,['미열람 '+fmt(n)+'명']);
+    closeAll();V.push();
+    toast(fmt(n)+'명에게 다시 보내기로 예약했어요','ok','실행 취소',function(){
+      MSGS.shift();m.retry--;V.push()})});
+  f.appendChild(ok)}
 
 /* ══════ 메시지 만들기 ══════ */
 var nw={seg:'both',target:'act:14',title:'오늘은 가볍게 걷기만 해볼까요',
@@ -2633,7 +2699,7 @@ V.settings=function(){
        +'<input class="mfld" id="st-pt" type="number" min="1" max="23" value="'+CFG.pushTo+'" style="width:76px"> 시'
        +'<span class="mcap">이 밖으로 예약하면 다음 날 시작 시각으로 옮겨져요</span></div></div>'
      +lockRow('자동 로그아웃',CFG.locked.idleMin+'분 동안 조작이 없으면 접속 차단',
-       '개인정보 보호법 안전성 확보조치 기준이에요. 열어둔 원문도 같이 닫혀요. <button class="mb mbx" id="st-idle">10초로 시험</button>')
+       '개인정보 보호법 안전성 확보조치 기준이에요. 열어둔 원문도 같이 닫혀요.')
      +lockRow('상담 자동 이관',CFG.locked.escalateDays+'일 무응답 시 운영팀으로 알림',
        '담당자 1명 = 답변 권한 1명 구조라서 생긴 제약이에요. 구조가 바뀌면 열려요.'))
 
@@ -2657,9 +2723,7 @@ V.settings=function(){
     var t=el('span','mpill');t.style.cssText='background:#F2F4F7;color:#475467;padding:5px 10px';
     t.textContent=x;sb.appendChild(t)});
   $('#st-addsite').addEventListener('click',function(){toast('시설 이름을 입력받아요')});
-  if($('#st-idle'))$('#st-idle').addEventListener('click',function(){
-    window.__idleTestSec=10;A.sessReset();
-    toast('10초 뒤 경고가 떠요. 마우스·키보드를 건드리지 마세요','wa')});
+
   $('#st-form').value=CFG.form;
 
   /* 보고 서식 미리보기 실시간 반영 */
@@ -3163,9 +3227,54 @@ V.channels=function(){
 $$('#sf-tog button').forEach(function(b){
   b.addEventListener('click',function(){setSurface(b.dataset.s)})});
 $('#grp-btn').addEventListener('click',openGroupPicker);
-$('#top-idle').addEventListener('click',function(){
-  window.__idleTestSec=12;A.SESS.warnSec=8;A.sessReset();
-  toast('12초 뒤 자동 로그아웃돼요. 4초 뒤 경고가 뜹니다 — 마우스·키보드를 건드리지 마세요','wa')});
+
+/* ═══ 전역 검색 ═══
+   PIN을 '전화 응대용 조회번호'로 정의해놓고 정작 어디서든 칠 곳이 없었다.
+   전화 받은 채로 메뉴를 들어가게 하지 않는다. 결과는 마스킹 상태로 보이고,
+   열려면 사유를 받는다 — 상세 진입과 같은 규칙이다. */
+function gsRun(q){
+  var box=$('#gs-res');
+  q=(q||'').trim();
+  if(q.length<2){box.classList.remove('on');box.innerHTML='';return}
+  var low=q.toLowerCase();
+  var ppl=PEOPLE.filter(function(p){
+    return p.pin.indexOf(q)===0||p.tail.indexOf(q)===0||p.name.indexOf(q)>=0||p.full.indexOf(q)>=0}).slice(0,6);
+  var grp=GROUPS.filter(function(g){return !g.ghost&&g.ch===CH_SELF&&g.name.toLowerCase().indexOf(low)>=0}).slice(0,3);
+  box.innerHTML='';
+  if(!ppl.length&&!grp.length){
+    box.innerHTML='<div class="ge">‘'+esc(q)+'’으로 찾은 게 없어요<br><span class="mcap">이름·PIN·전화 뒷자리로 찾을 수 있어요</span></div>';
+    box.classList.add('on');return}
+  if(ppl.length){
+    box.appendChild(el('div','gh','참여자 '+ppl.length));
+    ppl.forEach(function(p){
+      var b=el('button');
+      b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(p.name)+'</span>'
+        +'<span class="gm">PIN '+p.pin+' · '+p.phone+' · '+esc(p.org)+'</span></span>'
+        +pill(p.status==='active'?'참여 중':p.status==='dropped'?'중도포기':'만료',
+              p.status==='active'?'nu':p.status==='dropped'?'cr':'wa');
+      b.addEventListener('click',function(){gsClose();A.askOpen(p,'people')});
+      box.appendChild(b)})}
+  if(grp.length){
+    box.appendChild(el('div','gh','프로그램 그룹 '+grp.length));
+    grp.forEach(function(g){
+      var b=el('button');
+      b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(g.name)+'</span>'
+        +'<span class="gm">'+KIND[g.kind][0]+' · 대상자 '+fmt(g.n)+'명</span></span>'+pill(g.st,g.k);
+      b.addEventListener('click',function(){gsClose();setGroup(g.id);go('groups')});
+      box.appendChild(b)})}
+  box.classList.add('on')}
+function gsClose(){$('#gs-res').classList.remove('on');$('#gs').value=''}
+$('#gs').addEventListener('input',function(){gsRun(this.value)});
+$('#gs').addEventListener('keydown',function(e){
+  if(e.key==='Escape'){gsClose();this.blur()}
+  if(e.key==='Enter'){var b=$('#gs-res button');if(b)b.click()}});
+document.addEventListener('mousedown',function(e){
+  if(!e.target.closest('#gs-wrap'))$('#gs-res').classList.remove('on')});
+/* 어디서든 / 로 검색 */
+document.addEventListener('keydown',function(e){
+  if(e.key==='/'&&!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName||''))){
+    e.preventDefault();$('#gs').focus()}});
+
 /* 세션 만료 시 열려 있던 원문을 닫는다 */
 A.SESS.onExpire=function(){
   $$('.mask.on').forEach(function(m){if(m.id!=='m-locked'&&m.id!=='m-idle')m.classList.remove('on')});
