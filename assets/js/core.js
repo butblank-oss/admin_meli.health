@@ -94,7 +94,7 @@ function donut(parts,center){
        '<span class="mcap mt" style="width:40px;text-align:right">'+(p[1]/tot*100).toFixed(1)+'%</span></div>'}).join('')+'</div></div>'}
 
 function emptyBox(t,d,btn){return '<div class="empty"><span class="mh">'+t+'</span>'+(d?'<span class="mcap">'+d+'</span>':'')+(btn?'<button class="mb" style="margin-top:4px">'+btn+'</button>':'')+'</div>'}
-function search(id,ph2,w){return '<span style="position:relative;display:inline-flex;align-items:center;width:'+(w||'300px')+'">'+
+function search(id,ph2,w){return '<span class="srch" style="position:relative;display:inline-flex;align-items:center;width:'+(w||'300px')+'">'+
   '<span style="position:absolute;left:11px;color:#69707C;display:flex">'+SRCH+'</span>'+
   '<input class="mfld" id="'+id+'" style="width:100%;padding-left:33px;padding-right:30px" placeholder="'+ph2+'">'+
   '<button id="'+id+'-x" type="button" aria-label="검색어 지우기" style="display:none;position:absolute;right:9px;width:17px;height:17px;border-radius:999px;background:#69707C;color:#fff;border:none;cursor:pointer;align-items:center;justify-content:center;font-size:10px;line-height:1">✕</button></span>'}

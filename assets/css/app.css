@@ -64,6 +64,9 @@ button,input,select,textarea{font-family:inherit;letter-spacing:-0.011em}
 .ph .ttl{font-size:20px;font-weight:700;letter-spacing:-0.032em}
 .ph .acts{margin-left:auto;display:flex;gap:6px;align-items:center}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fbox{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.fgrp{display:flex;align-items:center;gap:8px;min-width:0}
+.fcnt{margin-left:auto;font-size:13px;color:#667085}
 .kpi{display:grid;border-radius:10px;overflow:hidden}
 .kpi>div{padding:14px 16px;border-left:1px solid #EAECF0}
 .kpi>div:first-child{border-left:none}
@@ -418,7 +421,20 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .kpi .mcap{font-size:11px;margin-top:3px !important;line-height:1.35;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
+  /* ── 거르개 ── 검색은 한 줄 가득, 라벨은 칩과 같은 줄, 건수는 왼쪽 아래 작게 */
+  .srch{width:100% !important}
+  .row>select.mfld{flex:1;min-width:0}
+  .fgrp{width:100%;gap:7px;margin-right:-14px}
+  .fgrp>.mcap{flex:none;font-size:11.5px}
+  .fgrp>.row{flex:1;min-width:0;padding-right:14px}
+  .fcnt{margin-left:0;width:100%;font-size:12.5px;color:#69707C}
+  .mc>.row{gap:7px}
+
   /* 필터 칩도 한 줄로 훑는다 — 14개가 세로로 쌓이면 목록이 안 보인다 */
+  /* 칸 안쪽에서 끊기면 글자가 잘린 고장처럼 보인다. 가장자리까지 흘려
+     거기서 잘리게 해야 '옆으로 이어진다'로 읽힌다 */
+  .fbox{padding:14px;gap:9px;overflow:hidden}
+  .fbox>.row:has(>.mchip):not(:has(input)):not(:has(select)){margin-right:-14px;padding-right:14px}
   .row:has(>.mchip):not(:has(input)):not(:has(select)){
     flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
   .row:has(>.mchip):not(:has(input)):not(:has(select))::-webkit-scrollbar{display:none}

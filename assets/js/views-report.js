@@ -306,10 +306,10 @@ V.apply=function(keep){
      +kpi([['대기','111','건','가장 오래된 건 42일째','cr'],['보류','6','건','확인 후 다시 검토','wa'],
            ['승인','1,227','건',''],['거절','27','건',''],['승인했는데 앱 미설치','37','명','설치 안내가 필요해요','wa']])
      +note('<b>지금은 승인 여부와 상관없이 앱에 가입할 수 있어요.</b> 대기 111건 중 27명, 거절 27건 중 15명이 이미 가입해서 활동 중이에요. 승인을 앱 사용 조건으로 걸지 보건소와 정해야 해요.','cr')
-     +'<div class="mc" style="overflow:hidden"><div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
+     +'<div class="mc" style="overflow:hidden"><div class="fbox">'
        +'<div class="row">'+search('aq','이름, 전화 뒷자리, 주소로 찾기','300px')
-       +'<span class="mcap" style="margin-left:4px">신청일</span><span class="row" id="a-per"></span>'
-       +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 신청 <b class="mt" style="color:#101828" id="a-cnt">0</b>건</span></div>'
+       +'<span class="fgrp"><span class="mcap">신청일</span><span class="row" id="a-per"></span></span>'
+       +'<span class="fcnt">조건에 맞는 신청 <b class="mt" style="color:#101828" id="a-cnt">0</b>건</span></div>'
        +'<div class="row" id="a-chips"></div></div>'
        +'<div class="bulk" id="a-bulk"></div>'
        +'<div class="scroll"><table class="mtb"><thead><tr id="a-th"></tr></thead><tbody id="a-tb"></tbody></table></div>'

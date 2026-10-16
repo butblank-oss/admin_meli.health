@@ -88,11 +88,11 @@ V.people=function(keep){
   if(!keep){
     h.innerHTML=ph('참여자','3기에 배정된 822명을 관리해요.',
       '<button class="mb" id="p-msg">단체 메시지</button><button class="mb" data-modal="m-export">명단 내려받기</button>')
-     +'<div class="mc" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
+     +'<div class="mc fbox">'
        +'<div class="row">'+search('pq','이름, 전화 뒷자리, PIN으로 찾기','320px')
        +'<select class="mfld" id="p-age" aria-label="연령대 필터"><option>연령 전체</option><option>60대 미만</option><option>60대</option><option>70대</option><option>80대 이상</option></select>'
        +'<select class="mfld" id="p-sex" aria-label="성별 필터"><option>성별 전체</option><option>여성</option><option>남성</option><option>미상</option></select>'
-       +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 참여자 <b class="mt" style="color:#101828" id="p-cnt">822</b>명</span></div>'
+       +'<span class="fcnt">조건에 맞는 참여자 <b class="mt" style="color:#101828" id="p-cnt">822</b>명</span></div>'
        +'<div class="row" id="p-chips"></div><div class="row" id="p-app" style="display:none;padding-top:10px;border-top:1px solid #F2F4F7"></div></div>'
      +'<div class="mc" style="overflow:hidden"><div class="bulk" id="p-bulk"></div>'
        +'<div class="scroll"><table class="mtb"><thead><tr id="p-th"></tr></thead><tbody id="p-tb"></tbody></table></div>'
