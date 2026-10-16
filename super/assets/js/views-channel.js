@@ -77,7 +77,24 @@ V.channels=function(){
      +'<span style="margin-left:auto;font-size:13px;color:#667085">조건에 맞는 채널 <b class="mt" style="color:#101828" id="c-cnt">'+CHANNELS.length+'</b>개</span></div>'
      +'<div class="row" id="c-chips"></div></div>'
    +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr id="c-th"></tr></thead><tbody id="c-tb"></tbody></table></div>'
-     +'<div id="c-empty" style="display:none"></div></div>';
+     +'<div id="c-empty" style="display:none"></div></div>'
+   /* 모든 채널에 같은 값으로 내려가는 잠금 항목. 채널이 끌 수 없는 것들이라 여기서 한 번만 보여준다 */
+   +'<div class="mc" style="overflow:hidden">'+chead('모든 채널에 내려가는 보안 기준',
+       '<span class="mcap">채널이 끌 수 없어요</span>')
+     +'<div class="scroll"><table class="mtb"><thead><tr>'
+     +'<th style="padding-left:20px">항목</th><th>값</th><th style="padding-right:20px">근거</th>'
+     +'</tr></thead><tbody>'
+     +[['원문 자동 재마스킹','30초 후 다시 가림','법 제23조 제2항'],
+       ['한 번 열람에 보이는 기간','최근 6개월','〃 — 열어줬다고 전 기간이 열리면 안 돼요'],
+       ['세션 유휴 차단','30분 미조작 시 접속 차단','고시 제6조'],
+       ['로그인 실패 잠금','5회 → 30분 · 자동 해제','고시 제5조 · 맬리 본서비스와 같은 규격'],
+       ['로그인 2단계','비밀번호 + 이메일 인증번호','〃'],
+       ['열람 기록 보관','2년','고시 제8조 — 민감정보 처리 시스템'],
+       ['건강정보 열람 권한','좌석마다 따로 부여','법 제23조 — 역할과 별개']]
+      .map(function(x){return '<tr><td style="padding-left:20px;font-weight:600">'+x[0]+'</td>'
+        +'<td class="mt" style="color:#475467">'+x[1]+'</td>'
+        +'<td class="mcap" style="padding-right:20px">'+x[2]+'</td></tr>'}).join('')
+     +'</tbody></table></div></div>';
   var CH=[['진행 중','run'],['개소 준비','prep'],['종료','done']];
   var cc=$('#c-chips');
   CH.forEach(function(x){
@@ -97,7 +114,7 @@ V.channels=function(){
       return true});
     list=sortBy(list,cSort,function(c,k){return k==='n'?c.n:k==='mgr'?c.mgr:c[k]||0});
     var th=$('#c-th');
-    th.innerHTML=sth('기관','n',cSort)+'<th>지역</th>'+sth('담당자','mgr',cSort)+'<th>상태</th>'
+    th.innerHTML=sth('기관','n',cSort)+'<th>제품</th><th>지역</th>'+sth('담당자','mgr',cSort)+'<th>상태</th>'
       +sth('기수','cohort',cSort,1)+sth('대상자','people',cSort,1)+sth('앱 설치','app',cSort,1)
       +sth('수행률','rate',cSort,1)+sth('중도포기','drop',cSort,1)+'<th style="padding-right:20px">비고</th>';
     bindSort(th,cSort,fill);
@@ -108,6 +125,7 @@ V.channels=function(){
     list.forEach(function(c){
       var st=CH_ST[c.st],tr=el('tr','clk');
       tr.innerHTML='<td style="padding-left:20px"><span class="lnk" style="font-weight:600">'+esc(c.n)+'</span></td>'
+       +'<td><span class="mcap mt">'+(c.site==='brainService'?'맬리브레인':'맬리')+'</span></td>'
        +'<td style="color:#475467">'+c.region+'</td>'
        +'<td style="color:'+(c.mgr==='—'?'#B42318':'#475467')+';font-weight:'+(c.mgr==='—'?'600':'400')+'">'+esc(c.mgr)+'</td>'
        +'<td>'+pill(st[0],st[1])+'</td>'

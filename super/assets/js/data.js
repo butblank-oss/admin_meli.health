@@ -7,17 +7,17 @@ var rnd=A.rnd,pad2=A.pad2;
 
 /* ── 채널 ── */
 A.CHANNELS=[
- {id:'C01',n:'인천 남동구 치매안심센터',region:'인천',mgr:'김주무',mgrPhone:'032-***-1204',
+ {id:'C01',n:'인천 남동구 치매안심센터',region:'인천',site:'brainService',mgr:'김주무',mgrPhone:'032-***-1204',
   st:'run',cohort:3,day:171,people:822,app:789,rate:64,drop:8.2,cs:3,since:'2024-03',note:''},
- {id:'C02',n:'인천 미추홀구 치매안심센터',region:'인천',mgr:'박선주',mgrPhone:'032-***-3391',
+ {id:'C02',n:'인천 미추홀구 치매안심센터',region:'인천',site:'brainService',mgr:'박선주',mgrPhone:'032-***-3391',
   st:'run',cohort:2,day:96,people:514,app:471,rate:58,drop:11.4,cs:2,since:'2025-01',note:''},
- {id:'C03',n:'부천시 치매안심센터',region:'경기',mgr:'이한나',mgrPhone:'032-***-7720',
+ {id:'C03',n:'부천시 치매안심센터',region:'경기',site:'brainService',mgr:'이한나',mgrPhone:'032-***-7720',
   st:'run',cohort:3,day:171,people:690,app:664,rate:71,drop:6.1,cs:1,since:'2024-03',note:''},
- {id:'C04',n:'시흥시 치매안심센터',region:'경기',mgr:'정우석',mgrPhone:'031-***-5518',
+ {id:'C04',n:'시흥시 치매안심센터',region:'경기',site:'brainService',mgr:'정우석',mgrPhone:'031-***-5518',
   st:'run',cohort:1,day:42,people:302,app:238,rate:39,drop:18.9,cs:5,since:'2026-07',note:'개소 초기 — 앱 설치율 낮음'},
- {id:'C05',n:'안산시 단원구 치매안심센터',region:'경기',mgr:'—',mgrPhone:'—',
+ {id:'C05',n:'안산시 단원구 치매안심센터',region:'경기',site:'brainService',mgr:'—',mgrPhone:'—',
   st:'prep',cohort:0,day:0,people:0,app:0,rate:0,drop:0,cs:1,since:'2026-09',note:'담당자 미배정 · 9월 개소 예정'},
- {id:'C06',n:'광명시 치매안심센터',region:'경기',mgr:'최민경',mgrPhone:'02-***-4417',
+ {id:'C06',n:'광명시 치매안심센터',region:'경기',site:'brainService',mgr:'최민경',mgrPhone:'02-***-4417',
   st:'done',cohort:2,day:0,people:448,app:401,rate:66,drop:9.7,cs:0,since:'2024-09',note:'2기 종료 · 3기 재계약 협의 중'}];
 A.CH_ST={run:['진행 중','ok'],prep:['개소 준비','in'],done:['종료','nu']};
 A.byCh={};A.CHANNELS.forEach(function(c){A.byCh[c.id]=c});
