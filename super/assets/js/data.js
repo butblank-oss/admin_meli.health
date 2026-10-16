@@ -151,23 +151,23 @@ A.ROLES={mgr:['채널관리자','in'],ops:['운영팀','ok'],view:['조회 전�
 A.AC_ST={live:['사용 중','ok'],susp:['정지','cr'],wait:['발급 대기','wa'],hand:['인수인계 중','in']};
 A.ACCOUNTS=[
  {id:'U01',n:'김주무',role:'mgr',ch:'C01',st:'live',email:'kim@***.go.kr',last:'2026-08-24 09:12',
-  made:'2024-03-04',mfa:true,note:''},
+  made:'2024-03-04',mfa:true,sens:true,note:''},
  {id:'U02',n:'박선주',role:'mgr',ch:'C02',st:'live',email:'park@***.go.kr',last:'2026-08-23 23:18',
-  made:'2025-01-20',mfa:true,note:'심야 접속 이력 있음'},
+  made:'2025-01-20',mfa:true,sens:false,note:'심야 접속 이력 있음'},
  {id:'U03',n:'이한나',role:'mgr',ch:'C03',st:'live',email:'lee@***.go.kr',last:'2026-08-24 08:40',
-  made:'2024-03-04',mfa:false,note:'2단계 인증 미설정'},
+  made:'2024-03-04',mfa:false,sens:false,note:'2단계 인증 미설정'},
  {id:'U04',n:'정우석',role:'mgr',ch:'C04',st:'live',email:'jung@***.go.kr',last:'2026-08-23 15:50',
-  made:'2026-07-13',mfa:true,note:''},
+  made:'2026-07-13',mfa:true,sens:true,note:''},
  {id:'U05',n:'최민경',role:'mgr',ch:'C06',st:'susp',email:'choi@***.go.kr',last:'2026-06-30 17:22',
-  made:'2024-09-01',mfa:true,note:'2기 종료로 정지'},
+  made:'2024-09-01',mfa:true,sens:false,note:'2기 종료로 정지'},
  {id:'U06',n:'—',role:'mgr',ch:'C05',st:'wait',email:'—',last:'—',
-  made:'—',mfa:false,note:'9일째 발급 대기 — 9월 14일 개소 예정'},
+  made:'—',mfa:false,sens:false,note:'9일째 발급 대기 — 9월 14일 개소 예정'},
  {id:'U07',n:'이운영',role:'ops',ch:'',st:'live',email:'lee@onemedix.***',last:'2026-08-24 09:30',
-  made:'2024-01-15',mfa:true,note:''},
+  made:'2024-01-15',mfa:true,sens:true,note:''},
  {id:'U08',n:'한지훈',role:'ops',ch:'',st:'live',email:'han@onemedix.***',last:'2026-08-22 18:04',
-  made:'2025-06-02',mfa:true,note:''},
+  made:'2025-06-02',mfa:true,sens:true,note:''},
  {id:'U09',n:'서보건',role:'view',ch:'C01',st:'live',email:'seo@***.go.kr',last:'2026-08-19 14:11',
-  made:'2026-05-11',mfa:false,note:'보건소 감독관 — 조회만'}];
+  made:'2026-05-11',mfa:false,sens:false,note:'보건소 감독관 — 조회만'}];
 
 /* 전 채널 열람 기록 — 시드로 생성 */
 A.AUDIT=[];

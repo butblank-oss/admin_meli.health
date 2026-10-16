@@ -305,7 +305,12 @@ V.accounts=function(){
          ['발급 대기',String(wait.length),'개',wait.length?'가장 오래된 건 9일째':'','cr'],
          ['정지',String(ACCOUNTS.filter(function(u){return u.st==='susp'}).length),'개',''],
          ['2단계 인증 미설정',String(noMfa.length),'개','개인정보를 다루는 계정이에요','wa'],
+         ['건강정보 열람 허용',String(ACCOUNTS.filter(function(u){return u.sens&&u.st==='live'}).length),'개',
+          '검사 점수·마음기록을 볼 수 있는 계정'],
          ['담당자 없는 채널','1','개','안산시 단원구','cr']])
+   +note('<b>건강정보 열람은 역할과 따로 줘요.</b> 주관리자라고 해서 검사 점수·마음기록이 열리지 않아요. '
+     +'민감정보라 좌석마다 따로 열고(법 제23조), 채널 어드민의 <b>우리 채널 운영자</b>와 같은 값이에요. '
+     +'맬리 본서비스가 의료진·특수 권한 계정만 보게 한 것과 같은 축이에요.','in')
    +note('<b>퇴사 통보를 받으면 그날 정지해주세요.</b> 인수인계는 계정을 함께 쓰는 게 아니라 후임자 계정을 먼저 발급해서 풀어요. 퇴사자 계정으로 남긴 열람 기록은 감사 때 설명할 수 없어요.','wa')
    +'<div class="mc" style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">'
      +'<div class="row">'+search('aq','이름, 이메일로 찾기','280px')
@@ -341,7 +346,7 @@ V.accounts=function(){
     list=sortBy(list,aSort,function(u,k){return k==='n'?u.n:k==='ch'?(u.ch?chName(u.ch):'—'):k==='last'?u.last:k==='role'?ROLES[u.role][0]:u[k]||0});
     var th=$('#ac-th');
     th.innerHTML=sth('이름','n',aSort)+sth('역할','role',aSort)+sth('담당 채널','ch',aSort)+'<th>이메일</th>'
-      +'<th>2단계</th>'+sth('마지막 접속','last',aSort)+'<th>상태</th><th style="padding-right:20px"></th>';
+      +'<th>2단계</th><th>건강정보</th>'+sth('마지막 접속','last',aSort)+'<th>상태</th><th style="padding-right:20px"></th>';
     bindSort(th,aSort,fill);
     var tb=$('#ac-tb');tb.innerHTML='';
     $('#ac-cnt').textContent=list.length;
@@ -354,12 +359,19 @@ V.accounts=function(){
        +'<td>'+(u.ch?chChip(u.ch):'<span style="color:#69707C">전체</span>')+'</td>'
        +'<td class="mt" style="color:#475467">'+esc(u.email)+'</td>'
        +'<td>'+(u.mfa?'<span class="mcap" style="color:#067647">설정</span>':'<span class="mcap" style="color:#B42318;font-weight:600">미설정</span>')+'</td>'
+       +'<td class="sens"></td>'
        +'<td class="mt" style="color:#475467">'+u.last+'</td>'
        +'<td>'+pill(st[0],st[1])+'</td>'
        +'<td style="text-align:right;padding-right:20px">'
          +(u.st==='live'?'<button class="mb mbs sus" type="button" style="color:#B42318;border-color:#FDA29B">정지</button>'
           :u.st==='susp'?'<button class="mb mbs act" type="button">해제</button>'
           :u.st==='wait'?'<button class="mb mbs mbp iss" type="button">발급</button>':'')+'</td>';
+      var sc=tr.querySelector('.sens');
+      sc.innerHTML=(u.sens?pill('열림','ok'):'<span class="mcap">닫힘</span>')+' ';
+      if(u.st==='live'){var sb=el('button','mb mbx',u.sens?'닫기':'열기');sb.type='button';sb.style.marginLeft='6px';
+        sb.addEventListener('click',function(){u.sens=!u.sens;V.accounts();
+          toast(u.n+' 계정 건강정보 열람을 '+(u.sens?'열었어요':'닫았어요'),'ok')});
+        sc.appendChild(sb)}
       var s=tr.querySelector('.sus'),a2=tr.querySelector('.act'),i=tr.querySelector('.iss');
       if(s)s.addEventListener('click',function(){openSusp(u)});
       if(a2)a2.addEventListener('click',function(){u.st='live';V.accounts();toast(u.n+' 계정을 다시 열었어요','ok')});
