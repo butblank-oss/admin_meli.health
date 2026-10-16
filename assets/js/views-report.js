@@ -362,7 +362,10 @@ V.apply=function(keep){
     var cl=el('button','lb','선택 해제');cl.style.marginLeft='auto';cl.addEventListener('click',function(){aSel={};V.apply(1)});b.appendChild(cl)}
   else{b.className='bulk';b.innerHTML=''}
   var rows=aPager.slice(list),tb=$('#a-tb');tb.innerHTML='';
-  $('#a-empty').innerHTML=list.length?'':emptyBox('조건에 맞는 신청이 없어요','필터를 줄이거나 조건을 지워보세요');
+  $('#a-empty').innerHTML=list.length?'':emptyBox('조건에 맞는 신청이 없어요','필터를 줄이거나 조건을 지워보세요','조건 초기화');
+  var az=$('#a-empty').querySelector('.mb');
+  if(az)az.addEventListener('click',function(){
+    aq='';aFil.st=[];aFil.sg=[];aFil.per='';aPager.page=1;V.apply()});
   rows.forEach(function(a){
     var SP={pending:['대기','cr'],hold:['보류','wa'],approved:['승인','ok'],rejected:['거절','nu']}[a.st];
     var tr=el('tr',aSel[a.id]?'sel':'');

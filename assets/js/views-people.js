@@ -82,7 +82,11 @@ V.today=function(){
     $('#t-attn').appendChild(tr)})};
 
 /* ══════ 참여자 ══════ */
-var pf={st:[],org:[],act:[],cs:[],mine:[]},pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
+/* 필터의 빈 모양은 여기 한 곳에서만 만든다.
+   resetP 가 따로 {st,org,act} 만 적어 둬서 cs·mine 키가 사라졌고,
+   '조건 초기화'를 누르면 다음 렌더에서 pf.cs.length 로 터졌다. */
+function pfBlank(){return {st:[],org:[],act:[],cs:[],mine:[]}}
+var pf=pfBlank(),pSel={},pAll=false,pageRows=[],pSort={key:'days',dir:-1},pPager=mkPager(function(){V.people(1)}),pList=[],pq='',pAge=0,pSex=0;
 V.people=function(keep){
   var h=$('#v-people');
   if(!keep){
@@ -193,7 +197,7 @@ function renderApplied(){
   it.forEach(function(x){var c=el('span','ftag',esc(x[0])+'<button type="button" class="x" aria-label="'+esc(x[0])+' 필터 제거">✕</button>');
     c.querySelector('.x').addEventListener('click',x[1]);box.appendChild(c)});
   var b=el('button','mb mbs mbg','모두 지우기');b.addEventListener('click',resetP);box.appendChild(b)}
-function resetP(){pf={st:[],org:[],act:[]};pq='';pAge=0;pSex=0;pPager.page=1;V.people()}
+function resetP(){pf=pfBlank();pq='';pAge=0;pSex=0;pPager.page=1;V.people()}
 function selN(){return pAll?pList.length:Object.keys(pSel).length}
 function renderBulk(){
   var b=$('#p-bulk'),n=selN();
