@@ -230,7 +230,10 @@ var REASON_COMMON=[
 var REASON_CARE=[
  ['CARE_OUTREACH','미활동자 안부 연락'],['CARE_RISK','위험군 상담 연계'],
  ['CARE_APPLY','참여 신청 확인'],['CARE_HEALTH_DOC','보건소 공문 회신']];
-var pdRev=false,pdReason='',revT=null,revRow=null;
+/* 원문은 상세를 보는 동안 계속 보인다. 몇 초 만에 다시 가리면
+   전화를 받으며 확인하는 일이 안 된다. 대신 목록으로 나가는 순간 닫고,
+   그 시점을 열람 기록에 남겨 '언제까지 봤나' 를 증빙으로 쓴다. */
+var pdRev=false,pdReason='',revRow=null;
 /* 열람은 넷이 맞아야 열린다 — 동의 · 소속 · 권한 · 사유.
    맬리는 여기에 '환자 본인의 NFC 태깅'까지 넣었다. 케어센터엔 태깅이 없으니 셋 + 사유다. */
 function openBlock(p){
@@ -251,7 +254,7 @@ function askOpen(p,from){
   var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
   b.innerHTML='<p class="mcap">대상 <b style="color:#101828">'+esc(p.name)+'</b> · '+p.birth+'년생 · '+esc(p.org)+'<br>'
    +'사유는 열람 기록에 남고 보건소 점검 때 증빙으로 제출돼요. '
-   +CFG.locked.remaskSec+'초가 지나면 자동으로 다시 가려져요.</p>'
+   +'목록으로 나가면 다시 가려지고, 나간 시각도 함께 남아요.</p>'
    +'<div><span class="flab">조회 사유 <span style="color:#B42318">*</span></span>'
    +'<select class="mfld" id="rv-r" style="width:100%"><option value="">사유를 선택하세요</option>'
    +'<optgroup label="공통">'+REASON_COMMON.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</optgroup>'
@@ -275,15 +278,14 @@ function askOpen(p,from){
     if(!v||!$('#rv-ok2').checked||(v==='ETC'&&et.length<5)){err.style.display='block';return}
     pdRev=true;pdReason=$('#rv-r').selectedOptions[0].text;
     revRow=addAudit('상세 열람','1건',pdReason,[p.name+'('+p.pin+')']);
-    clearTimeout(revT);
-    revT=setTimeout(function(){pdRev=false;expireAudit(revRow);revRow=null;
-      if(onPerson())V.person();
-      toast('열람 시간이 지나 원문을 다시 가렸어요')},CFG.locked.remaskSec*1000);
     closeAll();openPerson(p,from)});
   f.appendChild(ok)}
 function onPerson(){var e=document.querySelector('.pane.on');return !!e&&e.dataset.pane==='person'}
 /* 세션 만료 시 상세의 원문도 닫는다 */
-window.__closeReveal=function(){if(pdRev){pdRev=false;clearTimeout(revT);expireAudit(revRow);revRow=null;if(onPerson())V.person()}};
+window.__closeReveal=function(quiet){
+  if(!pdRev)return;
+  pdRev=false;expireAudit(revRow);revRow=null;
+  if(!quiet&&onPerson())V.person()};
 A.askOpen=askOpen;   /* 상세로 가는 길은 여기 하나뿐이다 (P-4 예외 없음) */
 
 /* withdraw */
@@ -426,7 +428,7 @@ V.person=function(){
    +(pdRev?'<div class="mc" style="background:#FFFAEB;border-color:#FEDF89;padding:13px 18px;display:flex;align-items:center;gap:12px">'
       +'<span class="mdot" style="background:#F79009"></span>'
       +'<span style="flex:1;font-size:13.5px;color:#B54708">개인정보 원문을 보는 중이에요 · 사유 <b>'+esc(pdReason)+'</b>'
-      +'<span class="mcap" style="display:block;margin-top:2px;color:#B54708">'+CFG.locked.remaskSec+'초 뒤 자동으로 가려져요. 이 열람은 기록에 남았어요.</span></span>'
+      +'<span class="mcap" style="display:block;margin-top:2px;color:#B54708">목록으로 나가면 다시 가려져요. 이 열람은 기록에 남았어요.</span></span>'
       +'<button class="mb mbx" id="pd-hide">지금 가리기</button></div>'
      /* 가린 뒤에도 다시 열 길을 남긴다. 없으면 목록으로 나갔다 들어와야 한다 */
      :'<div class="mc" style="padding:13px 18px;display:flex;align-items:center;gap:12px">'
@@ -439,7 +441,7 @@ V.person=function(){
    +(p.days===0?'<div class="mc" id="pd-none"></div>':'<div class="mc" style="overflow:hidden"><div class="tabs" id="pd-tabs"></div><div id="pd-body"></div></div>');
   $('#pd-b').addEventListener('click',function(){go(backTo)});
   if($('#pd-hide'))$('#pd-hide').addEventListener('click',function(){
-    pdRev=false;clearTimeout(revT);expireAudit(revRow);revRow=null;V.person();toast('원문을 가렸어요')});
+    pdRev=false;expireAudit(revRow);revRow=null;V.person();toast('원문을 가렸어요')});
   var sh=$('#pd-show');
   if(sh)sh.addEventListener('click',function(){askOpen(p,backTo)});
   if($('#cs-req'))$('#cs-req').addEventListener('click',function(){

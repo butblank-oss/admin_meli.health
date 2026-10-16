@@ -706,6 +706,8 @@ function labelCells(root){
     setTimeout(function(){q=0;labelCells(m)},0)});
   mo.observe(m,{childList:true,subtree:true})})();
 function go(p){
+  /* 상세를 벗어나면 원문을 닫는다. 열람은 '그 사람을 보고 있는 동안' 이다 */
+  if(cur==='person'&&p!=='person'&&window.__closeReveal)window.__closeReveal(true);
   cur=p;
   $$('.pane').forEach(function(e){e.classList.toggle('on',e.dataset.pane===p)});
   var hl=p==='questdetail'?'quest':p==='person'?'people':p==='pushnew'?'push':p;
