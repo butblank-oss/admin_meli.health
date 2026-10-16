@@ -229,6 +229,72 @@ var $=A.$,el=A.el,esc=A.esc,fmt=A.fmt,pill=A.pill,note=A.note,kpi=A.kpi,ph=A.ph,
     search=A.search,sth=A.sth,bindSort=A.bindSort,sortBy=A.sortBy,toast=A.toast,open=A.open,
     closeAll=A.closeAll,V=A.V,ACCOUNTS=A.ACCOUNTS,ROLES=A.ROLES,AC_ST=A.AC_ST,chChip=A.chChip,chName=A.chName;
 var aFil=[],aSort={key:'last',dir:-1},aq='';
+/* ══════ 운영자 로그 ══════
+   맬리 admin.stg 에 '운영자 로그'가 슈퍼에만 있는 걸 그대로 따른다.
+   채널 운영자가 무엇을 했는지는 슈퍼가 감사한다 — 채널 자신은 볼 수 없다.
+   이상 열람 탐지(다른 화면)가 '패턴'을 본다면 여기는 '행위 원장'이다. */
+var OPLOG=[
+ {at:'2026-08-21 14:22',who:'김주무',ch:'인천 남동구 치매안심센터',act:'상세 열람',tgt:'안*순(5716)',
+  why:'미활동자 안부 연락',ip:'218.***.***.42',k:'nu'},
+ {at:'2026-08-21 11:40',who:'서동혁',ch:'대찬병원',act:'명단 내려받기',tgt:'소속 회원 43명',
+  why:'월간 보고자료',ip:'121.***.***.77',k:'wa'},
+ {at:'2026-08-21 09:10',who:'김주무',ch:'인천 남동구 치매안심센터',act:'명단 내려받기',tgt:'184명',
+  why:'7월 보고자료 작성',ip:'218.***.***.42',k:'wa'},
+ {at:'2026-08-20 23:51',who:'정미경',ch:'인천 남동구 치매안심센터',act:'상세 열람',tgt:'윤*태(7588)',
+  why:'위험군 상담 연계',ip:'218.***.***.61',k:'cr'},
+ {at:'2026-08-20 16:47',who:'이운영',ch:'원메딕스 운영팀',act:'상세 열람',tgt:'황*학(2727)',
+  why:'앱 오류 문의 회신',ip:'121.***.***.8',k:'in'},
+ {at:'2026-08-20 11:02',who:'김주무',ch:'인천 남동구 치매안심센터',act:'권한 이전',tgt:'박선영',
+  why:'인사이동',ip:'218.***.***.42',k:'nu'},
+ {at:'2026-08-19 10:31',who:'김주무',ch:'인천 남동구 치매안심센터',act:'리포트 생성',tgt:'7월분',
+  why:'보건소 제출',ip:'218.***.***.42',k:'nu'},
+ {at:'2026-08-18 15:55',who:'한지원',ch:'부평구 치매안심센터',act:'계정 수락',tgt:'한지원',
+  why:'초대 수락',ip:'211.***.***.19',k:'in'}];
+var olFil='',olCh='';
+V.oplog=function(){
+  var h=$('#v-oplog');
+  var chs=[];OPLOG.forEach(function(o){if(chs.indexOf(o.ch)<0)chs.push(o.ch)});
+  var acts=[];OPLOG.forEach(function(o){if(acts.indexOf(o.act)<0)acts.push(o.act)});
+  var list=OPLOG.filter(function(o){return (!olFil||o.act===olFil)&&(!olCh||o.ch===olCh)});
+  var night=OPLOG.filter(function(o){var hh=+o.at.slice(11,13);return hh>=22||hh<6}).length;
+  var dl=OPLOG.filter(function(o){return /내려받기/.test(o.act)}).length;
+  h.innerHTML=ph('운영자 로그','전 채널 운영자가 무엇을 했는지 한 곳에서 봐요.',
+    '<button class="mb" id="ol-dl">기간별 내려받기</button>')
+   +note('<b>채널은 자기 열람 기록만 보고, 전 채널을 가로질러 보는 건 여기뿐이에요.</b> '
+     +'위·수탁 감독에서 수탁자 행위를 확인하는 근거가 돼요. 보관기간은 채널 열람 기록과 같은 2년이에요.','in')
+   +(night?note('<b>심야 접속이 '+night+'건 있어요.</b> 22시~06시 열람은 업무 시간 밖이라 사유를 확인하는 게 좋아요. '
+     +'패턴 분석은 <b>이상 열람 탐지</b>에서 봐요.','wa'):'')
+   +kpi([['이번 달 기록',fmt(OPLOG.length),'건'],['내려받기',fmt(dl),'건','사유 확인 대상','wa'],
+         ['심야 열람',fmt(night),'건','22시~06시',night?'cr':'ok'],['활동 채널',fmt(chs.length),'개']])
+   +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="ol-f"></div>'
+   +'<div class="scroll"><table class="mtb"><thead><tr>'
+   +'<th style="padding-left:20px">일시</th><th>운영자</th><th>채널</th><th>행위</th>'
+   +'<th>대상</th><th>사유</th><th style="padding-right:20px">접속지</th>'
+   +'</tr></thead><tbody id="ol-tb"></tbody></table></div></div>';
+  $('#ol-dl').addEventListener('click',function(){toast('기간을 골라 CSV로 내려받아요')});
+  var f=$('#ol-f');
+  [['','전체 채널']].concat(chs.map(function(c){return [c,c]})).forEach(function(x){
+    var b=el('button','mchip'+(olCh===x[0]?' on':''),x[1]);
+    b.addEventListener('click',function(){olCh=olCh===x[0]?'':x[0];V.oplog()});f.appendChild(b)});
+  f.appendChild(el('span','sep'));
+  [['','전체 행위']].concat(acts.map(function(a2){return [a2,a2]})).forEach(function(x){
+    var b=el('button','mchip'+(olFil===x[0]?' on':''),x[1]);
+    b.addEventListener('click',function(){olFil=olFil===x[0]?'':x[0];V.oplog()});f.appendChild(b)});
+  var tb=$('#ol-tb');tb.innerHTML='';
+  if(!list.length)tb.innerHTML='<tr><td colspan="7">'+emptyBox('조건에 맞는 기록이 없어요','필터를 지워보세요')+'</td></tr>';
+  list.forEach(function(o){
+    var hh=+o.at.slice(11,13),isNight=hh>=22||hh<6;
+    var tr=el('tr');
+    tr.innerHTML='<td class="mt" style="padding-left:20px;color:'+(isNight?'#B42318;font-weight:600':'#475467')+'">'
+       +o.at+(isNight?' <span class="mcap" style="color:#B42318">심야</span>':'')+'</td>'
+     +'<td style="font-weight:600">'+esc(o.who)+'</td>'
+     +'<td class="mt" style="color:#475467">'+esc(o.ch)+'</td>'
+     +'<td>'+pill(o.act,o.k)+'</td>'
+     +'<td class="mt" style="color:#475467">'+esc(o.tgt)+'</td>'
+     +'<td style="color:#475467">'+esc(o.why)+'</td>'
+     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+o.ip+'</td>';
+    tb.appendChild(tr)})};
+
 V.accounts=function(){
   var h=$('#v-accounts');
   var wait=ACCOUNTS.filter(function(u){return u.st==='wait'});

@@ -219,13 +219,30 @@ function thread(r){
 
 /* ══════ 프로그램 일정 ══════ */
 var pcM={y:2026,m:8};
+/* 그날 편성 — 저장된 게 있으면 그걸, 없으면 기본 공식.
+   편성은 그룹 주관리자만 바꾼다. 케어센터는 지역 사정에 맞춰 편성해야 해서
+   맬리 파트너(콘텐츠 Own 없음)와 달리 예외로 열어둔 자리다. */
+function schedOf(y,m,dn,dow){
+  var k=skey(y,m,dn);
+  if(SCHED[k])return SCHED[k];
+  if(dow===0||dow===6)return null;
+  var t=dn*3+m;
+  return {br:BRAIN[t%BRAIN.length],ex:t%ROUT.length,mi:MIND[t%MIND.length],
+          as:(dn%9===3)?ASMT[t%ASMT.length]:''}}
 V.sched=function(){
-  var h=$('#v-sched');
-  h.innerHTML=ph('프로그램 일정','확인만 할 수 있어요. 바꿔야 하면 변경 요청을 보내주세요.','<button class="mb" data-modal="m-schedreq">일정 변경 요청</button>')
-   +note('채널관리자는 일정을 <b>확인만</b> 할 수 있어요. 변경 요청과 처리 결과는 기록에 남아요.','nu')
+  var h=$('#v-sched'),ed=canEditSched(),g0=groupById(getGroup());
+  h.innerHTML=ph('프로그램 일정',ed?'참여자 앱에 언제 무엇이 나갈지 정해요.':'확인만 할 수 있어요. 바꿔야 하면 변경 요청을 보내주세요.',
+    ed?'<button class="mb" id="sc-tpl">템플릿 적용</button><button class="mb" data-modal="m-schedreq">변경 요청</button>'
+      :'<button class="mb" data-modal="m-schedreq">일정 변경 요청</button>')
+   +(ed?note('<b>'+esc(g0.name)+'의 주관리자라 편집할 수 있어요.</b> 날짜를 누르면 그날 편성을 바꿔요. '
+       +'직접 짜기 부담되면 <b>템플릿 적용</b>으로 12주치를 한 번에 깔거나, 운영팀에 요청하세요.','in')
+      :note('이 그룹의 <b>주관리자만</b> 일정을 바꿀 수 있어요. 지금은 확인만 가능해요. 변경 요청은 기록에 남아요.','nu'))
    +'<div class="mc" style="padding:20px"><div class="row" style="margin-bottom:16px">'
-     +'<button type="button" class="pgn" id="sc-p" aria-label="이전 달">'+LT+'</button><span class="mh mt" style="min-width:116px;text-align:center">'+pcM.y+'년 '+pcM.m+'월</span>'
-     +'<button type="button" class="pgn" id="sc-n" aria-label="다음 달">'+RT+'</button><button class="mb mbs" id="sc-t">오늘</button>'
+     +'<button type="button" class="pgn" id="sc-p" aria-label="이전 달">'+LT+'</button>'
+     +'<span class="mh mt" style="min-width:116px;text-align:center">'+pcM.y+'년 '+pcM.m+'월</span>'
+     +'<button type="button" class="pgn" id="sc-n" aria-label="다음 달">'+RT+'</button>'
+     +'<button class="mb mbs" id="sc-t">오늘</button>'
+     +(ed?'<span class="mcap" style="margin-left:12px">날짜를 눌러 편성을 바꿔요</span>':'')
      +'<span class="lgd" style="margin-left:auto"><span><b style="background:#E7F9F1"></b>두뇌훈련</span>'
      +'<span><b style="background:#EFF8FF"></b>운동 <span style="color:#175CD3">눌러서 동작 보기</span></span>'
      +'<span><b style="background:#FFFAEB"></b>마음다루기</span><span><b style="background:#F4F3FF"></b>검사측정</span></span></div>'
@@ -233,21 +250,82 @@ V.sched=function(){
   $('#sc-p').addEventListener('click',function(){pcM.m--;if(pcM.m<1){pcM.m=12;pcM.y--}V.sched()});
   $('#sc-n').addEventListener('click',function(){pcM.m++;if(pcM.m>12){pcM.m=1;pcM.y++}V.sched()});
   $('#sc-t').addEventListener('click',function(){pcM={y:2026,m:8};V.sched()});
+  if($('#sc-tpl'))$('#sc-tpl').addEventListener('click',openTemplate);
   var g=$('#pc');
   ['일','월','화','수','목','금','토'].forEach(function(d,ix){g.appendChild(el('div','dh'+(ix===0?' s':ix===6?' t':''),d))});
   var first=new Date(pcM.y,pcM.m-1,1).getDay(),dim=new Date(pcM.y,pcM.m,0).getDate();
   for(var k=0;k<first;k++)g.appendChild(el('div','dy off'));
   for(var dn=1;dn<=dim;dn++){(function(dn){
     var dow=(first+dn-1)%7,wk=dow===0||dow===6,tdy=(pcM.y===2026&&pcM.m===8&&dn===21);
-    var d=el('div','dy'+(wk?' off':'')+(tdy?' tdy':''));
-    d.appendChild(el('div','n',String(dn)));
-    if(!wk){var s=dn*3+pcM.m;
-      d.appendChild(el('div','it br',BRAIN[s%BRAIN.length]));
-      var ri=s%ROUT.length,b=el('button','it ex',ROUT[ri].n);
-      b.addEventListener('click',function(){showWorkout(ROUT[ri])});d.appendChild(b);
-      d.appendChild(el('div','it mi',MIND[s%MIND.length]));
-      if(dn%9===3)d.appendChild(el('div','it as',ASMT[s%ASMT.length]))}
+    var edited=!!SCHED[skey(pcM.y,pcM.m,dn)];
+    var d=el('div','dy'+(wk?' off':'')+(tdy?' tdy':'')+(ed&&!wk?' edt':''));
+    var nn=el('div','n',String(dn));
+    if(edited)nn.innerHTML=dn+' <span class="mcap" style="color:#077A50;font-weight:600">수정됨</span>';
+    d.appendChild(nn);
+    var sc=schedOf(pcM.y,pcM.m,dn,dow);
+    if(sc){
+      if(sc.br)d.appendChild(el('div','it br',sc.br));
+      if(sc.ex!=null){var b2=el('button','it ex',ROUT[sc.ex].n);b2.type='button';
+        b2.addEventListener('click',function(e){e.stopPropagation();showWorkout(ROUT[sc.ex])});d.appendChild(b2)}
+      if(sc.mi)d.appendChild(el('div','it mi',sc.mi));
+      if(sc.as)d.appendChild(el('div','it as',sc.as));
+      if(!sc.br&&sc.ex==null&&!sc.mi&&!sc.as)d.appendChild(el('div','mcap','휴강'));
+    }
+    if(ed&&!wk)d.addEventListener('click',function(){openDayEdit(pcM.y,pcM.m,dn,dow)});
     g.appendChild(d)})(dn)}};
+
+/* 하루 편성 편집 */
+function openDayEdit(y,m,dn,dow){
+  var sc=schedOf(y,m,dn,dow)||{br:'',ex:null,mi:'',as:''};
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  function sel(id,label,opts,cur){
+    return '<div><span class="flab">'+label+'</span><select class="mfld" id="'+id+'" style="width:100%">'
+     +'<option value="">없음</option>'
+     +opts.map(function(o,i){var v=typeof o==='string'?o:o.n;
+       return '<option value="'+i+'"'+((typeof cur==='number'?cur===i:cur===v)?' selected':'')+'>'+esc(v)+'</option>'}).join('')
+     +'</select></div>'}
+  b.innerHTML='<p class="mcap">'+y+'년 '+m+'월 '+dn+'일 ('+'일월화수목금토'[dow]+') 편성이에요. 비우면 그날은 <b>휴강</b>이 돼요.</p>'
+   +sel('sd-br','두뇌훈련',BRAIN,sc.br)+sel('sd-ex','운동',ROUT,sc.ex)
+   +sel('sd-mi','마음다루기',MIND,sc.mi)+sel('sd-as','검사측정',ASMT,sc.as)
+   +'<label class="chk"><input type="checkbox" id="sd-rep" style="accent-color:#13BD7E;width:15px;height:15px">'
+   +'<span>이후 같은 요일에도 똑같이 적용 <span class="mcap">(12주치를 하나씩 고치지 않아도 돼요)</span></span></label>';
+  var mo=modalBox(m+'월 '+dn+'일 편성',b);
+  var f=mo.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var rs=el('button','mb','기본값으로');
+  rs.addEventListener('click',function(){delete SCHED[skey(y,m,dn)];closeAll();V.sched();toast('기본 편성으로 되돌렸어요')});
+  f.appendChild(rs);
+  var ok=el('button','mb mbp','저장');
+  ok.addEventListener('click',function(){
+    var v=function(id){var x=$('#'+id).value;return x===''?null:+x};
+    var nb=v('sd-br'),ne=v('sd-ex'),nm=v('sd-mi'),na=v('sd-as');
+    var rec={br:nb==null?'':BRAIN[nb],ex:ne,mi:nm==null?'':MIND[nm],as:na==null?'':ASMT[na]};
+    SCHED[skey(y,m,dn)]=rec;
+    var n=1;
+    if($('#sd-rep').checked){
+      var d=new Date(y,m-1,dn);
+      for(var i=0;i<12;i++){d.setDate(d.getDate()+7);
+        SCHED[skey(d.getFullYear(),d.getMonth()+1,d.getDate())]={br:rec.br,ex:rec.ex,mi:rec.mi,as:rec.as};n++}}
+    addAudit('일정 변경',m+'/'+dn+(n>1?' 외 '+(n-1)+'일':''),'프로그램 편성 조정');
+    closeAll();V.sched();
+    toast(n>1?n+'일 편성을 바꿨어요':m+'월 '+dn+'일 편성을 바꿨어요','ok','실행 취소',null)});
+  f.appendChild(ok)}
+
+/* 템플릿 — 12주치를 한 번에. 60일을 하나씩 고칠 사람은 없다. */
+function openTemplate(){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap">원메딕스가 만든 편성표예요. 적용하면 <b>이번 달부터 12주치</b>가 한 번에 깔려요. '
+   +'적용 후에도 날짜별로 고칠 수 있어요.</p>'
+   +'<div><span class="flab">템플릿</span><select class="mfld" id="tp-s" style="width:100%">'
+   +'<option>치매예방 표준 12주 (주 5일)</option><option>경증 인지저하 12주 (주 3일)</option>'
+   +'<option>경로당 상시형 (주 2일 · 종료 없음)</option></select></div>'
+   +note('이미 손으로 고친 날은 <b>덮어쓰지 않아요.</b> 템플릿은 비어 있는 날만 채워요.','in');
+  var mo=modalBox('템플릿 적용',b);
+  var f=mo.querySelector('.mfoot');f.innerHTML='<button class="mb" data-close>취소</button>';
+  var ok=el('button','mb mbp','적용');
+  ok.addEventListener('click',function(){
+    addAudit('일정 변경','12주 템플릿',$('#tp-s').value);
+    closeAll();toast('"'+$('#tp-s').value+'"을 적용했어요. 손으로 고친 날은 그대로 뒀어요','ok')});
+  f.appendChild(ok)}
 function showWorkout(rt){
   $('#wo-t').firstChild.textContent='세부 운동 · '+rt.n;
   $('#wo-b').innerHTML=kpi([['부위',rt.area,''],['난이도',rt.lv,''],['구성',rt.mv.length+'개 동작','약 '+rt.mv.length*2+'분']])
