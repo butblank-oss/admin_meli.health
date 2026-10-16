@@ -160,6 +160,33 @@ th .sw:hover{color:#101828}
 .bento.narrow{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}
 @media (max-width:1180px){.bento.wide,.bento.narrow{grid-template-columns:minmax(0,1fr)}}
 
+/* ── 아래 탭바 (좁은 화면 전용) ── */
+.mtab{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
+  grid-template-columns:repeat(5,minmax(0,1fr));background:#fff;
+  border-top:1px solid #EAECF0;box-shadow:0 -2px 12px rgba(16,24,40,.06);
+  padding-bottom:env(safe-area-inset-bottom)}
+.mtab button{background:none;border:none;cursor:pointer;font:inherit;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:8px 2px 7px;color:#98A2B3;min-height:56px}
+.mtab button.on{color:#077A50}
+.mtab .ti{position:relative;display:flex}
+.mtab .tl{font-size:11px;font-weight:600;letter-spacing:-0.02em;white-space:nowrap}
+.mtab button.on .tl{font-weight:700}
+.mtab .tb{position:absolute;top:-5px;left:11px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:999px;background:#F04438;color:#fff;font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.msheet{display:flex;flex-direction:column;gap:18px}
+.msheet .mgrp{margin:0}
+.msheet .sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.msheet .sgrid button{background:none;border:1px solid #EAECF0;border-radius:10px;cursor:pointer;
+  font:inherit;padding:13px 6px;display:flex;flex-direction:column;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:600;color:#344054;letter-spacing:-0.02em;line-height:1.3;text-align:center}
+.msheet .sgrid button.on{border-color:#6BDCAF;background:#F6FEFA;color:#065C3D}
+.msheet .sgrid .si{width:36px;height:36px;border-radius:999px;background:#F2F4F7;color:#475467;
+  display:flex;align-items:center;justify-content:center;position:relative}
+.msheet .sgrid .tb{top:-4px;left:auto;right:-5px}
+.msheet .sgrid button.on .si{background:#E7F9F1;color:#077A50}
+
 .spark{display:flex;align-items:flex-end;gap:5px;height:80px}
 .spark i{flex:1;border-radius:3px;background:#13BD7E;min-height:2px}
 .spark i.wk{background:#EAECF0}
@@ -354,23 +381,11 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   #gs-wrap{flex:1;margin-right:0}
   #gs-res{width:calc(100vw - 24px);right:auto;left:0}
 
-  /* 사이드바를 하단 탭바로 — 엄지로 닿는 자리에 둔다 */
+  /* 메뉴 14개를 아래에 늘어놓으면 찾지도 못하고 현재 위치도 밀려 나간다.
+     자주 쓰는 넷만 고정하고 나머지는 '전체 메뉴' 시트로 보낸다. */
   .mid{flex-direction:column}
-  .side{width:auto;border-right:none;border-top:1px solid #EAECF0;
-    position:fixed;left:0;right:0;bottom:0;top:auto;      /* 원본의 top:58px 를 푼다 */
-    height:auto;                                           /* 원본의 calc(100vh-58px) 해제 */
-    z-index:40;background:#fff;
-    flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:6px 8px;gap:4px;
-    box-shadow:0 -2px 12px rgba(16,24,40,.06);
-    padding-bottom:calc(6px + env(safe-area-inset-bottom))}
-  .side>nav{display:flex;flex-direction:row;gap:4px;overflow-x:auto;overflow-y:hidden;
-    width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .side>nav::-webkit-scrollbar{display:none}
-  .side .mgrp{display:none}
-  .side>div{display:none}                  /* 갱신 안내 — 좁은 화면에선 자리를 뺏는다 */
-  .mnav{flex:none;height:auto;min-width:76px;padding:8px 10px;flex-direction:column;
-    gap:3px;font-size:11.5px;text-align:center;border-radius:10px;line-height:1.25}
-  .mnav .mbdg{position:static;margin:0}
+  .side{display:none}
+  .mtab{display:grid}
   .main{padding:14px 12px 88px;gap:12px}
   .gap>.note{order:5}            /* 늘 같은 경고는 목록을 밀어내지 않게 뒤로 */
 
@@ -462,6 +477,5 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .dcal button{height:38px}
 }
 @media (max-width:520px){
-  .mnav{min-width:66px;font-size:11px;padding:8px 6px}
   .kpi>*{padding:11px 12px}
 }

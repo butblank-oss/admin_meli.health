@@ -47,7 +47,11 @@ var ICON={
  chat:'<path d="M15 10.5c0 1.4-1.3 2.5-3 2.5H7.5L4 15.5V13c-1-.5-1.5-1.4-1.5-2.5v-4C2.5 5.1 3.8 4 5.5 4h6.5c1.7 0 3 1.1 3 2.5Z"/>',
  cal:'<rect x="3" y="4" width="12" height="11.5" rx="2"/><path d="M3 7.5h12M6.5 2.5v3M11.5 2.5v3"/>',
  plus:'<path d="M9 4v10M4 9h10"/>',
- list:'<path d="M6.5 5.5h8M6.5 9h8M6.5 12.5h8M3.5 5.5h.01M3.5 9h.01M3.5 12.5h.01"/>'};
+ list:'<path d="M6.5 5.5h8M6.5 9h8M6.5 12.5h8M3.5 5.5h.01M3.5 9h.01M3.5 12.5h.01"/>',
+ home:'<path d="M3 7.6 9 3l6 4.6V14a1.4 1.4 0 0 1-1.4 1.4H4.4A1.4 1.4 0 0 1 3 14Z"/><path d="M7 15.4v-4.6h4v4.6"/>',
+ more:'<circle cx="4" cy="9" r="1.3"/><circle cx="9" cy="9" r="1.3"/><circle cx="14" cy="9" r="1.3"/>',
+ flag:'<path d="M4.5 15.5V3.2h9l-1.8 3 1.8 3h-9"/>',
+ lock:'<rect x="4" y="8" width="10" height="7" rx="1.8"/><path d="M6.5 8V6a2.5 2.5 0 0 1 5 0v2"/>'};
 function ico(k,sz){return '<svg width="'+(sz||15)+'" height="'+(sz||15)+'" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+(ICON[k]||'')+'</svg>'}
 function chead(t,r,o){o=o||{};
   return '<div class="ch">'+(o.ic?'<span class="cico">'+ico(o.ic)+'</span>':'')+'<h2 class="mh">'+t+'</h2>'+
@@ -191,7 +195,7 @@ document.addEventListener('click',function(e){
   var r=e.target.closest('.mtb.msum tbody tr');
   if(r&&!e.target.closest('button,a,.cbx,.lnk')&&matchMedia('(max-width:860px)').matches){
     var k=r.querySelector('.lnk');if(k){k.click();return}}
-  var g=e.target.closest('[data-go]');if(g)go(g.dataset.go)});
+  var g=e.target.closest('[data-go]');if(g){closeAll();go(g.dataset.go)}});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){closeAll();return}
   /* 커스텀 체크박스는 span이라 스페이스/엔터가 먹지 않는다. 클릭으로 바꿔 기존 핸들러를 그대로 쓴다 */
@@ -609,6 +613,15 @@ var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',s
  push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록',
  chops:'우리 채널 운영자',settings:'내 채널 정보',cx:'운영팀 문의'}
 var V={},cur='today';
+/* 아래 탭바는 넷만 고정한다. 더 넣으면 가로로 밀려 현재 위치가 화면 밖으로 나간다. */
+var MTAB=[['today','오늘','home'],['apply','참여 신청','todo'],
+          ['people','참여자','user'],['consult','상담실','chat']];
+var NAVICO={today:'home',people:'user',stats:'chart',consult:'chat',groups:'pie',sched:'cal',
+ quest:'flag',push:'bell',report:'doc',apply:'todo',audit:'list',chops:'user',settings:'lock',cx:'chat'};
+function navItem(k){var r=null;
+  NAV.forEach(function(g){g[1].forEach(function(it){if(it[0]===k)r=it})});return r}
+/* 탭바 배지는 '처리할 일' 수만 띄운다. 822명 같은 전체 수를 빨갛게 달면 경고가 값싸진다 */
+function navBadge(spec){return spec&&spec.indexOf('cr:')===0?spec.slice(3):''}
 function buildNav(){
   var n=$('#nav');n.innerHTML='';
   NAV.forEach(function(g){
@@ -622,7 +635,32 @@ function buildNav(){
       b.innerHTML=it[1]+bd;
       b.addEventListener('click',function(){go(it[0])});
       b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go(it[0])}});
-      n.appendChild(b)})})}
+      n.appendChild(b)})});
+  buildMtab()}
+function buildMtab(){
+  var t=$('#mtab');if(!t)return;t.innerHTML='';
+  MTAB.forEach(function(x){
+    var it=navItem(x[0]),bd=navBadge(it&&it[2]);
+    var b=el('button');b.dataset.t=x[0];b.setAttribute('aria-label',it?it[1]:x[1]);
+    b.innerHTML='<span class="ti">'+ico(x[2],21)+(bd?'<span class="tb mt">'+bd+'</span>':'')+
+      '</span><span class="tl">'+x[1]+'</span>';
+    b.addEventListener('click',function(){go(x[0])});
+    t.appendChild(b)});
+  var m=el('button');m.dataset.t='_more';m.setAttribute('aria-label','전체 메뉴');
+  m.innerHTML='<span class="ti">'+ico('more',21)+'</span><span class="tl">전체</span>';
+  m.addEventListener('click',openMenuSheet);
+  t.appendChild(m)}
+/* 탭바에 없는 열한 개는 여기서 연다 — 사이드바와 같은 묶음, 같은 순서 */
+function openMenuSheet(){
+  var d=el('div','msheet');
+  d.innerHTML=NAV.map(function(g){
+    return '<div><div class="mgrp">'+g[0]+'</div><div class="sgrid">'+g[1].map(function(it){
+      var bd=navBadge(it[2]);
+      return '<button data-go="'+it[0]+'"'+(cur===it[0]?' class="on"':'')+'>'+
+        '<span class="si">'+ico(NAVICO[it[0]]||'list',17)+
+        (bd?'<span class="tb mt">'+bd+'</span>':'')+'</span>'+it[1]+'</button>'}).join('')+
+      '</div></div>'}).join('');
+  modalBox('전체 메뉴',d)}
 /* 좁은 화면에선 thead 가 숨고 행이 카드로 접힌다 — 각 칸 앞에 열 이름을 붙여 둔다.
    표마다 손으로 data-l 을 적지 않도록 thead 를 읽어 한 번에 찍는다. */
 /* 열 머리에 data-m 을 달면 그 표는 모바일에서 요약 카드로 바뀐다.
@@ -661,6 +699,11 @@ function go(p){
     var dot=e.querySelector('.navdot');
     if(on&&!dot){var d=el('span','navdot mdot');d.style.cssText='background:#13BD7E;width:6px;height:6px;margin-right:1px';e.insertBefore(d,e.firstChild)}
     if(!on&&dot)dot.remove()});
+  var inTab=MTAB.some(function(x){return x[0]===hl});
+  $$('#mtab button').forEach(function(b){
+    var on=b.dataset.t===(inTab?hl:'_more');
+    b.classList.toggle('on',on);
+    if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(V[p])V[p]();
   window.scrollTo(0,0);
   /* 화면이 통째로 바뀌므로 제목으로 포커스를 옮겨 스크린리더가 새 화면을 읽게 한다 */
@@ -669,7 +712,7 @@ function go(p){
   document.title=(TITLES[p]||'')+' · 맬리 케어센터 채널 어드민'}
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,card:card,
  chead:chead,ico:ico,shortcuts:shortcuts,area:area,donut:donut,bindTabs:bindTabs,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,mkPager:mkPager,toast:toast,
- open:open,closeAll:closeAll,go:go,labelCells:labelCells,mroles:mroles,buildNav:buildNav,V:V,
+ open:open,closeAll:closeAll,go:go,labelCells:labelCells,mroles:mroles,buildNav:buildNav,buildMtab:buildMtab,V:V,
  PEOPLE:PEOPLE,byId:byId,ORGS:ORGS,BRAIN:BRAIN,MIND:MIND,ASMT:ASMT,ROUT:ROUT,TESTS:TESTS,QUESTS:QUESTS,APPS:APPS,AUDIT:AUDIT,
  dayRec:dayRec,moveRows:moveRows,assessHist:assessHist,achieve:achieve,addAudit:addAudit,
  CHEV:CHEV,LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,
