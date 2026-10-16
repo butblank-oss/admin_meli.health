@@ -155,17 +155,28 @@ var ROOMS=[{n:'황*학',st:'unans',t:'3일',last:'걸음 수가 안 올라가요
  {n:'최*옥',st:'open',t:'2시간',last:'감사합니다 잘 쓰고 있어요',mine:1,msgs:[['me','오늘부터 29일까지 활동 7일 이상 하신 분께 선물을 드려요!','오전 8:57','08-13'],['them','감사합니다 잘 쓰고 있어요','오전 11:20','08-14']]},
  {n:'김*자',st:'open',t:'1일',last:'네 알겠습니다',mine:1,msgs:[['them','비밀번호를 잊어버렸어요','오전 7:30','08-12'],['me','앱에서 전화번호로 다시 로그인하시면 돼요.','오전 9:10','08-12'],['them','네 알겠습니다','오전 6:55','08-13']]},
  {n:'박*수',st:'empty',t:'—',last:'',mine:1,msgs:[]}];
-var cScope='MINE',cFilter=[],cRoom=null;
-V.consult=function(){
+var cScope='MINE',cFilter=[],cRoom=null,cMob='list';
+/* 좁은 화면에선 목록과 대화를 같이 쌓지 않고 한 번에 하나만 보여준다 —
+   keep 없이 부르면(메뉴 이동·필터 변경) 목록으로 되돌아온다 */
+V.consult=function(keep){
+  if(!keep)cMob='list';
   var h=$('#v-consult');
   h.innerHTML=ph('상담실','참여자 한 명당 방이 하나씩 자동으로 만들어져요.','<button class="mb mbp" id="c-bc">단체 공지 보내기</button>')
    +kpi([['답변을 기다려요','4','건','가장 오래된 건 3일째','cr'],['내 상담실','621','개','전체 625개 중'],
          ['운영팀이 맡은 방','4','개',''],['이번 달 응답','28','건','평균 5.2시간 안에 답했어요','','up']])
    +note('상담방은 참여자 한 명당 하나씩 자동으로 만들어져요(현재 625개). 이 중 <b>222개는 아직 대화가 없어요.</b> 개별 문의는 드물고 실제로는 단체 공지함으로 쓰이고 있어요.','in')
    +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="c-f"></div>'
-   +'<div class="chat"><div class="rooms" id="c-rooms"></div><div class="thr"><div class="msgs" id="c-msgs"></div><div id="c-comp"></div></div><div class="cpn" id="c-pn"></div></div></div>'
+   +'<div class="chat'+(cMob==='thread'?' thr-on':'')+'"><div class="rooms" id="c-rooms"></div>'
+   +'<div class="thr"><button class="cback" id="c-back" type="button">'
+     +'<svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 6 9l5 5"/></svg>'
+     +'<b id="c-back-n"></b></button>'
+     +'<div class="msgs" id="c-msgs"></div><div id="c-comp"></div></div>'
+   +'<div class="cpn" id="c-pn"></div></div></div>'
    +note('<b>지금 시스템의 제약이에요.</b> 답변 입력창은 그 방의 담당자로 지정된 사람에게만 나타나요. 담당자 1명 = 답변 권한 1명 구조라 주무관 1차 / 운영팀 2차 응대가 아직 안 돼요.','cr');
+  /* 대화를 볼 땐 지표·필터·안내문을 치운다 — 좁은 화면에서 대화가 쓸 자리를 뺏는다 */
+  h.classList.toggle('thr-on',cMob==='thread');
   $('#c-bc').addEventListener('click',function(){go('pushnew')});
+  $('#c-back').addEventListener('click',function(){cMob='list';V.consult(1);window.scrollTo(0,0)});
   var f=$('#c-f');
   [['내 상담실','MINE',621],['전체 상담실','ALL',625]].forEach(function(x){
     var b=el('button','mchip'+(cScope===x[1]?' on':''),x[0]+' <span class="c mt">'+x[2]+'</span>');
@@ -178,7 +189,7 @@ V.consult=function(){
     if(cScope==='MINE'&&!r.mine)return false;
     if(cFilter.length&&cFilter.indexOf(r.st)<0)return false;return true});
   var rl=$('#c-rooms');rl.innerHTML='';
-  if(!list.length){rl.innerHTML=emptyBox('해당하는 상담실이 없어요','');thread(null);return}
+  if(!list.length){rl.innerHTML=emptyBox('해당하는 상담실이 없어요','');$('#c-back-n').textContent='목록';thread(null);return}
   if(!cRoom||list.indexOf(cRoom)<0)cRoom=list[0];
   list.forEach(function(r){
     var b=el('button','room');
@@ -186,11 +197,10 @@ V.consult=function(){
     b.innerHTML='<span class="r1">'+r.n+' '+pl+'<span class="t">'+r.t+'</span></span><span class="r2">'+(r.last||'아직 대화가 없어요')+'</span>';
     b.setAttribute('aria-selected',cRoom===r?'true':'false');
     b.setAttribute('role','option');b.type='button';
-    b.addEventListener('click',function(){cRoom=r;V.consult();
-      /* 좁은 화면에선 대화가 목록 아래에 있어서, 고른 뒤 거기로 데려다준다 */
-      if(matchMedia('(max-width:860px)').matches){var t=$('#c-msgs');if(t)t.scrollIntoView({block:'start',behavior:'smooth'})}});
+    b.addEventListener('click',function(){cRoom=r;cMob='thread';V.consult(1);window.scrollTo(0,0)});
     rl.appendChild(b)});
   rl.setAttribute('role','listbox');rl.setAttribute('aria-label','상담 목록');
+  $('#c-back-n').textContent=cRoom?cRoom.n:'목록';
   thread(cRoom)};
 function thread(r){
   var m=$('#c-msgs'),c=$('#c-comp'),p=$('#c-pn');

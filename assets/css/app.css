@@ -243,6 +243,7 @@ th .sw:hover{color:#101828}
 .room .r1 .t{margin-left:auto;font-size:11.5px;color:#69707C;font-weight:400;font-variant-numeric:tabular-nums}
 .room .r2{font-size:12.5px;color:#667085;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .thr{display:flex;flex-direction:column;background:#F9FAFB;min-width:0}
+.cback{display:none}
 .msgs{flex:1;padding:18px;display:flex;flex-direction:column;gap:9px;overflow-y:auto}
 .msg{max-width:74%;padding:10px 13px;font-size:13.5px;line-height:1.55}
 .msg.them{background:#fff;border:1px solid #EAECF0;align-self:flex-start;border-radius:10px 10px 10px 2px}
@@ -486,9 +487,18 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .dwrap{flex-direction:column;gap:16px;padding:4px 14px 18px}
   .dlg{width:100%}
   .area{height:150px}
+  /* 목록과 대화를 같이 쌓으면 둘 다 반쪽이 된다. 한 번에 하나씩 보여주고 오간다 */
   .chat{display:block;height:auto}
-  .rooms{border-right:none;border-bottom:1px solid #EAECF0;max-height:46vh;overflow-y:auto}
+  .rooms{border-right:none;max-height:none;overflow:visible}
+  .chat:not(.thr-on) .thr{display:none}
+  .chat.thr-on .rooms{display:none}
   .cpn{display:none}                 /* 참여자 패널은 넓은 화면에서 */
+  .cback{display:flex;align-items:center;gap:6px;width:100%;background:#fff;cursor:pointer;
+    border:none;border-bottom:1px solid #EAECF0;padding:12px 14px;font:inherit;
+    font-size:14.5px;font-weight:700;letter-spacing:-0.02em;color:#101828;text-align:left}
+  .cback svg{flex:none;color:#69707C}
+  .thr-on>.ph,.thr-on>.kpi,.thr-on>.note,.thr-on #c-f{display:none !important}
+  .msgs{padding:14px;max-height:none;overflow:visible}
   /* 화면 안에서 인라인으로 짜 둔 2단·고정폭 그리드를 좁은 화면에선 한 줄로 편다.
      쓰인 곳이 흩어져 있어 선택자로 한 번에 덮는 쪽이 짧다 */
   [style*="repeat(2,minmax(0,1fr))"]:not(.kpi),[style*="repeat(4,minmax(0,1fr))"]:not(.kpi),
