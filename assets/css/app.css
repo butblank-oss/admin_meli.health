@@ -404,11 +404,19 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   select.mfld,input.mfld{font-size:16px}
   .tab{height:44px;font-size:14px}
 
-  /* 지표 — 세로로 쌓으면 목록이 첫 화면에서 밀려난다. 가로로 훑게 둔다 */
-  .kpi{display:flex !important;overflow-x:auto;scrollbar-width:none}
-  .kpi::-webkit-scrollbar{display:none}
-  .kpi>*{flex:0 0 47%;padding:13px 14px}
-  .kpi>div:first-child{border-left:none}
+  /* 지표는 한눈에 다 보여야 한다 — 옆으로 밀면 숫자가 잘리고 견줄 수가 없다.
+     칸 수는 폭이 정하고(최소 96px), 큰 숫자와 여백을 줄여 전부 한 화면에 넣는다.
+     칸 사이 선은 1px 틈에 배경색이 비치게 해 개수와 상관없이 맞아떨어지게 한다. */
+  .kpi{display:grid !important;grid-template-columns:repeat(auto-fit,minmax(96px,1fr)) !important;
+    gap:0;background:#fff;overflow:hidden}
+  /* 칸 선은 그림자로 긋는다 — 테두리를 쓰면 지표가 홀수일 때 빈 자리까지 칸처럼 보인다 */
+  .kpi>div{border-left:none;padding:10px 11px;box-shadow:1px 0 0 #EAECF0,0 1px 0 #EAECF0}
+  .kpi .ml,.kpi .mcap{word-break:keep-all}     /* 한글은 어절째 넘긴다 */
+  .kpi .ml{font-size:11.5px !important}
+  .kpi>div>.mt:not(.mcap){font-size:19px !important;margin-top:2px !important}
+  .kpi>div>.mt:not(.mcap) span{font-size:11.5px !important}
+  .kpi .mcap{font-size:11px;margin-top:3px !important;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
   /* 필터 칩도 한 줄로 훑는다 — 14개가 세로로 쌓이면 목록이 안 보인다 */
   .row:has(>.mchip):not(:has(input)):not(:has(select)){
@@ -467,7 +475,7 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .cpn{display:none}                 /* 참여자 패널은 넓은 화면에서 */
   /* 화면 안에서 인라인으로 짜 둔 2단·고정폭 그리드를 좁은 화면에선 한 줄로 편다.
      쓰인 곳이 흩어져 있어 선택자로 한 번에 덮는 쪽이 짧다 */
-  [style*="repeat(2,minmax(0,1fr))"],[style*="repeat(4,minmax(0,1fr))"],
+  [style*="repeat(2,minmax(0,1fr))"]:not(.kpi),[style*="repeat(4,minmax(0,1fr))"]:not(.kpi),
   [style*="minmax(0,1fr) 340px"],[style*="320px minmax(0,1fr)"],
   [style*="284px minmax(0,1fr)"]{grid-template-columns:minmax(0,1fr) !important}
   .kvform{grid-template-columns:1fr}
@@ -477,5 +485,5 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
   .dcal button{height:38px}
 }
 @media (max-width:520px){
-  .kpi>*{padding:11px 12px}
+  .kpi>div{padding:9px 9px}
 }
