@@ -154,14 +154,17 @@ var BADGE={
    return n?{k:'n',v:'예약 '+n}:null},
  anomaly:function(){var n=Sup.ALERTS.filter(function(a){return a.st==='open'}).length;
    return n?{k:'cr',v:n}:null}};
+/* ═══ 슈퍼 = 소유(Own) ═══
+   맬리 admin.stg 구조를 따른다. 원본을 만들고 전 채널에 뿌리는 쪽.
+   채널에 없는 것이 여기 있는 게 아니라, 여기 있는 것 중 일부만 채널에 잘라서 내려준다. */
 var NAV=[['운영',[['home','운영 현황']]],
- ['채널',[['channels','채널 관리'],['cohorts','기수 관리'],['accounts','계정·권한']]],
+ ['채널',[['channels','채널 관리'],['cohorts','프로그램 그룹'],['accounts','계정·권한'],['oplog','운영자 로그']]],
  ['프로그램',[['programs','프로그램 편성'],['content','콘텐츠'],['challenges','챌린지']]],
- ['소통',[['cs','CS 접수'],['push','전 채널 발송']]],
+ ['소통',[['cs','채널 문의'],['push','전 채널 발송']]],
  ['감사',[['anomaly','이상 열람 탐지']]]];
-var TITLES={home:'운영 현황',channels:'채널 관리',channel:'채널 상세',cohorts:'기수 관리',accounts:'계정·권한',
- programs:'프로그램 편성',content:'콘텐츠',challenges:'챌린지',challengenew:'챌린지 만들기',
- cs:'CS 접수',csdetail:'문의 상세',push:'전 채널 발송',pushnew:'발송 만들기',anomaly:'이상 열람 탐지'};
+var TITLES={home:'운영 현황',channels:'채널 관리',cohorts:'프로그램 그룹',accounts:'계정·권한',
+ oplog:'운영자 로그',programs:'프로그램 편성',content:'콘텐츠',challenges:'챌린지',challengenew:'챌린지 만들기',
+ cs:'채널 문의',csdetail:'문의 상세',push:'전 채널 발송',pushnew:'발송 만들기',anomaly:'이상 열람 탐지'}
 var V={},cur='home';
 function buildNav(){
   var n=$('#nav');n.innerHTML='';

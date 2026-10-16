@@ -270,12 +270,35 @@ function addAudit(act,tgt,reason){
   if(V.audit)V.audit()}
 
 /* ═══ nav ═══ */
-var NAV=[['운영',[['today','오늘','cr:3'],['people','참여자','n:822'],['stats','활동 현황',''],['consult','상담실','cr:4']]],
- ['프로그램',[['sched','프로그램 일정','ro'],['quest','챌린지','']]],
+/* ═══ 권한 축 — 소유 / 운영 / 조회 ═══
+   맬리 본서비스(admin.stg ↔ partner.stg)가 쓰는 모델을 그대로 따른다.
+   DB 원본은 전부 슈퍼가 갖고, 채널에는 자기 범위만 잘라서 내려준다.
+
+     Own      원본을 만들고 지운다          → 슈퍼만
+     Operate  주어진 범위 안에서 판단·기록한다 → 케어센터 채널
+     View     자기 범위를 본다              → 전부
+
+   맬리 파트너(병원)는 View 만 갖지만, 케어센터 주무관은 사업 수행 주체라
+   Operate 까지 갖는다. 그래서 메뉴가 파트너보다 많은 것은 의도다.
+   대신 Own 에 해당하는 것(콘텐츠·그룹·계정·공지 원본)은 슈퍼에만 둔다.
+
+   메뉴 라벨에 범위를 박는 것도 맬리 규칙이다 —
+   슈퍼 '회원 현황' ↔ 파트너 '소속 회원 현황', '채널 현황' ↔ '내 채널 정보'.
+
+   API 경로도 맬리를 따른다 — 슈퍼 /adm/*, 채널 /mng/*.
+   같은 응답 스키마를 쓰고 서버가 토큰 보고 범위를 자른다.
+   예: /mng/meliDashboard/summary 와 /adm/meliDashboard/summary 는 모양이 같고
+       채널 쪽은 자기 소속분만 담겨 온다. 화면은 한 벌로 끝난다. */
+var AXIS={own:['소유','cr'],op:['운영','ok'],view:['조회','nu']};
+var NAV=[['운영',[['today','오늘','cr:3'],['people','소속 참여자','n:822'],['stats','활동 현황',''],['consult','상담실','cr:4']]],
+ ['프로그램',[['groups','소속 프로그램 그룹',''],['sched','프로그램 일정',''],['quest','챌린지','ro']]],
  ['알림',[['push','푸시 메시지','n:예약 4']]],
- ['기록과 보고',[['report','월간 리포트',''],['apply','참여 신청','cr:111'],['audit','열람 기록','']]]];
-var TITLES={today:'오늘',people:'참여자',person:'참여자 상세',stats:'활동 현황',consult:'상담실',sched:'프로그램 일정',
- quest:'챌린지',questdetail:'챌린지 상세',push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록'};
+ ['기록과 보고',[['report','월간 리포트',''],['apply','참여 신청','cr:111'],['audit','열람 기록','']]],
+ ['채널',[['chops','우리 채널 운영자',''],['settings','내 채널 정보',''],['cx','운영팀 문의','']]]];
+var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',stats:'활동 현황',consult:'상담실',
+ groups:'소속 프로그램 그룹',sched:'프로그램 일정',quest:'챌린지',questdetail:'챌린지 상세',
+ push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록',
+ chops:'우리 채널 운영자',settings:'내 채널 정보',cx:'운영팀 문의'}
 var V={},cur='today';
 function buildNav(){
   var n=$('#nav');n.innerHTML='';

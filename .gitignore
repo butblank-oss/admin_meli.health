@@ -1,2 +1,14 @@
 node_modules/
 .DS_Store
+
+# 같은 폴더의 별개 작업물 — 이 저장소 대상 아님
+figma-mcp/
+__pycache__/
+.mcp.json
+.claude/settings.local.json
+malibrain-deck*.html
+맬리브레인-현황공유.html
+발표대본.md
+현황공유-대본.md
+맬리_어드민_디자인_핸드오프.zip
+meli-admin-convergence.html
