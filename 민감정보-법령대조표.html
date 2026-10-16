@@ -1,0 +1,357 @@
+<title>민감정보 법령 대조표</title>
+<style>
+:root{
+  --brand:#13BD7E; --brand-50:#E7F9F1; --brand-200:#6BDCAF; --brand-700:#077A50; --brand-900:#043528;
+  --g25:#FCFCFD; --g50:#F9FAFB; --g100:#F2F4F7; --g200:#EAECF0; --g300:#D0D5DD;
+  --g400:#98A2B3; --g500:#667085; --g700:#344054; --g900:#101828;
+  --page:#F7F8FA; --card:#fff;
+  --ok-bg:#ECFDF3; --ok-fg:#067647; --ok-dot:#17B26A;
+  --wa-bg:#FFFAEB; --wa-fg:#B54708; --wa-dot:#F79009;
+  --cr-bg:#FEF3F2; --cr-fg:#B42318; --cr-dot:#F04438;
+  --in-bg:#EFF8FF; --in-fg:#175CD3; --in-dot:#2E90FA;
+  --nu-bg:#F2F4F7; --nu-fg:#475467; --nu-dot:#98A2B3;
+  --hair:1px solid #EAECF0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--page); color:var(--g900);
+  font-family:Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+  font-size:14px; line-height:1.6; letter-spacing:-.011em;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+  padding:36px 20px 80px;
+}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+
+header .eyebrow{font-size:12.5px;font-weight:600;color:var(--brand-700);letter-spacing:.02em}
+header h1{font-size:28px;font-weight:700;letter-spacing:-.04em;margin-top:6px;text-wrap:balance}
+header p{font-size:14px;color:var(--g500);margin-top:8px;max-width:68ch}
+
+.card{background:var(--card);border:var(--hair);border-radius:10px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card-h{padding:18px 22px 14px;border-bottom:var(--hair)}
+.card-t{font-size:16px;font-weight:700;letter-spacing:-.024em;display:flex;align-items:center;gap:9px}
+.card-d{font-size:13px;color:var(--g500);margin-top:4px}
+.card-b{padding:20px 22px}
+
+h2{font-size:20px;font-weight:700;letter-spacing:-.032em;margin-top:10px}
+h2 .sub{font-size:13px;font-weight:400;color:var(--g500);margin-left:8px;letter-spacing:-.011em}
+
+.tag{height:22px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:-.004em;
+  display:inline-flex;align-items:center;gap:5px;white-space:nowrap;vertical-align:1px}
+.dot{width:6px;height:6px;border-radius:999px;flex:none}
+.t-ok{background:var(--ok-bg);color:var(--ok-fg)} .t-ok .dot{background:var(--ok-dot)}
+.t-wa{background:var(--wa-bg);color:var(--wa-fg)} .t-wa .dot{background:var(--wa-dot)}
+.t-cr{background:var(--cr-bg);color:var(--cr-fg)} .t-cr .dot{background:var(--cr-dot)}
+.t-in{background:var(--in-bg);color:var(--in-fg)} .t-in .dot{background:var(--in-dot)}
+.t-nu{background:var(--nu-bg);color:var(--nu-fg)} .t-nu .dot{background:var(--nu-dot)}
+
+.law{font-size:12px;color:var(--g500);background:var(--g50);border:var(--hair);
+  border-radius:5px;padding:1px 6px;white-space:nowrap;display:inline-block}
+
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th{height:38px;background:var(--g25);border-bottom:var(--hair);font-size:12.5px;font-weight:600;
+  color:var(--g500);text-align:left;padding:0 14px;white-space:nowrap}
+td{border-bottom:1px solid var(--g100);padding:12px 14px;font-size:13.5px;vertical-align:top}
+tr:last-child td{border-bottom:none}
+td .why{font-size:12.5px;color:var(--g500);margin-top:4px;display:block}
+
+ol.items{list-style:none;display:flex;flex-direction:column}
+ol.items>li{display:grid;grid-template-columns:30px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--g100)}
+ol.items>li:last-child{border-bottom:none}
+ol.items>li:first-child{padding-top:2px}
+.num{width:26px;height:26px;border-radius:7px;font-size:12.5px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.num.cr{background:var(--cr-bg);color:var(--cr-fg)}
+.num.wa{background:var(--wa-bg);color:var(--wa-fg)}
+.num.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.num.nu{background:var(--g100);color:var(--g700)}
+.it-t{font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.it-b{font-size:13.5px;color:var(--g700);margin-top:6px}
+.it-b b{color:var(--g900)}
+.now{font-size:13px;margin-top:9px;padding:9px 13px;border-radius:0 8px 8px 0;border-left:3px solid var(--g300);background:var(--g50);color:var(--g700)}
+.now.cr{border-left-color:var(--cr-dot);background:var(--cr-bg);color:var(--cr-fg)}
+.now.ok{border-left-color:var(--ok-dot);background:var(--ok-bg);color:var(--ok-fg)}
+.now strong{font-weight:700}
+.todo{font-size:13px;margin-top:8px;color:var(--g700)}
+.todo b{color:var(--brand-700)}
+
+.note{border-left:3px solid var(--brand-200);background:var(--brand-50);border-radius:0 8px 8px 0;
+  padding:13px 16px;font-size:13.5px;color:#065C3D}
+.note.cr{border-left-color:var(--cr-dot);background:var(--cr-bg);color:var(--cr-fg)}
+.note.in{border-left-color:var(--in-dot);background:var(--in-bg);color:var(--in-fg)}
+.note.wa{border-left-color:var(--wa-dot);background:var(--wa-bg);color:var(--wa-fg)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.stat{background:var(--card);border:var(--hair);border-radius:10px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.stat .l{font-size:13px;color:var(--g500);font-weight:500}
+.stat .v{font-size:28px;font-weight:700;letter-spacing:-.04em;margin-top:5px;line-height:1.1}
+.stat .v.cr{color:var(--cr-fg)} .stat .v.wa{color:var(--wa-fg)} .stat .v.ok{color:var(--ok-fg)}
+.stat .s{font-size:12.5px;color:var(--g500);margin-top:3px}
+
+footer{font-size:12.5px;color:var(--g500);border-top:var(--hair);padding-top:16px;line-height:1.7}
+footer a{color:var(--brand-700)}
+@media (max-width:640px){
+  body{padding:24px 14px 60px}
+  header h1{font-size:23px}
+  ol.items>li{grid-template-columns:24px 1fr;gap:10px}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">맬리 케어센터 채널어드민</div>
+  <h1>민감정보 법령 대조표</h1>
+  <p>케어센터가 다루는 건강정보는 「개인정보 보호법」상 <b>민감정보</b>입니다. 일반 개인정보보다 의무가 한 층 더 붙고
+     제재도 무겁습니다. 현재 프로토타입이 어디까지 와 있고 무엇이 비어 있는지 조문 단위로 대조했습니다.</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="l">반영됨</div><div class="v ok">9</div><div class="s">화면에 구현된 항목</div></div>
+  <div class="stat"><div class="l">미반영 · 시급</div><div class="v cr">5</div><div class="s">법 위반에 직결</div></div>
+  <div class="stat"><div class="l">미반영 · 후속</div><div class="v wa">5</div><div class="s">운영 중 문제가 됨</div></div>
+  <div class="stat"><div class="l">화면 밖 영역</div><div class="v">7</div><div class="s">서버·인프라 담당</div></div>
+</div>
+
+<!-- ───────── 법령 기준 ───────── -->
+<section class="card">
+  <div class="card-h">
+    <div class="card-t">왜 민감정보인가</div>
+    <div class="card-d">여기부터 확정돼야 나머지 의무가 따라옵니다.</div>
+  </div>
+  <div class="card-b" style="display:flex;flex-direction:column;gap:14px">
+    <p>시행령이 정한 민감정보에 <b>건강에 관한 정보</b>가 들어갑니다. 케어센터는 활동 기록만 다루는 게 아니라
+       <b>우울(GDS-SF)·불면(ISI-K)·스트레스(PSS)·기억감퇴(SMCQ) 검사 점수와 등급</b>, 걸음·체중 같은 건강 기록을 다룹니다.
+       <span class="law">법 제23조①</span> <span class="law">시행령 제18조</span></p>
+    <div class="note cr"><b>따라서 "개인정보 조심하자" 수준으로는 부족합니다.</b> 민감정보는 원칙적으로 처리 금지이고,
+      별도 동의나 법령 근거가 있을 때만 예외로 열립니다.</div>
+
+    <div class="tw"><table>
+      <thead><tr><th style="width:150px">의무</th><th>내용</th><th style="width:210px">위반 시</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>① 처리 제한</b><span class="why">법 제23조①</span></td>
+          <td>알릴 사항을 알리고 <b>다른 개인정보 동의와 별도로</b> 동의를 받아야 처리 가능.
+            법령이 요구·허용하는 경우는 예외.</td>
+          <td>5년 이하 징역 / 5천만원 이하 벌금 <span class="law">제71조4호</span><br>
+            <b>전체 매출액의 3% 이내 과징금</b> <span class="law">제64조의2①3호</span></td>
+        </tr>
+        <tr>
+          <td><b>② 안전성 확보조치</b><span class="why">법 제23조② · 제29조</span></td>
+          <td>분실·도난·유출·위조·변조·훼손되지 않도록 조치. 구체적 항목은
+            <b>「개인정보의 안전성 확보조치 기준」 고시</b>가 정함.</td>
+          <td>3천만원 이하 과태료 <span class="law">제75조②5호</span></td>
+        </tr>
+        <tr>
+          <td><b>③ 공개 가능성 고지</b><span class="why">법 제23조③</span></td>
+          <td>서비스 제공 과정에서 민감정보가 공개돼 사생활 침해 우려가 있으면,
+            <b>제공 전에</b> 공개 가능성과 비공개 선택 방법을 알아보기 쉽게 고지.</td>
+          <td>3천만원 이하 과태료 <span class="law">제75조②6호</span></td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="note wa"><b>민감정보라서 달라지는 숫자가 하나 있습니다.</b>
+      접속기록 보관기간이 일반은 1년인데, <b>민감정보를 처리하는 시스템은 2년 이상</b>입니다.
+      현재 프로토타입이 "2년간 보관"으로 적어둔 건 이 기준에 맞습니다.</div>
+  </div>
+</section>
+
+<!-- ───────── 반영됨 ───────── -->
+<h2>이미 반영된 것 <span class="sub">프로토타입에 화면으로 존재</span></h2>
+<section class="card"><div class="card-b">
+  <ol class="items">
+    <li><div class="num ok">1</div><div>
+      <div class="it-t">기본 마스킹 + 원문 열람 통제 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">이름·연락처가 기본 마스킹 상태. 원문을 보려면 <b>조회 사유 선택 + "업무 목적 외 조회하지 않겠습니다" 동의</b>가
+        모두 있어야 열립니다. 사유 없이는 버튼이 막힙니다.</div>
+      <div class="now ok">안전성 확보조치의 <strong>접근 권한 최소화</strong>에 해당</div></div></li>
+
+    <li><div class="num ok">2</div><div>
+      <div class="it-t">조회 사유 코드 2층 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">맬리 본서비스에서 확정돼 운영 중인 공통 8종 위에 케어센터 전용 4종을 얹었습니다.
+        두 표면의 열람 기록이 한 테이블로 합쳐집니다.</div></div></li>
+
+    <li><div class="num ok">3</div><div>
+      <div class="it-t">30초 자동 재마스킹 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">원문을 열어도 30초 뒤 자동으로 다시 가려집니다. 채널이 이 값을 늘릴 수 없게 잠가뒀습니다.</div></div></li>
+
+    <li><div class="num ok">4</div><div>
+      <div class="it-t">다운로드 별도 통제 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">명단 내려받기는 조회와 <b>별도 모달</b>. 가린 상태가 기본이고, 원문 포함은 사유를 따로 받습니다.
+        파일로 나가는 건 되돌릴 수 없으니 분리하는 게 맞습니다.</div></div></li>
+
+    <li><div class="num ok">5</div><div>
+      <div class="it-t">열람 기록 2년 보관 + 증빙 출력 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">열람·다운로드 이력을 2년 보관하고 점검표 증빙용으로 바로 내려받습니다.
+        <b>민감정보 처리 시스템의 2년 기준과 일치</b>합니다. <span class="law">고시 접속기록의 보관 및 점검</span></div></div></li>
+
+    <li><div class="num ok">6</div><div>
+      <div class="it-t">권한 3단계 + 파괴적 액션 분리 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">주관리자 / 부관리자 / 시스템관리자. 역할이 계정이 아니라 <b>자리(그룹·기관)</b>에 붙습니다.
+        탈퇴·승인·거절 같은 파괴적 액션은 부관리자에게 닫혀 있습니다.
+        <span class="law">고시 접근 권한의 관리</span></div></div></li>
+
+    <li><div class="num ok">7</div><div>
+      <div class="it-t">권한 이전 절차 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">그 자리의 부관리자에게만 넘길 수 있고, 없으면 막힙니다. 이전 내역이 기록에 남습니다.</div></div></li>
+
+    <li><div class="num ok">8</div><div>
+      <div class="it-t">미그룹 기간 열람 차단 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">그룹 합류 이전 활동·건강 기록을 채널이 볼 수 없습니다. UI만 가린 게 아니라
+        <b>데이터 소스 단계에서 차단</b>했습니다. 수집 목적 범위를 시점으로 끊은 것이라 목적 외 이용 방지에 직접 해당합니다.</div></div></li>
+
+    <li><div class="num ok">9</div><div>
+      <div class="it-t">보관기간·재마스킹 설정 잠금 <span class="tag t-ok"><span class="dot"></span>구현</span></div>
+      <div class="it-b">채널 설정에서 열람기록 2년·재마스킹 30초는 🔒로 잠기고 이유가 같이 표시됩니다.
+        채널이 법정 기준을 임의로 낮출 수 없습니다.</div></div></li>
+  </ol>
+</div></section>
+
+<!-- ───────── 미반영 P0 ───────── -->
+<h2>안 된 것 · 시급 <span class="sub">법 위반에 직결됩니다</span></h2>
+<section class="card"><div class="card-b">
+  <ol class="items">
+    <li><div class="num cr">1</div><div>
+      <div class="it-t">민감정보 별도 동의 <span class="tag t-cr"><span class="dot"></span>없음</span>
+        <span class="law">법 제23조①</span></div>
+      <div class="it-b">민감정보는 <b>다른 개인정보 동의와 분리해서</b> 받아야 합니다. 지금 어드민에는
+        동의를 받았는지, 언제 받았는지, 어떤 항목에 받았는지가 <b>어디에도 없습니다.</b></div>
+      <div class="now cr"><strong>제재가 가장 무거운 항목입니다.</strong> 동의 없이 처리하면 매출액 3% 이내 과징금 대상입니다.
+        보건소 점검에서 "동의서 어디 있냐"가 먼저 나옵니다.</div>
+      <div class="todo"><b>제안 —</b> 참여자 상세에 <b>동의 현황</b> 블록. 항목별(건강정보·민감정보·제3자 제공) 동의 여부,
+        받은 일시, 동의서 원본 보기, 철회 처리. 참여 신청 승인 시 동의 미수집이면 승인을 막는 것도 방법입니다.</div></div></li>
+
+    <li><div class="num cr">2</div><div>
+      <div class="it-t">세션 자동 로그아웃 <span class="tag t-cr"><span class="dot"></span>없음</span>
+        <span class="law">고시 인증 및 접근통제</span></div>
+      <div class="it-b">취급자가 <b>일정시간 업무처리를 하지 않으면 자동으로 접속이 차단</b>돼야 합니다.
+        현재 프로토타입에 세션 개념이 아예 없습니다.</div>
+      <div class="now cr">주무관 자리는 민원인이 오가는 <strong>개방된 사무실</strong>입니다.
+        화면 켜둔 채 자리를 비우면 822명의 건강정보가 노출됩니다. 실제 사고가 가장 잘 나는 경로입니다.</div>
+      <div class="todo"><b>제안 —</b> 채널 설정에 🔒 항목으로 <b>무조작 N분 후 자동 로그아웃</b>(기본 30분 권장, 상한 고정).
+        만료 1분 전 경고 모달 + 연장 버튼. 만료 시 열려 있던 원문은 즉시 재마스킹.</div></div></li>
+
+    <li><div class="num cr">3</div><div>
+      <div class="it-t">접속기록 항목 미달 <span class="tag t-cr"><span class="dot"></span>미달</span>
+        <span class="law">고시 접속기록의 보관 및 점검</span></div>
+      <div class="it-b">고시는 <b>계정 · 접속일시 · 접속지 정보 · 처리한 정보주체 정보 · 수행업무</b>를 남기라고 합니다.
+        현재 열람 기록의 대상 칸은 <b>"1건" "184건"</b>처럼 건수로만 적혀 있어
+        <b>누구의 정보를 봤는지</b>가 남지 않습니다.</div>
+      <div class="now cr">지금 월간 리포트의 점검표가 이미 이 항목을 <strong>"불이행 / 기록 미수집"</strong>으로
+        표시하고 있습니다. 화면이 스스로 미비를 신고하는 중입니다.</div>
+      <div class="todo"><b>제안 —</b> 대상 칸에 정보주체 식별자(PIN) 기록. 다건이면 "184건" 옆에 대상 목록 펼침.
+        점검표 판정이 자동으로 <b>이행</b>으로 바뀌게 연결.</div></div></li>
+
+    <li><div class="num cr">4</div><div>
+      <div class="it-t">접속기록 위·변조 방지 <span class="tag t-cr"><span class="dot"></span>없음</span>
+        <span class="law">고시 접속기록의 보관 및 점검</span></div>
+      <div class="it-b">기록을 남기는 것만으로는 부족하고 <b>위·변조되지 않게 보관</b>해야 합니다.
+        어드민에서 기록을 지우거나 고칠 수 있으면 증빙 가치가 없습니다.</div>
+      <div class="todo"><b>제안 —</b> 열람 기록은 읽기 전용임을 화면에 명시하고, 무결성 검증 상태(해시 체인 등)를
+        점검표 증빙에 포함. 구현은 서버지만 <b>화면에 상태가 보여야</b> 점검 대응이 됩니다.</div></div></li>
+
+    <li><div class="num cr">5</div><div>
+      <div class="it-t">접속기록 월 1회 점검 <span class="tag t-cr"><span class="dot"></span>없음</span>
+        <span class="law">고시 접속기록의 보관 및 점검</span></div>
+      <div class="it-b">보관만이 아니라 <b>월 1회 이상 점검</b>해야 하고, 특히 개인정보 다운로드 건은 사유를 확인해야 합니다.
+        점검을 했다는 <b>기록</b>이 남아야 증빙이 됩니다.</div>
+      <div class="todo"><b>제안 —</b> 열람 기록에 <b>월간 점검</b> 탭. 그 달의 다운로드 건을 한 줄씩 확인 처리하고
+        점검자·점검일시를 남김. 미점검 상태면 <b>오늘</b> 화면 처리할 일에 올림.</div></div></li>
+  </ol>
+</div></section>
+
+<!-- ───────── 미반영 P1 ───────── -->
+<h2>안 된 것 · 후속 <span class="sub">당장 위반은 아니지만 운영에서 터집니다</span></h2>
+<section class="card"><div class="card-b">
+  <ol class="items">
+    <li><div class="num wa">6</div><div>
+      <div class="it-t">퇴직·전보 시 권한 말소 <span class="tag t-wa"><span class="dot"></span>수동</span>
+        <span class="law">고시 접근 권한의 관리</span></div>
+      <div class="it-b">전보·퇴직하면 <b>지체 없이</b> 권한을 변경하거나 말소해야 합니다.
+        지금은 <b>62일 미접속 휴면 계정이 그룹 주관리자 자리를 그대로 들고</b> 있고, 아무 일도 일어나지 않습니다.</div>
+      <div class="todo"><b>제안 —</b> 휴면 기준(예: 60일) 도달 시 자동 접근 차단 + 운영자 관리에 알림.
+        권한 회수 전까지 그 계정의 원문 열람을 막는 것이 핵심입니다.</div></div></li>
+
+    <li><div class="num wa">7</div><div>
+      <div class="it-t">권한 변경 이력 3년 보관 <span class="tag t-wa"><span class="dot"></span>부분</span>
+        <span class="law">고시 접근 권한의 관리</span></div>
+      <div class="it-b">권한 부여·변경·말소 내역을 <b>3년 이상</b> 보관해야 합니다. 권한 이전은 열람 기록에 남지만
+        <b>부여·말소는 안 남고</b>, 열람 기록은 2년 보관이라 기간도 모자랍니다.</div>
+      <div class="todo"><b>제안 —</b> 운영자 관리에 <b>권한 이력</b> 탭을 분리. 보관기간을 3년으로 따로 설정.</div></div></li>
+
+    <li><div class="num wa">8</div><div>
+      <div class="it-t">비밀번호 규칙 · 로그인 실패 잠금 <span class="tag t-wa"><span class="dot"></span>없음</span>
+        <span class="law">고시 접근 권한의 관리</span></div>
+      <div class="it-b">비밀번호 작성규칙과 <b>연속 인증 실패 시 접근 제한</b>이 필요합니다.
+        그룹 주관리자 지정 시 이메일로 계정을 발급하는 흐름을 만들어뒀는데, 그 뒤 규칙이 비어 있습니다.</div>
+      <div class="todo"><b>제안 —</b> 초대 수락 시 비밀번호 규칙 안내 + 5회 실패 잠금. 운영자 목록에 잠김 상태 표시와 해제.</div></div></li>
+
+    <li><div class="num wa">9</div><div>
+      <div class="it-t">보존기간 만료 파기 <span class="tag t-wa"><span class="dot"></span>없음</span>
+        <span class="law">고시 개인정보의 파기</span></div>
+      <div class="it-b">탈퇴 처리는 있지만 <b>보존기간이 끝난 데이터를 복구 불가능하게 파기</b>하는 절차가 없습니다.
+        기수가 종료돼도 822명의 건강정보가 그대로 남습니다.</div>
+      <div class="now"><strong>기수 종료 기능과 충돌합니다.</strong> 종료 리포트는 계속 뽑아야 하는데(보건소 요구),
+        원본 건강정보는 보존기간이 지나면 지워야 합니다. <b>리포트용 집계와 원본을 분리</b>해야 둘 다 됩니다.</div>
+      <div class="todo"><b>제안 —</b> 채널 설정에 보존기간 항목(🔒). 만료 대상을 <b>오늘</b> 화면 처리할 일에 올리고
+        파기 실행 기록을 남김.</div></div></li>
+
+    <li><div class="num wa">10</div><div>
+      <div class="it-t">동의 철회 처리 <span class="tag t-wa"><span class="dot"></span>없음</span>
+        <span class="law">법 제23조① 관련</span></div>
+      <div class="it-b">동의가 처리 근거라면 <b>철회도 처리돼야</b> 합니다. 철회 시 어떤 데이터가 멈추고 무엇이 남는지가
+        화면에 정의돼 있지 않습니다.</div>
+      <div class="todo"><b>제안 —</b> 1번(동의 현황)과 묶어서 설계. 철회하면 그룹 소속이 해제되고 미그룹으로 전환되는 흐름이
+        이미 만들어둔 모델과 맞습니다.</div></div></li>
+  </ol>
+</div></section>
+
+<!-- ───────── 화면 밖 ───────── -->
+<h2>화면 밖 영역 <span class="sub">서버·인프라 담당 · 기획 범위는 아니지만 점검표에 들어갑니다</span></h2>
+<section class="card"><div class="card-b" style="display:flex;flex-direction:column;gap:14px">
+  <div class="tw"><table>
+    <thead><tr><th style="width:190px">항목</th><th>요건</th><th style="width:110px">상태</th></tr></thead>
+    <tbody>
+      <tr><td><b>개인정보 암호화</b></td><td>고유식별정보·비밀번호·바이오정보 암호화 저장, 비밀번호는 복호화 불가 일방향, 전송 구간 암호화</td><td><span class="tag t-ok"><span class="dot"></span>이행</span></td></tr>
+      <tr><td><b>인터넷망 접근통제</b></td><td>IP 제한, 침입 탐지·차단, 외부 접속 시 VPN·2차 인증</td><td><span class="tag t-nu"><span class="dot"></span>미확인</span></td></tr>
+      <tr><td><b>악성프로그램 방지</b></td><td>백신 자동 업데이트, OS 보안 업데이트</td><td><span class="tag t-nu"><span class="dot"></span>미확인</span></td></tr>
+      <tr><td><b>관리용 단말기</b></td><td>지정·용도 제한·강화된 보안</td><td><span class="tag t-nu"><span class="dot"></span>미확인</span></td></tr>
+      <tr><td><b>물리적 안전조치</b></td><td>전산실·문서보관실 통제, 보조저장매체 관리</td><td><span class="tag t-nu"><span class="dot"></span>미확인</span></td></tr>
+      <tr><td><b>재해·재난 대비</b></td><td>백업·복구 계획 수립과 점검</td><td><span class="tag t-nu"><span class="dot"></span>미확인</span></td></tr>
+      <tr><td><b>내부 관리계획</b></td><td>수립·시행하고 <b>연 1회 이상</b> 이행 실태 점검</td><td><span class="tag t-wa"><span class="dot"></span>수기</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note in">점검표 18개 항목 중 <b>시스템이 자동 판정할 수 있는 건 6개</b>라고 리포트에 적혀 있습니다.
+    위 항목들을 어드민이 직접 구현하진 않더라도, <b>상태를 받아와 점검표에 표시</b>할 수는 있습니다.
+    그래야 매달 수기로 채우는 12개가 줄어듭니다.</div>
+</div></section>
+
+<!-- ───────── 순서 ───────── -->
+<section class="card">
+  <div class="card-h"><div class="card-t">제안하는 순서</div>
+    <div class="card-d">의존 관계를 고려했습니다.</div></div>
+  <div class="card-b" style="display:flex;flex-direction:column;gap:13px">
+    <div class="note"><b>1순위 — 세션 자동 로그아웃.</b> 가장 작고 독립적입니다. 채널 설정에 🔒 항목 하나와
+      경고 모달이면 끝나고, 열어둔 원문 재마스킹과 자연스럽게 묶입니다.</div>
+    <div class="note"><b>2순위 — 접속기록 3종 묶음</b>(항목 보강 · 월 1회 점검 · 위변조 표시).
+      셋이 한 화면에서 해결되고, 끝나면 <b>리포트 점검표의 "불이행"이 "이행"으로 바뀝니다.</b>
+      결과가 눈에 보이는 항목입니다.</div>
+    <div class="note"><b>3순위 — 동의 현황 + 철회.</b> 제재는 제일 무겁지만 범위가 큽니다.
+      동의를 <b>앱에서 받을지 어드민에서 등록할지</b>부터 정해야 화면이 나옵니다.
+      그 전에 보건소·법무 확인이 필요합니다.</div>
+    <div class="note wa"><b>결정이 필요한 것 —</b> 현재 동의를 <b>어디서 어떻게 받고 있는지</b> 확인해주세요.
+      앱 가입 시 일괄 동의만 받고 있다면 <b>민감정보 별도 동의 요건을 이미 못 맞추고 있는 상태</b>일 수 있습니다.
+      그러면 화면보다 동의 절차 자체를 먼저 고쳐야 합니다.</div>
+  </div>
+</section>
+
+<footer>
+  <b>근거</b> · 「개인정보 보호법」 제23조(민감정보의 처리 제한) · 제29조(안전조치의무) · 제71조 · 제75조 · 제64조의2,
+  「개인정보 보호법 시행령」 제18조, 「개인정보의 안전성 확보조치 기준」(개인정보보호위원회 고시)<br>
+  <b>주의</b> · 고시는 2023년 9월 전면개정으로 <b>조문 번호가 바뀌었습니다.</b> 위 표는 조문 <b>이름</b> 기준으로 적었으니,
+  개발 착수 전 <a href="https://www.law.go.kr">국가법령정보센터</a> 원문으로 번호를 대조하세요.<br>
+  <b>참고</b> · <a href="https://www.easylaw.go.kr/CSP/CnpClsMainBtr.laf?popMenu=ov&csmSeq=1257&ccfNo=2&cciNo=3&cnpClsNo=1">찾기 쉬운 생활법령정보 — 민감정보의 처리 제한</a>
+</footer>
+
+</div>
