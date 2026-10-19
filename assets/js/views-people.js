@@ -256,12 +256,12 @@ function askOpen(p,from){
    +'사유는 열람 기록에 남고 보건소 점검 때 증빙으로 제출돼요. '
    +'목록으로 나가면 다시 가려지고, 나간 시각도 함께 남아요.</p>'
    +'<div><span class="flab">조회 사유 <span style="color:#B42318">*</span></span>'
-   +'<select class="mfld" id="rv-r" style="width:100%"><option value="">사유를 선택하세요</option>'
+   +'<select class="mfld" id="rv-r" style="width:100%" aria-label="조회 사유 (필수)"><option value="">사유를 선택하세요</option>'
    +'<optgroup label="공통">'+REASON_COMMON.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</optgroup>'
    +'<optgroup label="케어센터 전용">'+REASON_CARE.map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</optgroup>'
    +'</select></div>'
    +'<div id="rv-etc" style="display:none"><span class="flab">상세 사유 <span style="color:#B42318">*</span></span>'
-   +'<textarea class="mfld" id="rv-e" style="width:100%;height:64px;padding:9px 11px" '
+   +'<textarea class="mfld" id="rv-e" style="width:100%;height:64px;padding:9px 11px" aria-label="상세 사유 (필수)" '
    +'placeholder="어떤 업무로 원문이 필요한지 적어주세요"></textarea>'
    +'<div class="mcap" style="margin-top:5px">직접 입력 사유는 5자 이상 적어야 해요.</div></div>'
    +'<label class="chk"><input type="checkbox" id="rv-ok2" style="accent-color:#13BD7E;width:15px;height:15px">'
@@ -390,7 +390,7 @@ function trendRows(p){
     var pr=45+r(k+2)*45,cr=Math.max(5,Math.min(99,pr+(r(k+3)-0.45)*26));
     return {n:b[0],pd:pd,cd:cd,pr:pr,cr:cr}})}
 function dlt(d,dp){
-  if(Math.abs(d)<0.05)return '<span class="mt" style="color:#98A2B3;font-size:12.5px;margin-left:5px">—</span>';
+  if(Math.abs(d)<0.05)return '<span class="mt" style="color:#69707C;font-size:12.5px;margin-left:5px">—</span>';
   var down=d<0;
   return '<span class="mt" style="font-size:12.5px;margin-left:5px;color:'+(down?'#B54708':'#667085')
    +(down?';font-weight:600':'')+'">'+(down?'▼':'▲')+Math.abs(d).toFixed(dp)+'</span>'}
@@ -402,16 +402,16 @@ function tabCmp(p,box){
    +'<tr><th rowspan="2" style="padding-left:20px;vertical-align:bottom">활동 유형</th>'
    +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0">평균 난이도</th>'
    +'<th colspan="2" class="num" style="border-left:1px solid #EAECF0;padding-right:20px">수행률 (%)</th></tr>'
-   +'<tr><th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num">이번달</th>'
-   +'<th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#98A2B3">지난달</th><th class="num" style="padding-right:20px">이번달</th></tr></thead><tbody>'
+   +'<tr><th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#69707C">지난달</th><th class="num">이번달</th>'
+   +'<th class="num" style="border-left:1px solid #EAECF0;font-weight:400;color:#69707C">지난달</th><th class="num" style="padding-right:20px">이번달</th></tr></thead><tbody>'
    +rows.map(function(x){
-     if(x.none)return '<tr style="color:#98A2B3"><td style="padding-left:20px">'+x.n+'</td>'
+     if(x.none)return '<tr style="color:#69707C"><td style="padding-left:20px">'+x.n+'</td>'
       +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num">–</td>'
       +'<td class="num" style="border-left:1px solid #EAECF0">–</td><td class="num" style="padding-right:20px">–</td></tr>';
      return '<tr><td style="padding-left:20px">'+x.n+'</td>'
-      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pd.toFixed(1)+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#69707C">'+x.pd.toFixed(1)+'</td>'
       +'<td class="num mt">'+x.cd.toFixed(1)+dlt(x.cd-x.pd,1)+'</td>'
-      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#98A2B3">'+x.pr.toFixed(1)+'</td>'
+      +'<td class="num mt" style="border-left:1px solid #EAECF0;color:#69707C">'+x.pr.toFixed(1)+'</td>'
       +'<td class="num mt" style="padding-right:20px">'+x.cr.toFixed(1)+dlt(x.cr-x.pr,1)+'</td></tr>'}).join('')
    +'</tbody></table></div>'}
 

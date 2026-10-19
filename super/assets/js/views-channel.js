@@ -310,7 +310,7 @@ V.oplog=function(){
      +'<td>'+pill(o.act,o.k)+'</td>'
      +'<td class="mt" style="color:#475467">'+esc(o.tgt)+'</td>'
      +'<td style="color:#475467">'+esc(o.why)+'</td>'
-     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+o.ip+'</td>';
+     +'<td class="mt" style="color:#69707C;padding-right:20px">'+o.ip+'</td>';
     tb.appendChild(tr)})};
 
 V.accounts=function(){

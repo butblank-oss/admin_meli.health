@@ -298,7 +298,7 @@ function progCell(a){
   if(a.st==='approved')return a.signed==='Y'
     ? pill(g.name.length>14?g.name.slice(0,13)+'…':g.name,'ok')
     : pill('없음 — 앱 미설치','cr');
-  return a.signed==='Y'?pill('미그룹','nu'):'<span style="color:#98A2B3">없음</span>'}
+  return a.signed==='Y'?pill('미그룹','nu'):'<span style="color:#69707C">없음</span>'}
 V.apply=function(keep){
   var h=$('#v-apply');
   if(!keep){
@@ -505,7 +505,7 @@ V.chops=function(){
    +'<tr><td style="padding-left:0">'+pill('주관리자','ok')+'</td><td>맡은 그룹·기관의 모든 기능</td>'
    +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">부관리자 초대</td></tr>'
    +'<tr><td style="padding-left:0">'+pill('부관리자','nu')+'</td><td>열어준 메뉴만</td>'
-   +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#98A2B3">없음</td></tr>'
+   +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('불가','cr')+'</td><td class="mt" style="color:#69707C">없음</td></tr>'
    +'<tr><td style="padding-left:0">'+pill('시스템관리자','in')+'</td><td>전 채널 · 원메딕스</td>'
    +'<td>'+pill('가능','ok')+'</td><td>'+pill('따로 받아야 함','wa')+'</td><td>'+pill('가능','ok')+'</td><td class="mt" style="color:#475467">주·부 초대/삭제/수정</td></tr>'
    +'</tbody></table></div>'
@@ -533,12 +533,12 @@ V.chops=function(){
     var nOwn=as.filter(function(x){return x.role==='owner'}).length;
     var nSub=as.filter(function(x){return x.role==='sub'}).length;
     var role=(nOwn||nSub)?[nOwn?pill('주관리자 '+nOwn,'ok'):'',nSub?pill('부관리자 '+nSub,'nu'):''].filter(Boolean).join(' ')
-      :'<span style="color:#98A2B3">자리 없음</span>';
+      :'<span style="color:#69707C">자리 없음</span>';
     var seats=as.length?as.map(function(x){
         return '<span class="mcap" style="display:inline-block;margin-right:8px">'
           +(x.role==='owner'?'<b style="color:#067647">주</b>':'<span style="color:#667085">부</span>')
           +' '+esc(x.name)+'</span>'}).join('')
-      :'<span style="color:#98A2B3">없음</span>';
+      :'<span style="color:#69707C">없음</span>';
     var tr=el('tr');
     tr.innerHTML='<td style="padding-left:20px"><b>'+esc(o.name)+'</b></td><td>'+role+'</td><td>'+seats+'</td>'
      +'<td class="sens"></td>'
@@ -698,6 +698,7 @@ V.audit=function(){
   [['log','기록'],['chk','월간 점검'+(undone?' ('+undone+')':'')],['int','무결성']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',auTab===x[0]?'true':'false');
     b.addEventListener('click',function(){auTab=x[0];V.audit()});tb.appendChild(b)});
+  A.bindTabs(tb);   /* role=tab 이 있어야 aria-selected 를 달 수 있다 */
   var B=$('#au-body');
   if(auTab==='log')auLog(B); else if(auTab==='chk')auCheck(B,dls); else auIntegrity(B)};
 
@@ -728,7 +729,7 @@ function auLog(B){
      +'<td class="mt" style="color:#475467;max-width:240px">'+cell+'</td>'
      +'<td style="color:#475467">'+a[6]+'</td>'
      +'<td>'+(a[10]?pill(a[10],'nu'):'<span class="mcap">—</span>')+'</td>'
-     +'<td class="mt" style="color:#98A2B3;padding-right:20px">'+a[7]+'</td>');
+     +'<td class="mt" style="color:#69707C;padding-right:20px">'+a[7]+'</td>');
     var more=tr.querySelector('.au-more');
     if(more)more.addEventListener('click',function(){
       var b2=el('div');b2.innerHTML='<p class="mcap">'+a[0]+' · '+a[4]+'</p>'

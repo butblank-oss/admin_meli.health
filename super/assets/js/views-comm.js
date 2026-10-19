@@ -257,7 +257,7 @@ V.anomaly=function(){
   var op=ALERTS.filter(function(a){return a.st==='open'});
   h.innerHTML=ph('이상 열람 탐지','개인정보 유출은 대개 권한 있는 내부자에서 시작해요. 그래서 <b>열람 기록만</b> 감시합니다.',
      '<button class="mb" type="button" id="an-rules">판정 기준</button><button class="mb" type="button">증빙 내려받기</button>')
-   +note('<b>운영팀은 개인정보 원문을 볼 수 없어요.</b> 감시하는 쪽이 감시 대상 권한을 함께 가지면 감사가 무의미해지기 때문입니다. 이 화면에서도 이름·전화번호는 나오지 않아요.','in')
+   +note('<b>운영팀 열람도 같은 규칙으로 감시해요.</b> 운영팀은 좌석별 권한과 사유가 있어야 원문을 열람할 수 있고(참여자 찾기), 그 기록은 채널 담당자와 <b>같은 장부</b>에 쌓여 같은 기준으로 탐지됩니다. 감시하는 쪽이라고 장부가 다르면 감사가 운영팀만 비켜 가요. 이 화면에는 이름·전화번호가 나오지 않아요.','in')
    +note('<b>유출은 훔쳐 가는 것만이 아니에요.</b> 열어놓고 자리를 뜨는 것도 유출이에요. '
      +'채널 어드민은 목록으로 나가면 원문을 다시 가리지만, <b>상세를 열어둔 채 자리를 비우면</b> 그대로 보여요. '
      +'그래서 <b>열람 시간</b>을 함께 봅니다.','wa')
@@ -303,7 +303,7 @@ V.anomaly=function(){
       tb.appendChild(el('tr',null,'<td class="mt" style="padding-left:20px;color:'+(late?'#B42318':'#475467')+'">'+x.t+(late?' <span class="mcap" style="color:#B42318">심야</span>':'')+'</td>'
        +'<td>'+A.chChip(x.ch)+'</td><td style="font-weight:600">'+esc(x.who)+'</td>'
        +'<td>'+x.act+'</td><td class="num mt" style="color:'+(x.n>=50?'#B42318':'#475467')+'">'+fmt(x.n)+'</td>'
-       +'<td class="num mt" style="color:'+(x.dur>=30?'#B42318':'#98A2B3')+'">'+(x.act==='원문 열람'?x.dur+'분':'—')+'</td>'
+       +'<td class="num mt" style="color:'+(x.dur>=30?'#B42318':'#69707C')+'">'+(x.act==='원문 열람'?(x._at?'열람 중':x.dur+'분'):'—')+'</td>'
        +'<td style="color:#475467">'+esc(x.reason)+'</td>'
        +'<td class="mt" style="color:#69707C;padding-right:20px">'+x.ip+'</td>'))});
     aPager.render($('#an-pg'))}

@@ -380,12 +380,12 @@ V.groups=function(){
       +'<b'+(g.ghost?' style="color:#667085"':'')+'>'+esc(g.name)+'</b>'
       +(on?' <span class="mpill" style="background:#E7F9F1;color:#065C3D">보는 중</span>':'')
       +'<div class="mcap">'+g.sites.join(' · ')+'</div></td>'
-     +'<td>'+(g.ghost?'<span style="color:#98A2B3">—</span>':pill(KIND[g.kind][0],g.kind==='fixed'?'nu':'in'))+'</td>'
+     +'<td>'+(g.ghost?'<span style="color:#69707C">—</span>':pill(KIND[g.kind][0],g.kind==='fixed'?'nu':'in'))+'</td>'
      +'<td class="mt" style="color:#475467">'+g.anchor+'<div class="mcap">'+g.start+'</div></td>'
      +'<td>'+(g.owner?'<b style="font-weight:600">'+esc(g.owner)+'</b>'
-        :(g.ghost?'<span style="color:#98A2B3">—</span>':pill('미지정','cr')))+'</td>'
+        :(g.ghost?'<span style="color:#69707C">—</span>':pill('미지정','cr')))+'</td>'
      +'<td class="mt" style="color:#475467">'+(g.subs&&g.subs.length?g.subs.join(', ')
-        :'<span style="color:#98A2B3">없음</span>')+'</td>'
+        :'<span style="color:#69707C">없음</span>')+'</td>'
      +'<td class="num mt">'+(g.n?fmt(g.n):'—')+'</td>'
      +'<td class="num mt">'+(g.active?fmt(g.active):'—')+'</td>'
      +'<td style="padding-right:20px">'+pill(g.st,g.k)+'</td>';
@@ -411,26 +411,26 @@ V.settings=function(){
     '<button class="mb" id="st-req">변경 요청</button><button class="mb mbp" id="st-save">저장</button>')
    +note('🔒 표시된 항목은 계약·법정·시스템 제약이라 채널에서 바꿀 수 없어요. 바꿔야 하면 <b>운영팀 문의</b>로 보내주세요.','in')
    +'<div class="mc">'+chead('기본 정보')+'<div style="padding:4px 20px 18px">'
-     +'<div class="kvform"><label>기관명</label><div>'+fld('st-name',CFG.name)+'</div>'
+     +'<div class="kvform"><label for="st-name">기관명</label><div>'+fld('st-name',CFG.name)+'</div>'
      +'<label>채널 ID</label><div class="mcap mt" style="padding-top:9px">'+CFG.key+'</div></div>'
      +lockRow('계약 기간',L.contract,'계약서 기준이라 원메딕스가 관리해요. 종료 30일 전에 안내가 가요.')+'</div></div>'
    +'<div class="mc">'+chead('보고 서식')
      +'<div class="mcap" style="padding:0 20px 10px">월간 리포트 공문 머리말에 그대로 들어가요.</div>'
      +'<div style="padding:0 20px 18px"><div class="kvform">'
-     +'<label>수신 기관</label><div>'+fld('st-recv',CFG.recvOrg)+'</div>'
-     +'<label>수신 직위</label><div>'+fld('st-recvt',CFG.recvTitle)+'</div>'
-     +'<label>발신 명의</label><div>'+fld('st-send',CFG.sendOrg)+'</div>'
-     +'<label>작성자</label><div>'+fld('st-writer',CFG.writer)+'</div>'
-     +'<label>문서번호</label><div>'+fld('st-doc',CFG.docNo)
+     +'<label for="st-recv">수신 기관</label><div>'+fld('st-recv',CFG.recvOrg)+'</div>'
+     +'<label for="st-recvt">수신 직위</label><div>'+fld('st-recvt',CFG.recvTitle)+'</div>'
+     +'<label for="st-send">발신 명의</label><div>'+fld('st-send',CFG.sendOrg)+'</div>'
+     +'<label for="st-writer">작성자</label><div>'+fld('st-writer',CFG.writer)+'</div>'
+     +'<label for="st-doc">문서번호</label><div>'+fld('st-doc',CFG.docNo)
        +'<div class="mcap" style="margin-top:5px">{YYYY} 연도 · {NNN} 일련번호. 다음 번호는 <b>'
        +CFG.docNo.replace('{YYYY}','2026').replace('{NNN}','014')+'</b>예요.</div></div>'
      +'</div></div></div>'
    +'<div class="mc">'+chead('활동 판정 기준')
      +'<div class="mcap" style="padding:0 20px 10px">여기 숫자를 바꾸면 오늘·참여자·활동 현황이 <b>같이</b> 바뀌어요. 지표를 한 곳에서 계산하니까요.</div>'
      +'<div style="padding:0 20px 8px"><div class="kvform">'
-     +'<label>경고 기준</label><div style="display:flex;gap:8px;align-items:center">'
+     +'<label for="st-warn">경고 기준</label><div style="display:flex;gap:8px;align-items:center">'
        +'<input class="mfld" id="st-warn" type="number" min="1" max="60" value="'+CFG.warn+'" style="width:88px"> 일 이상 무활동</div>'
-     +'<label>위험 기준</label><div style="display:flex;gap:8px;align-items:center">'
+     +'<label for="st-risk">위험 기준</label><div style="display:flex;gap:8px;align-items:center">'
        +'<input class="mfld" id="st-risk" type="number" min="2" max="90" value="'+CFG.risk+'" style="width:88px"> 일 이상 무활동</div>'
      +'<label>과거 판정</label><div id="st-kind" style="display:flex;gap:8px">'
        +'<button class="mb" data-k="policy" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
@@ -439,9 +439,9 @@ V.settings=function(){
        +'<b>다시 판정한다</b><div class="mcap">오류 정정 · 과거까지 소급</div></button></div>'
      +'</div></div><div style="padding:0 20px 18px" id="st-pv"></div></div>'
    +'<div class="mc">'+chead('알림')+'<div style="padding:4px 20px 18px">'
-     +'<div class="kvform"><label>푸시 발송 시간</label><div style="display:flex;gap:8px;align-items:center">'
-       +'<input class="mfld" id="st-pf" type="number" min="0" max="23" value="'+CFG.pushFrom+'" style="width:76px"> 시 ~ '
-       +'<input class="mfld" id="st-pt" type="number" min="1" max="23" value="'+CFG.pushTo+'" style="width:76px"> 시</div></div>'
+     +'<div class="kvform"><label for="st-pf">푸시 발송 시간</label><div style="display:flex;gap:8px;align-items:center">'
+       +'<input class="mfld" id="st-pf" type="number" min="0" max="23" value="'+CFG.pushFrom+'" style="width:76px" aria-label="푸시 발송 시작 시각"> 시 ~ '
+       +'<input class="mfld" id="st-pt" type="number" min="1" max="23" value="'+CFG.pushTo+'" style="width:76px" aria-label="푸시 발송 종료 시각"> 시</div></div>'
      +lockRow('자동 로그아웃',L.idleMin+'분 동안 조작이 없으면 접속 차단',
        '개인정보 보호법 안전성 확보조치 기준이에요. 열어둔 원문도 같이 닫혀요.')
      +lockRow('상담 자동 이관',L.escalateDays+'일 무응답 시 운영팀으로 알림',

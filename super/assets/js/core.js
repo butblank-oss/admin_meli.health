@@ -91,8 +91,9 @@ function mkPager(render){
     for(var p=1;p<=pages;p++)if(p<=2||p>pages-1||Math.abs(p-st.page)<=1)list.push(p);
     list.forEach(function(p){
       if(last&&p-last>1)pg.appendChild(el('span',null,'<span style="color:#D0D5DD;padding:0 2px">…</span>'));
-      var b=el('button','pgb',String(p));b.type='button';b.setAttribute('aria-label',p+'페이지');
-      if(p===st.page){b.setAttribute('aria-current','page');b.setAttribute('aria-label',p+'페이지, 현재 페이지')}
+      /* 숫자 뒤를 띄운다 — 보이는 글자가 이름 안에 한 단어로 있어야 음성 입력으로 누를 수 있다 */
+      var b=el('button','pgb',String(p));b.type='button';b.setAttribute('aria-label',p+' 페이지');
+      if(p===st.page){b.setAttribute('aria-current','page');b.setAttribute('aria-label',p+' 페이지, 현재 페이지')}
       b.addEventListener('click',function(){st.page=p;render()});pg.appendChild(b);last=p});
     var nx=el('button','pgn',RT);nx.type='button';nx.setAttribute('aria-label','다음 페이지');nx.disabled=st.page>=pages;
     nx.addEventListener('click',function(){st.page++;render()});pg.appendChild(nx);
@@ -137,11 +138,27 @@ document.addEventListener('keydown',function(e){
   var first=f[0],last=f[f.length-1];
   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});
+/* 공용 모달 — 채널 어드민 core.js 의 것과 같은 모양.
+   열람 사유 모달처럼 내용이 매번 다른 창은 HTML 에 박아두지 않고 여기로 만든다 */
+function modalBox(title,body,maxw){
+  var m=$('#m-box');
+  if(!m){m=el('div','mask');m.id='m-box';
+    m.innerHTML='<div class="modal sm"><h3></h3><div class="mbody"></div>'
+     +'<div class="mfoot"><button class="mb" type="button" data-close>닫기</button></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(e){
+      if(e.target===m||e.target.hasAttribute('data-close'))closeAll()})}
+  if(maxw)m.querySelector('.modal').style.maxWidth=maxw+'px';
+  m.querySelector('h3').innerHTML=esc(title)+'<button class="x" type="button" data-close aria-label="닫기">✕</button>';
+  var mb=m.querySelector('.mbody');mb.innerHTML='';mb.appendChild(body);
+  open('m-box');return m}
+
 /* ═══ 네비게이션 · 라우팅 ═══ */
 /* 배지 숫자는 손으로 적지 않고 데이터에서 센다.
    손으로 적으면 반드시 실제 값과 어긋나고, 어긋나도 아무도 모른다.
    (채널 어드민의 판정 기준표를 코드에서 파생시킨 것과 같은 이유) */
 var BADGE={
+ people:function(){return {k:'n',v:fmt(Sup.PEOPLE.length)}},
  channels:function(){return {k:'n',v:Sup.CHANNELS.length}},
  content:function(){return {k:'n',v:Sup.CONTENT.length}},
  accounts:function(){var n=Sup.ACCOUNTS.filter(function(u){return u.st==='wait'}).length;
@@ -157,12 +174,12 @@ var BADGE={
 /* ═══ 슈퍼 = 소유(Own) ═══
    맬리 admin.stg 구조를 따른다. 원본을 만들고 전 채널에 뿌리는 쪽.
    채널에 없는 것이 여기 있는 게 아니라, 여기 있는 것 중 일부만 채널에 잘라서 내려준다. */
-var NAV=[['운영',[['home','운영 현황']]],
+var NAV=[['운영',[['home','운영 현황'],['people','참여자 찾기']]],
  ['채널',[['channels','채널 관리'],['cohorts','프로그램 그룹'],['accounts','계정·권한'],['oplog','운영자 로그']]],
  ['프로그램',[['programs','프로그램 편성'],['content','콘텐츠'],['challenges','챌린지']]],
  ['소통',[['cs','채널 문의'],['push','전 채널 발송']]],
  ['감사',[['anomaly','이상 열람 탐지']]]];
-var TITLES={home:'운영 현황',channels:'채널 관리',cohorts:'프로그램 그룹',accounts:'계정·권한',
+var TITLES={home:'운영 현황',people:'참여자 찾기',person:'참여자 상세',channels:'채널 관리',cohorts:'프로그램 그룹',accounts:'계정·권한',
  oplog:'운영자 로그',programs:'프로그램 편성',content:'콘텐츠',challenges:'챌린지',challengenew:'챌린지 만들기',
  cs:'채널 문의',csdetail:'문의 상세',push:'전 채널 발송',pushnew:'발송 만들기',anomaly:'이상 열람 탐지'}
 var V={},cur='home';
@@ -180,11 +197,13 @@ function buildNav(){
       b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go(it[0])}});
       n.appendChild(b)})})}
 function go(p){
+  /* 상세를 벗어나면 원문을 닫는다 — 열람은 '그 사람을 보고 있는 동안'이다 (채널 어드민과 같은 규칙) */
+  if(cur==='person'&&p!=='person'&&window.__supCloseReveal)window.__supCloseReveal(true);
   cur=p;
   /* 배지를 매번 다시 센다 — 문의를 처리하면 사이드바 숫자도 같이 줄어야 한다 */
   if($('#nav').children.length)buildNav();
   $$('.pane').forEach(function(e){e.classList.toggle('on',e.dataset.pane===p)});
-  var hl=p==='channel'?'channels':p==='challengenew'?'challenges':p==='csdetail'?'cs':p==='pushnew'?'push':p;
+  var hl=p==='channel'?'channels':p==='person'?'people':p==='challengenew'?'challenges':p==='csdetail'?'cs':p==='pushnew'?'push':p;
   $$('.mnav').forEach(function(e){
     var on=e.dataset.p===hl;e.classList.toggle('on',on);
     if(on)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');
@@ -199,6 +218,6 @@ function go(p){
 
 return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kpi:kpi,cbx:cbx,brow:brow,ph:ph,
  chead:chead,emptyBox:emptyBox,search:search,sth:sth,bindSort:bindSort,sortBy:sortBy,bindTabs:bindTabs,
- mkPager:mkPager,toast:toast,open:open,closeAll:closeAll,go:go,buildNav:buildNav,V:V,
+ mkPager:mkPager,toast:toast,open:open,closeAll:closeAll,go:go,buildNav:buildNav,V:V,modalBox:modalBox,
  LT:LT,RT:RT,CK:CK,BANG:BANG,SRCH:SRCH,cur:function(){return cur}};
 })();

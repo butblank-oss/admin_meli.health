@@ -193,3 +193,52 @@ A.AUDIT=[];
      dur:1+Math.floor(Math.pow(r(8),2.6)*70)})}
  A.AUDIT.sort(function(a,b){return a.t<b.t?1:-1})})();
 })(Sup);
+
+/* ── 전 채널 참여자 (참여자 찾기) ──
+   16204b2 에서 운영팀도 좌석 권한 + 사유로 열람할 수 있게 정책이 바뀌었다.
+   여기는 그 정책이 실제로 도는 화면에 쓰는 데이터다. 채널 어드민과 같은
+   문지기(동의·권한·사유)를 쓰므로 동의 상태를 참여자마다 둔다. */
+(function(A){
+"use strict";
+var rnd=A.rnd,pad2=A.pad2;
+var SUR='김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남'.split('');
+var GIV=['순','자','옥','희','수','식','호','철','영','미','숙','현','진','규','화','태','근','만','복','례'];
+A.ME='U07';
+A.meAcct=function(){for(var i=0;i<A.ACCOUNTS.length;i++)if(A.ACCOUNTS[i].id===A.ME)return A.ACCOUNTS[i];return A.ACCOUNTS[0]};
+
+A.PEOPLE=[];A.byP={};
+[['C01',822,0],['C02',514,900],['C03',690,1800],['C04',302,2700]].forEach(function(cc){
+  var ch=cc[0],n=cc[1],base=cc[2];
+  for(var i=0;i<n;i++){(function(i){
+    var r=function(k){return rnd((base+i)*17+k)};
+    var c=A.byCh[ch];
+    var days=Math.floor(Math.pow(r(3),2.6)*Math.min(170,c.day||170));
+    var last=days===0?999:Math.floor(Math.pow(r(4),2)*160);
+    var p={id:ch+'-P'+(1000+i),ch:ch,
+      sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
+      tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
+      pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),
+      birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
+      sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
+      status:r(1)<0.976?'active':(r(2)<0.5?'dropped':'expired'),
+      days:days,last:last,rate:days===0?0:Math.min(99,Math.round(Math.pow(r(15),1.4)*100)),
+      app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)]};
+    p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
+    p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
+    p.age=2026-p.birth;
+    /* 동의 — 민감정보 별도 동의 없음 ~12%, 철회 ~1.5% (채널 어드민과 같은 비율) */
+    var cv=r(29);
+    p.consent={sensitive:cv<0.88?'2026-03-03':null,
+      revoked:r(30)<0.015?'2026-0'+(6+Math.floor(r(31)*3))+'-'+pad2(1+Math.floor(r(32)*27)):null};
+    A.PEOPLE.push(p);A.byP[p.id]=p})(i)}});
+
+/* 운영팀 열람 기록 — 채널 담당자 기록과 같은 표에 쌓인다.
+   운영팀이라고 다른 장부를 쓰면 이상 탐지가 운영팀만 비켜 가게 된다. */
+A.logView=function(p,reason){
+  var d=new Date();
+  var row={t:'2026-08-24 '+pad2(d.getHours())+':'+pad2(d.getMinutes()),
+    ch:p.ch,who:'이운영',act:'원문 열람',n:1,reason:reason,ip:'121.***.***.8',dur:0,_at:Date.now()};
+  A.AUDIT.unshift(row);return row};
+A.endView=function(row){if(!row)return;
+  row.dur=Math.max(0,Math.round((Date.now()-row._at)/60000));delete row._at};
+})(Sup);

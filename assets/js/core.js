@@ -145,8 +145,9 @@ function mkPager(render){
     for(var p=1;p<=pages;p++)if(p<=2||p>pages-1||Math.abs(p-st.page)<=1)list.push(p);
     list.forEach(function(p){
       if(last&&p-last>1)pg.appendChild(el('span',null,'<span style="color:#D0D5DD;padding:0 2px">…</span>'));
-      var b=el('button','pgb',String(p));b.type='button';b.setAttribute('aria-label',p+'페이지');
-      if(p===st.page){b.setAttribute('aria-current','page');b.setAttribute('aria-label',p+'페이지, 현재 페이지')}
+      /* 숫자 뒤를 띄운다 — 보이는 글자가 이름 안에 한 단어로 있어야 음성 입력으로 누를 수 있다 */
+      var b=el('button','pgb',String(p));b.type='button';b.setAttribute('aria-label',p+' 페이지');
+      if(p===st.page){b.setAttribute('aria-current','page');b.setAttribute('aria-label',p+' 페이지, 현재 페이지')}
       b.addEventListener('click',function(){st.page=p;render()});pg.appendChild(b);last=p});
     var nx=el('button','pgn',RT);nx.type='button';nx.setAttribute('aria-label','다음 페이지');nx.disabled=st.page>=pages;nx.addEventListener('click',function(){st.page++;render()});pg.appendChild(nx);
     host.appendChild(pg)};

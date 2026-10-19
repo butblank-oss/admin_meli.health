@@ -53,11 +53,13 @@ V.programs=function(){
       var a=seedSched(pCh,pWeek*2+si,d);
       var cell=el('div','cell'+(wk&&!a?' off':''));
       cell.tabIndex=0;cell.setAttribute('role','button');
+      /* aria-label 로 덮지 않는다 — 보이는 글자가 이름에 그대로 있어야 음성 입력으로 누를 수 있다.
+         요일·시간대 맥락은 sr 전용 글자로 뒤에 붙인다 */
       if(a){cell.innerHTML='<span style="font-weight:600;font-size:12px;display:block;line-height:1.35">'+esc(a.n)+'</span>'
-        +'<span class="mcap" style="font-size:11px">'+a.k+'</span>';
-        cell.setAttribute('aria-label',slot[0]+' '+DOW[(d+1)%7]+'요일 '+a.n+', 바꾸려면 누르세요')}
+        +'<span class="mcap" style="font-size:11px">'+a.k+'</span>'
+        +'<span class="sr">, '+slot[0]+' '+DOW[(d+1)%7]+'요일, 바꾸려면 누르세요</span>'}
       else{cell.innerHTML='<span style="color:#5925DC;font-size:12px">+ 배정</span>';
-        cell.setAttribute('aria-label',slot[0]+' '+DOW[(d+1)%7]+'요일 비어 있음, 배정하려면 누르세요')}
+        cell.setAttribute('aria-label',slot[0]+' '+DOW[(d+1)%7]+'요일 비어 있음, 누르면 배정')}
       function act(){openCell(pWeek*2+si,d,a,slot[0])}
       cell.addEventListener('click',act);
       cell.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();act()}});
