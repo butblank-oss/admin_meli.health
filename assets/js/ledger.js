@@ -91,6 +91,14 @@ function activeIn(L,a,b,filter){
   var n=0;a=Math.max(0,a);b=Math.min(L.T,b);
   L.P.forEach(function(p){if(filter&&!filter(p))return;
     for(var d=a;d<=b;d++)if(p.acts[d]){n++;return}});return n}
+/* [a,b] 를 하루씩 늘려 가며 센 고유 활동자 — "이번 달 지금까지 몇 명" 곡선. 결과[k] = a~a+k 일 */
+function cumActive(L,a,b,filter){
+  var out=[];a=Math.max(0,a);b=Math.min(L.T,b);
+  var hit=new Int32Array(Math.max(0,b-a+1));
+  L.P.forEach(function(p){if(filter&&!filter(p))return;
+    for(var d=a;d<=b;d++)if(p.acts[d]){hit[d-a]++;return}});
+  var c=0;for(var k=0;k<hit.length;k++){c+=hit[k];out.push(c)}
+  return out}
 function stepIn(L,a,b,filter){
   var n=0,sum=0,cnt=0,only=0;a=Math.max(0,a);b=Math.min(L.T,b);
   L.P.forEach(function(p){if(filter&&!filter(p))return;
@@ -127,6 +135,6 @@ function curve(L,step){
     out.push({d:d,rate:starters.length?n/starters.length*100:0})}
   return {n:starters.length,pts:out}}
 
-return {rnd:rnd,build:build,series:series,activeIn:activeIn,stepIn:stepIn,lastAsOf:lastAsOf,
+return {rnd:rnd,build:build,series:series,activeIn:activeIn,cumActive:cumActive,stepIn:stepIn,lastAsOf:lastAsOf,
         retention:retention,curve:curve,idx:idx,addDays:addDays,ymd:ymd}})();
 if(typeof module!=='undefined')module.exports=Ledger;

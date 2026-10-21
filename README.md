@@ -67,6 +67,7 @@ index.html                  화면 뼈대 + 모달 9개
 assets/css/app.css          전체 스타일 (Pretendard @font-face 포함)
 assets/fonts/*.woff2        Pretendard 400/500/700
 assets/js/ledger.js         활동 원장 — 합류→활동→이탈. 두 어드민 공용, 앱 의존 없음
+assets/js/viz.js            차트 부품 — 캘린더·누적 비교·범위 바·스파크라인·증감 막대. 두 어드민 공용
 assets/js/core.js           유틸·공통 컴포넌트·더미 데이터·지표(METRICS)·라우팅
 assets/js/views-people.js   오늘 / 참여자 / 참여자 상세
 assets/js/views-program.js  활동 현황 / 상담실 / 일정 / 챌린지

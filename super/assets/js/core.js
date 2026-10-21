@@ -11,6 +11,8 @@ var $=function(s,r){return (r||document).querySelector(s)},
     fmt=function(n){return Number(n).toLocaleString('ko-KR')},
     pad2=function(n){return String(n).padStart(2,'0')};
 function rnd(s){var x=Math.sin(s)*10000;return x-Math.floor(x)}
+/* 차트 강조색 — 슈퍼 보라 — 파랑과 한 차트에 두지 않는다 (viz.js 머리말) */
+if(window.Viz)Viz.theme({accent:'#6941C6'});
 
 var LT='<svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5 5.5 9 11 14.5"/></svg>';
 var RT='<svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 3.5 5.5 5.5L7 14.5"/></svg>';

@@ -7,6 +7,8 @@ var $=function(s,r){return (r||document).querySelector(s)},
     fmt=function(n){return Number(n).toLocaleString('ko-KR')},
     pad2=function(n){return String(n).padStart(2,'0')};
 function rnd(s){var x=Math.sin(s)*10000;return x-Math.floor(x)}
+/* 차트 강조색 — 채널 초록 — #13BD7E 는 흰 바탕 2.4:1 이라 차트 선(3:1)에 못 쓴다 */
+if(window.Viz)Viz.theme({accent:'#0E9F6E'});
 
 var CHEV='<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg>';
 var LT='<svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 3.5 5.5 9 11 14.5"/></svg>';

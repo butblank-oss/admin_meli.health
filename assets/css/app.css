@@ -522,3 +522,93 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 @media (max-width:520px){
   .kpi>div{padding:9px 9px}
 }
+
+/* ═══ 차트 부품 (assets/js/viz.js) — 두 어드민 공용 ═══
+   글자는 늘 글자색. 데이터 색은 선·점·칸·막대만 입는다 */
+.vz-tip{position:fixed;z-index:200;display:none;pointer-events:none;background:#101828;color:#fff;border-radius:8px;
+  padding:9px 11px;font-size:12.5px;line-height:1.5;box-shadow:0 8px 24px rgba(16,24,40,.18);min-width:120px}
+.vz-tip .vz-th{color:#A9B2C0;font-size:11.5px;margin-bottom:3px}
+.vz-tip .vz-tr{display:flex;align-items:center;gap:7px}
+.vz-tip .vz-tr b{font-weight:700;font-variant-numeric:tabular-nums}
+.vz-tip .vz-tr span:last-child{color:#D0D5DD}
+.vz-tip .vz-key{width:12px;flex:none}
+.vz-tip .vz-tf{margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.14);color:#EAECF0;font-weight:600}
+.vz-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:12px;color:#475467}
+.vz-legend>span{display:inline-flex;align-items:center;gap:6px}
+.vz-legend i{display:inline-block;width:14px;height:10px;border-radius:2px}
+.vz-legend.line i{height:2px;border-radius:1px;width:16px}
+.vz-legend>i{width:18px;height:12px;border-radius:3px;margin-left:-8px}
+.vz-legend>i:first-of-type{margin-left:0}
+
+/* 월 캘린더 */
+.vz-cal{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed}
+.vz-cal th{font-size:12px;font-weight:500;color:#69707C;padding:2px 0 4px;text-align:center}
+.vz-cal th.we{color:#69707C}
+.vz-cal td{padding:0;vertical-align:top}
+.vz-day{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;
+  min-height:70px;padding:7px 2px 6px;border-radius:8px;cursor:pointer;background:#F9FAFB;font-variant-numeric:tabular-nums}
+.vz-day:hover{box-shadow:inset 0 0 0 1px #98A2B3}
+.vz-day:focus-visible{outline:2px solid #101828;outline-offset:1px}
+.vz-day.sel{box-shadow:inset 0 0 0 2px #101828}
+.vz-day.today .dn{background:#101828;color:#fff;border-radius:999px;padding:0 6px}
+.vz-day .dn{font-size:12px;color:#344054;font-weight:600;line-height:18px}
+.vz-day .dn.we{color:#475467;font-weight:500}
+.vz-day.deep .dn.we{color:#344054}   /* 가장 진한 칸에서는 회색이 대비를 못 낸다 */
+.vz-day.today .dn.we{color:#fff}
+.vz-day .dv{font-size:15px;font-weight:700;color:#101828;letter-spacing:-0.02em;line-height:1.3}
+.vz-day .dd{display:flex;gap:4px;font-size:11.5px;font-weight:600;line-height:1.3;min-height:15px}
+.vz-day .pl,.vz-day .mi{background:#fff;border-radius:4px;padding:0 4px}   /* 진한 칸 위에서도 대비가 나오게 흰 바탕에 올린다 */
+.vz-day .pl{color:#175CD3}
+.vz-day .mi{color:#B42318}
+.vz-day[disabled]{cursor:default;background:transparent;min-height:34px}
+.vz-day[disabled] .dn{color:#98A2B3}
+.vz-cal td.pad{background:transparent}
+
+/* 누적 비교 곡선 */
+.vz-plot{position:relative;width:100%;outline:none;margin-top:10px}
+.vz-plot:focus-visible{box-shadow:0 0 0 2px #101828;border-radius:4px}
+.vz-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.vz-dot,.vz-hdot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:999px;box-shadow:0 0 0 2px #fff;pointer-events:none}
+.vz-elab{position:absolute;transform:translate(10px,-50%);font-size:12.5px;color:#101828;white-space:nowrap;pointer-events:none;font-variant-numeric:tabular-nums;
+  text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
+.vz-elab.cur.up{transform:translate(-50%,-150%)}
+.vz-elab.cur.dn{transform:translate(-50%,55%)}
+.vz-elab.ctx{transform:translate(0,-50%);color:#475467}
+.vz-yax{position:absolute;inset:0;pointer-events:none}
+.vz-yax span{position:absolute;left:2px;transform:translateY(-118%);font-size:11px;color:#69707C;font-variant-numeric:tabular-nums;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff}
+.vz-xax{display:flex;justify-content:space-between;font-size:11.5px;color:#69707C;margin-top:6px;padding-right:9%;font-variant-numeric:tabular-nums}
+.vz-tbl{margin-top:10px;font-size:12.5px}
+.vz-tbl summary{cursor:pointer;color:#475467;font-weight:600;width:max-content}
+.vz-tbl .scroll{max-height:220px;overflow:auto;margin-top:8px;border:1px solid #EAECF0;border-radius:8px}
+.vz-tbl .mtb th,.vz-tbl .mtb td{padding:6px 12px;text-align:right}
+.vz-tbl .mtb th[scope="row"],.vz-tbl .mtb thead th:first-child{text-align:left}
+
+/* 범위 바 */
+.vz-range{position:relative;padding:26px 0 0}
+.vz-range.hasg .vz-rl{margin-top:24px}
+.vz-rv{position:absolute;top:0;font-size:12.5px;color:#475467;white-space:nowrap}
+.vz-rv b{color:#101828;font-weight:700;font-size:13.5px}
+.vz-rt{position:relative;height:6px;border-radius:999px;background:#F2F4F7}
+.vz-rt>i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;opacity:.28}
+.vz-rd{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:999px;box-shadow:0 0 0 2px #fff}
+.vz-goal{position:absolute;top:-5px;bottom:-5px;width:2px;margin-left:-1px;background:#101828;border-radius:1px}
+.vz-goal span{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:11.5px;color:#344054;white-space:nowrap;font-weight:600}
+.vz-rl{display:flex;justify-content:space-between;margin-top:9px;font-size:12px;color:#69707C}
+.vz-rl span{display:flex;flex-direction:column;gap:1px}
+.vz-rl b{font-size:13px;color:#344054;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* 스파크라인 */
+.vz-spark{display:block;overflow:visible}
+
+/* 증감 막대 */
+.vz-div{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.vz-dr{display:grid;grid-template-columns:132px 1fr;align-items:center;gap:10px;min-height:26px;border-radius:6px;outline:none}
+.vz-dr:focus-visible{box-shadow:0 0 0 2px #101828}
+.vz-dr:hover .vz-dt{background:#F9FAFB}
+.vz-dl{font-size:13px;color:#344054;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vz-dt{position:relative;height:26px;border-radius:4px}
+.vz-d0{position:absolute;left:50%;top:2px;bottom:2px;width:1px;background:#D0D5DD}
+.vz-dt i{position:absolute;top:6px;height:14px}
+.vz-dt i.p{border-radius:0 4px 4px 0}
+.vz-dt i.n{border-radius:4px 0 0 4px}
+.vz-dvl{position:absolute;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:600;color:#344054;font-variant-numeric:tabular-nums;white-space:nowrap}
