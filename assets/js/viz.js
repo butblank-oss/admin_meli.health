@@ -154,6 +154,65 @@ function cumLine(host,opt){
   plot.addEventListener('keydown',function(e){
     var m={ArrowLeft:-1,ArrowRight:1,Home:-99,End:99}[e.key];if(m==null)return;e.preventDefault();show(cur+m)})}
 
+/* ══════ 여러 계열 선 — 코호트·기수 비교 ══════
+   opt = {series:[{name, color?, pts:[{x,y}]}], xs:[x 눈금들], xLabel(x)→'12주', yMax, unit:'%',
+          h, aria, tableHead:'경과'}
+   3계열까지만 — 넘으면 묶음을 줄이거나 나눠 그린다(가이드: 전쌍 구분은 앞 3색까지만 검증됨).
+   색 순서 고정: 파랑 · 주황 · 청록. 청록은 흰 바탕 2.82:1 이라 끝 라벨과 표 보기를 반드시 같이 둔다 */
+var CAT=['#2a78d6','#eb6834','#1baf7a'];
+function lines(host,opt){
+  var W=600,H=opt.h||200,PL=8,PR=74,PT=16,PB=8,iw=W-PL-PR,ih=H-PT-PB;
+  var S=opt.series.slice(0,3).map(function(s,i){return {name:s.name,color:s.color||CAT[i],pts:s.pts}});
+  var xs=opt.xs,x0=xs[0],x1=xs[xs.length-1],top=opt.yMax||100,un=opt.unit||'';
+  function X(x){return PL+(x1>x0?(x-x0)/(x1-x0):0)*iw}
+  function Y(v){return PT+ih-(v/top)*ih}
+  function pct(x,y){return 'left:'+(x/W*100)+'%;top:'+(y/H*100)+'%'}
+  var ticks=[0,top/2,top],id=nid('ln');
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" class="vz-svg" aria-hidden="true" focusable="false">'
+   +ticks.map(function(t){return '<line x1="'+PL+'" x2="'+(PL+iw)+'" y1="'+Y(t)+'" y2="'+Y(t)+'" stroke="'+T.grid+'" stroke-width="1" vector-effect="non-scaling-stroke"/>'}).join('')
+   +S.map(function(s){var ok=s.pts.filter(function(p){return p.y!=null});
+     return '<path d="'+ok.map(function(p,i){return (i?'L':'M')+X(p.x).toFixed(1)+' '+Y(p.y).toFixed(1)}).join(' ')+'" fill="none" stroke="'+s.color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'}).join('')
+   +'<line class="vz-xh" x1="0" x2="0" y1="'+PT+'" y2="'+(PT+ih)+'" stroke="'+T.axis+'" stroke-width="1" vector-effect="non-scaling-stroke" style="display:none"/></svg>';
+  /* 끝점 — 점과 라벨. 값이 붙으면 라벨을 15px 씩 띄우는데, 그러면 선과 떨어지므로
+     라벨 앞에 그 계열의 짧은 선 표식을 붙여 색으로 다시 묶는다 */
+  var ends=S.map(function(s){var ok=s.pts.filter(function(p){return p.y!=null});return {s:s,p:ok[ok.length-1]}}).filter(function(e){return e.p});
+  var pos={};
+  ends.slice().sort(function(a,b){return Y(a.p.y)-Y(b.p.y)}).forEach(function(e,i,arr){
+    var y=Y(e.p.y);if(i&&y-pos[arr[i-1].s.name]<15)y=pos[arr[i-1].s.name]+15;pos[e.s.name]=y});
+  /* 점은 뒤 계열부터 그려 첫 계열(주인공)이 맨 위에 오게 — 값이 붙으면 점이 겹친다 */
+  var dots=ends.slice().reverse().map(function(e){return '<span class="vz-dot" style="'+pct(X(e.p.x),Y(e.p.y))+';background:'+e.s.color+'"></span>'
+      +'<span class="vz-elab" style="left:calc('+(X(e.p.x)/W*100)+'% + 4px);top:'+(pos[e.s.name]/H*100)+'%"><i class="vz-lk" style="background:'+e.s.color+'"></i><b>'+(Math.round(e.p.y*10)/10)+un+'</b> '+esc(e.s.name)+'</span>'}).join('')
+   +S.map(function(s){return '<span class="vz-hdot" style="display:none;background:'+s.color+'"></span>'}).join('');
+  var yax='<div class="vz-yax">'+ticks.slice().reverse().map(function(t){return '<span style="top:'+(Y(t)/H*100)+'%">'+fmt(t)+un+'</span>'}).join('')+'</div>';
+  var mid=xs[Math.floor((xs.length-1)/2)];
+  var axis='<div class="vz-xax" style="padding-right:'+(PR/W*100)+'%"><span>'+esc(opt.xLabel(x0))+'</span><span>'+esc(opt.xLabel(mid))+'</span><span>'+esc(opt.xLabel(x1))+'</span></div>';
+  var legend='<div class="vz-legend line">'+S.map(function(s){return '<span><i style="background:'+s.color+'"></i>'+esc(s.name)+'</span>'}).join('')+'</div>';
+  function at(s,x){for(var i=0;i<s.pts.length;i++)if(s.pts[i].x===x)return s.pts[i].y;return null}
+  var rows=xs.map(function(x){return '<tr><th scope="row">'+esc(opt.xLabel(x))+'</th>'+S.map(function(s){var v=at(s,x);
+    return '<td>'+(v==null?'—':(Math.round(v*10)/10)+un)+'</td>'}).join('')+'</tr>'}).join('');
+  var table='<details class="vz-tbl"><summary>표로 보기</summary><div class="scroll"><table class="mtb"><caption class="sr">'+esc(opt.aria||'')+'</caption><thead><tr><th scope="col">'+esc(opt.tableHead||'경과')+'</th>'
+    +S.map(function(s){return '<th scope="col">'+esc(s.name)+'</th>'}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div></details>';
+  host.innerHTML=legend+'<div class="vz-plot" id="'+id+'" tabindex="0" role="img" aria-label="'+esc((opt.aria||'')+' 방향키로 값을 읽을 수 있어요.')+'" style="aspect-ratio:'+W+'/'+H+'">'
+   +svg+dots+yax+'</div>'+axis+table;
+  var plot=host.querySelector('#'+id),xh=plot.querySelector('.vz-xh'),hd=plot.querySelectorAll('.vz-hdot'),ci=xs.length-1;
+  function show(i,cx,cy){
+    i=Math.max(0,Math.min(xs.length-1,i));ci=i;var x=xs[i];
+    xh.setAttribute('x1',X(x));xh.setAttribute('x2',X(x));xh.style.display='';
+    var html='<div class="vz-th">'+esc(opt.xLabel(x))+'</div>',ym=null;
+    S.map(function(s,k){return {s:s,k:k,v:at(s,x)}}).sort(function(a,b){return (b.v==null?-1:b.v)-(a.v==null?-1:a.v)}).forEach(function(o){
+      var h=hd[o.k];if(o.v==null){h.style.display='none';return}
+      h.setAttribute('style',pct(X(x),Y(o.v))+';background:'+o.s.color);if(ym==null)ym=Y(o.v);
+      html+=tipRow(o.s.color,(Math.round(o.v*10)/10)+un,o.s.name)});
+    var r=plot.getBoundingClientRect();
+    tip(html,cx!=null?cx:r.left+X(x)/W*r.width,cy!=null?cy:r.top+(ym==null?PT:ym)/H*r.height)}
+  function off(){xh.style.display='none';[].forEach.call(hd,function(h){h.style.display='none'});hideTip()}
+  plot.addEventListener('pointermove',function(e){var r=plot.getBoundingClientRect(),vx=(e.clientX-r.left)/r.width*W,b=0,bd=1e9;
+    xs.forEach(function(x,i){var d=Math.abs(X(x)-vx);if(d<bd){bd=d;b=i}});show(b,e.clientX,e.clientY)});
+  plot.addEventListener('pointerleave',off);
+  plot.addEventListener('focus',function(){show(ci)});
+  plot.addEventListener('blur',off);
+  plot.addEventListener('keydown',function(e){var m={ArrowLeft:-1,ArrowRight:1,Home:-999,End:999}[e.key];if(m==null)return;e.preventDefault();show(ci+m)})}
+
 /* ══════ 범위 바 — 최저~최고 중 지금은 어디쯤 ══════
    opt = {min, max, v, minLabel, maxLabel, vLabel, goal, goalLabel, unit, fmt}
    목표가 있으면 눈금을 하나 세운다. 점은 지금 값 하나뿐 — 숫자를 몰라도 '평소보다 낮다' 가 보인다 */
@@ -207,4 +266,4 @@ function divBars(host,opt){
     el.addEventListener('focus',function(){var b=el.getBoundingClientRect();sh(b.left+b.width/2,b.top)});
     el.addEventListener('blur',hideTip)})}
 
-return {theme:theme,T:T,calendar:calendar,cumLine:cumLine,range:range,spark:spark,divBars:divBars,tip:tip,hideTip:hideTip}})();
+return {theme:theme,T:T,CAT:CAT,calendar:calendar,cumLine:cumLine,lines:lines,range:range,spark:spark,divBars:divBars,tip:tip,hideTip:hideTip}})();

@@ -754,12 +754,12 @@ function modalBox(title,body,maxw){
    예: /mng/meliDashboard/summary 와 /adm/meliDashboard/summary 는 모양이 같고
        채널 쪽은 자기 소속분만 담겨 온다. 화면은 한 벌로 끝난다. */
 var AXIS={own:['소유','cr'],op:['운영','ok'],view:['조회','nu']};
-var NAV=[['운영',[['today','오늘','cr:3'],['people','소속 참여자','n:822'],['stats','활동 현황',''],['consult','상담실','cr:4']]],
+var NAV=[['운영',[['today','오늘','cr:3'],['people','소속 참여자','n:822'],['stats','활동 현황',''],['cohort','코호트',''],['consult','상담실','cr:4']]],
  ['프로그램',[['groups','소속 프로그램 그룹',''],['sched','프로그램 일정',''],['quest','챌린지','ro']]],
  ['알림',[['push','푸시 메시지','n:예약 4']]],
  ['기록과 보고',[['report','월간 리포트',''],['apply','참여 신청','cr:111'],['audit','열람 기록','']]],
  ['채널',[['chops','우리 채널 운영자',''],['settings','내 채널 정보',''],['cx','운영팀 문의','']]]];
-var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',stats:'활동 현황',consult:'상담실',
+var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',stats:'활동 현황',cohort:'코호트',consult:'상담실',
  groups:'소속 프로그램 그룹',sched:'프로그램 일정',quest:'챌린지',questdetail:'챌린지 상세',
  push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록',
  chops:'우리 채널 운영자',settings:'내 채널 정보',cx:'운영팀 문의'}
@@ -767,7 +767,7 @@ var V={},cur='today';
 /* 아래 탭바는 넷만 고정한다. 더 넣으면 가로로 밀려 현재 위치가 화면 밖으로 나간다. */
 var MTAB=[['today','오늘','home'],['apply','참여 신청','todo'],
           ['people','참여자','user'],['consult','상담실','chat']];
-var NAVICO={today:'home',people:'user',stats:'chart',consult:'chat',groups:'pie',sched:'cal',
+var NAVICO={today:'home',people:'user',stats:'chart',cohort:'pie',consult:'chat',groups:'pie',sched:'cal',
  quest:'flag',push:'bell',report:'doc',apply:'todo',audit:'list',chops:'user',settings:'lock',cx:'chat'};
 function navItem(k){var r=null;
   NAV.forEach(function(g){g[1].forEach(function(it){if(it[0]===k)r=it})});return r}

@@ -650,3 +650,11 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 button.lnk{background:none;border:none;padding:0;font:inherit;font-weight:600;color:#077A50;cursor:pointer}
 @media (max-width:900px){.dz-goals,.dz-out{grid-template-columns:1fr}}
 .dz-ob{color:#101828 !important;text-align:left}
+
+/* ═══ 코호트 (views-cohort.js) ═══ */
+.ch-mx td.ch-c{padding:4px 6px;text-align:center}
+.ch-mx td.ch-c span{display:block;padding:7px 0;border-radius:6px;font-weight:700;color:#101828;font-variant-numeric:tabular-nums}
+.ch-mx td.ch-c.small span{color:#475467;font-weight:500}
+.ch-mx td.ch-c.na span{color:#98A2B3;font-weight:400}
+.ch-mx th[scope="row"]{white-space:nowrap}
+.vz-elab .vz-lk{display:inline-block;width:12px;height:2px;border-radius:1px;vertical-align:middle;margin-right:5px}

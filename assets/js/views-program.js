@@ -17,39 +17,15 @@ V.stats=function(){
    /* 월간 현황은 카드 여러 장이라 탭 카드 안에 넣지 않는다 — 카드 속 카드가 된다 */
    +'<div id="s-dash"></div>';
   var tb=$('#s-tabs');
-  [['sum','월간 현황'],['ret','참여 지속'],['pat','활동 패턴'],['cont','콘텐츠'],['ind','개인별'],['def','판정 기준']].forEach(function(x){
+  [['sum','월간 현황'],['pat','활동 패턴'],['cont','콘텐츠'],['ind','개인별'],['def','판정 기준']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',sTab===x[0]?'true':'false');
     b.addEventListener('click',function(){sTab=x[0];V.stats()});tb.appendChild(b)});
   A.bindTabs(tb);
   var B=$('#s-b');
   B.style.display=sTab==='sum'?'none':'';
-  if(sTab==='sum')A.dashMonth($('#s-dash'));else if(sTab==='ret')retTab(B);else if(sTab==='pat')patTab(B);
+  if(sTab==='sum')A.dashMonth($('#s-dash'));else if(sTab==='pat')patTab(B);
   else if(sTab==='cont')contTab(B);else if(sTab==='ind')indTab(B);else defTab(B)};
-function retTab(B){
-  var COH=[['개강 첫 주','3/3~','140명',[76.4,78.6,75.7,67.1,67.1]],['2주차','3/10~','58명',[48.3,41.4,27.6,24.1,22.4]],
-   ['8주차','4/21~','30명',[33.3,30.0,26.7,26.7,13.3]],['9주차','4/28~','22명',[63.6,45.5,59.1,45.5,22.7]]];
-  function hc(v){var c=v>=60?['#ECFDF3','#067647']:v>=30?['#FFFAEB','#B54708']:['#FEF3F2','#B42318'];
-    return '<td style="text-align:center"><span style="display:block;margin:4px 0;padding:8px 0;border-radius:6px;background:'+c[0]+';color:'+c[1]+';font-weight:700;font-variant-numeric:tabular-nums">'+v.toFixed(1)+'%</span></td>'}
-  var SIG=[['7일 연속 무활동','184','71%','#B42318'],['수행률 20% 미만 2주 지속','101','64%','#B42318'],
-   ['진입만 하고 중단 3회 이상','57','48%','#B54708'],['앱 구버전 3개월 이상 사용','32','44%','#B54708']];
-  B.innerHTML='<div class="gap">'
-   +kpi([['개강 첫 주 시작 → 12주 후','67.1','%','140명 중 94명이 남았어요','ok'],
-         ['2주차 이후 시작 → 12주 후','22.4','%','58명 중 13명만 남았어요','cr'],
-         ['첫 주 재방문 (D+7)','49.5','%','238 / 481명'],['한 달 후 (D+30)','40.2','%','182 / 453명']])
-   +note('<b>가장 중요한 발견이에요.</b> 개강 첫 주에 시작한 분은 12주 뒤에도 67%가 남아 있는데, 한 주만 늦게 시작하면 22%로 떨어져요. <b>3배 차이</b>예요. 개강 첫 주 온보딩에 힘을 쏟는 게 다른 어떤 개선보다 효과가 커요.','wa')
-   +'<div class="mc" style="overflow:hidden">'+chead('언제 시작했느냐에 따른 잔존율','<span class="mcap">첫 활동 주 기준 · 그 주에 1회라도 활동</span>')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">시작 시점</th><th class="num">인원</th>'
-     +['1주 후','2주 후','4주 후','8주 후','12주 후'].map(function(x){return '<th style="text-align:center">'+x+'</th>'}).join('')+'</tr></thead><tbody>'
-     +COH.map(function(c){return '<tr><td style="padding-left:20px;font-weight:600">'+c[0]+' <span class="mt" style="color:#69707C;font-size:12px;font-weight:400">'+c[1]+'</span></td>'
-       +'<td class="num mt" style="color:#667085">'+c[2]+'</td>'+c[3].map(hc).join('')+'</tr>'}).join('')+'</tbody></table></div></div>'
-   +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">'
-   +'<div class="mc" style="padding:20px"><span class="mh">이탈 직전 콘텐츠</span><div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">'
-     +brow('두뇌훈련',100,'361명','c')+brow('운동',37,'135명','w')+brow('마음다루기',18,'64명')+brow('검사측정',6,'23명','w')+'</div>'
-     +'<p class="mcap" style="margin:24px 0 0;font-size:13px">두뇌훈련을 마지막으로 떠난 분이 가장 많지만, 전체 활동의 절반이라 노출량 대비로는 평균 수준이에요. 상대적으로 위험한 건 검사예요.</p></div>'
-   +'<div class="mc" style="overflow:hidden">'+chead('이탈 전조 신호','<span class="mcap">자동 감지</span>')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">신호</th><th class="num">해당</th><th class="num" style="padding-right:20px">2주 내 이탈률</th></tr></thead><tbody>'
-     +SIG.map(function(s){return '<tr><td style="padding-left:20px">'+s[0]+'</td><td class="num mt" style="color:#475467">'+s[1]+'</td><td class="num mt" style="padding-right:20px;font-weight:700;color:'+s[3]+'">'+s[2]+'</td></tr>'}).join('')
-     +'</tbody></table></div><p class="mcap" style="padding:14px 20px">이 신호에 걸린 분은 <b style="color:#475467">오늘</b> 화면에 자동으로 올라와요.</p></div></div></div>'}
+/* 참여 지속(잔존)은 '코호트' 메뉴로 옮겼다 — views-cohort.js */
 function patTab(B){
   var DOW=[['월',29236],['화',31459],['수',31034],['목',29428],['금',31926],['토',9111],['일',7533]];
   var HR=[7410,3200,1800,1500,4200,10629,17261,16409,14222,14067,10575,7131,7066,8339,6584,5585,6109,6161,4809,5548,5110,4100,3200,2400];
