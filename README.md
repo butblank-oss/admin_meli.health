@@ -77,11 +77,12 @@ assets/js/views-cohort.js   코호트 — 잔존 매트릭스·곡선·기수 �
 assets/js/views-report.js   푸시 / 리포트 / 신청 / 열람 기록 + 초기화
 
 ── 슈퍼어드민 ───────────────────────────────
-super/index.html            화면 16개 + 모달 9개
+super/index.html            화면 17개 + 모달 9개
 super/assets/css/super.css  강조색만 덮어씀 (app.css를 먼저 불러옴)
 super/assets/js/core.js     헬퍼·라우팅·사이드바
-super/assets/js/data.js     채널 6 / 참여자 2,328 / 콘텐츠 20 / CS 14 / 발송 6 / 열람 148건
-super/assets/js/views-channel.js   운영 현황 / 채널 / 기수
+super/assets/js/data.js     채널 6 / 참여자 2,328(채널별 활동 원장) / 콘텐츠 20 / CS 14 / 발송 6 / 열람 148건
+super/assets/js/views-channel.js   운영 현황 / 채널(상세에 캘린더·누적 곡선) / 기수
+super/assets/js/views-compare.js   채널 비교 — 같은 경과일 잔존·순증감
 super/assets/js/views-people.js    참여자 찾기 / 참여자 상세 (열람 모델은 채널과 동일)
 super/assets/js/views-program.js   편성 / 콘텐츠 / 챌린지
 super/assets/js/views-comm.js      CS / 발송 / 이상 열람 + 초기화

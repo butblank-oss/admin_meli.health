@@ -206,31 +206,70 @@ var GIV=['순','자','옥','희','수','식','호','철','영','미','숙','현'
 A.ME='U07';
 A.meAcct=function(){for(var i=0;i<A.ACCOUNTS.length;i++)if(A.ACCOUNTS[i].id===A.ME)return A.ACCOUNTS[i];return A.ACCOUNTS[0]};
 
+/* 채널마다 활동 원장 — 채널 어드민과 같은 ledger.js · 같은 기본값(CARE).
+   C01(남동구)은 채널 어드민과 시드·설정이 같아서 822명의 활동이 한 명도 안 다르다.
+   데이터 기준일도 채널 어드민과 같은 8/21 (채널 일차 '171일째' 가 이 날 기준이다).
+   채널별 차이는 성향 값으로만 준다 — 부천은 초반 이탈이 적고, 시흥은 개소 초기라 앱 미설치가 많다 */
+A.TODAY=new Date(2026,7,21);
+var LCFG={
+  C01:{seed:7019,base:0,   start:new Date(2026,2,3)},
+  C02:{seed:7121,base:900, start:new Date(2026,4,18),earlyP:function(w){return w===0?0.22:0.7}},
+  C03:{seed:7223,base:1800,start:new Date(2026,2,4), earlyP:function(w){return w===0?0.13:0.6},neverP:function(w){return w===0?0.15:w<3?0.3:0.35}},
+  C04:{seed:7325,base:2700,start:new Date(2026,6,13),earlyP:function(w){return w===0?0.28:0.72},neverP:function(w){return w===0?0.32:0.45}}};
+A.LEDGERS={};
 A.PEOPLE=[];A.byP={};
-[['C01',822,0],['C02',514,900],['C03',690,1800],['C04',302,2700]].forEach(function(cc){
-  var ch=cc[0],n=cc[1],base=cc[2];
-  for(var i=0;i<n;i++){(function(i){
+['C01','C02','C03','C04'].forEach(function(ch){
+  var c=A.byCh[ch],cf=LCFG[ch],base=cf.base,o={seed:cf.seed,n:c.people,start:cf.start,end:A.TODAY,force:Ledger.dropForce(base)};
+  if(cf.earlyP)o.earlyP=cf.earlyP;if(cf.neverP)o.neverP=cf.neverP;
+  var L=Ledger.care(o);A.LEDGERS[ch]=L;
+  for(var i=0;i<c.people;i++){(function(i){
     var r=function(k){return rnd((base+i)*17+k)};
-    var c=A.byCh[ch];
-    var days=Math.floor(Math.pow(r(3),2.6)*Math.min(170,c.day||170));
-    var last=days===0?999:Math.floor(Math.pow(r(4),2)*160);
-    var p={id:ch+'-P'+(1000+i),ch:ch,
+    var lp=L.P[i],ps=Ledger.pstats(L,lp);
+    var p={id:ch+'-P'+(1000+i),ch:ch,li:i,
       sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
       tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
       pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),
       birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
       sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
-      status:r(1)<0.976?'active':(r(2)<0.5?'dropped':'expired'),
-      days:days,last:last,rate:days===0?0:Math.min(99,Math.round(Math.pow(r(15),1.4)*100)),
-      app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)]};
+      /* 상태 판정도 채널 어드민과 같은 식 */
+      status:r(1)<0.976?'active':(r(2)<0.25?'dropped':'expired'),
+      days:ps.days,last:ps.last,rate:ps.rate,
+      app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)],
+      installed:lp.days>0||lp.stepper||r(24)>0.55};
     p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
     p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
     p.age=2026-p.birth;
-    /* 동의 — 민감정보 별도 동의 없음 ~12%, 철회 ~1.5% (채널 어드민과 같은 비율) */
+    /* 동의 — 민감정보 별도 동의 없음 ~12%. 철회는 남동구엔 없다(채널 어드민과 같게), 다른 채널은 ~1.5% */
     var cv=r(29);
-    p.consent={sensitive:cv<0.88?'2026-03-03':null,
-      revoked:r(30)<0.015?'2026-0'+(6+Math.floor(r(31)*3))+'-'+pad2(1+Math.floor(r(32)*27)):null};
+    p.consent={sensitive:cv<0.88?Ledger.ymd(cf.start):null,
+      revoked:ch!=='C01'&&r(30)<0.015?'2026-0'+(6+Math.floor(r(31)*3))+'-'+pad2(1+Math.floor(r(32)*27)):null};
     A.PEOPLE.push(p);A.byP[p.id]=p})(i)}});
+
+/* 채널 숫자 — 손으로 적지 않고 원장에서 센다.
+     대상자     = 그룹 합류 인원
+     앱 설치    = 활동 또는 걸음 기록이 있거나 설치만 한 분
+     월 활동률  = 이번 달 활동자 ÷ 대상자 (채널 어드민 '사업 목표' 의 같은 지표)
+     월 이탈률  = 이번 달 이탈 ÷ 지난달 활동자
+   누적 이탈 비율은 오래된 채널일수록 커질 수밖에 없어 개소 6주차와 171일째를 비교할 수 없다 → 월 단위 */
+function di(L,d){return Ledger.idx(L,d)}
+A.chMonth=function(ch,y,m,upto){
+  var L=A.LEDGERS[ch];if(!L)return null;
+  var dim=new Date(y,m,0).getDate(),end=Math.min(upto||dim,dim),a=di(L,new Date(y,m-1,1)),b=di(L,new Date(y,m-1,end));
+  if(b<0)return null;if(b>L.T){end-=b-L.T;b=L.T}a=Math.max(0,a);
+  var S=L.S||(L.S=Ledger.series(L,14)),sum=function(arr){var x=0;for(var d=a;d<=b;d++)x+=arr[d];return x};
+  var aud=L.P.filter(function(p){return p.join<=b}).length,act=Ledger.activeIn(L,a,b);
+  return {a:a,b:b,end:end,dim:dim,aud:aud,activist:act,rate:aud?act/aud*100:0,acts:sum(S.acts),
+    join:sum(S.join),lost:sum(S.lost),back:sum(S.back)}};
+['C01','C02','C03','C04'].forEach(function(ch){
+  var c=A.byCh[ch],L=A.LEDGERS[ch],T=A.TODAY,cur=A.chMonth(ch,T.getFullYear(),T.getMonth()+1),
+      prev=A.chMonth(ch,T.getFullYear(),T.getMonth());
+  c.day=L.T;
+  c.app=A.PEOPLE.filter(function(p){return p.ch===ch&&p.installed}).length;
+  c.rate=Math.round(cur.rate);
+  c.drop=prev&&prev.activist?Math.round(cur.lost/prev.activist*1000)/10:0;
+  c.month=cur});
+/* 남동구 3기 개강일은 3월 3일 (채널 어드민과 같게) */
+A.COHORTS.forEach(function(x){if(x.id==='H1')x.s='2026-03-03'});
 
 /* 운영팀 열람 기록 — 채널 담당자 기록과 같은 표에 쌓인다.
    운영팀이라고 다른 장부를 쓰면 이상 탐지가 운영팀만 비켜 가게 된다. */

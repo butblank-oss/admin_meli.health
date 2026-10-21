@@ -176,12 +176,12 @@ var BADGE={
 /* ═══ 슈퍼 = 소유(Own) ═══
    맬리 admin.stg 구조를 따른다. 원본을 만들고 전 채널에 뿌리는 쪽.
    채널에 없는 것이 여기 있는 게 아니라, 여기 있는 것 중 일부만 채널에 잘라서 내려준다. */
-var NAV=[['운영',[['home','운영 현황'],['people','참여자 찾기']]],
+var NAV=[['운영',[['home','운영 현황'],['compare','채널 비교'],['people','참여자 찾기']]],
  ['채널',[['channels','채널 관리'],['cohorts','프로그램 그룹'],['accounts','계정·권한'],['oplog','운영자 로그']]],
  ['프로그램',[['programs','프로그램 편성'],['content','콘텐츠'],['challenges','챌린지']]],
  ['소통',[['cs','채널 문의'],['push','전 채널 발송']]],
  ['감사',[['anomaly','이상 열람 탐지']]]];
-var TITLES={home:'운영 현황',people:'참여자 찾기',person:'참여자 상세',channels:'채널 관리',cohorts:'프로그램 그룹',accounts:'계정·권한',
+var TITLES={home:'운영 현황',compare:'채널 비교',people:'참여자 찾기',person:'참여자 상세',channels:'채널 관리',cohorts:'프로그램 그룹',accounts:'계정·권한',
  oplog:'운영자 로그',programs:'프로그램 편성',content:'콘텐츠',challenges:'챌린지',challengenew:'챌린지 만들기',
  cs:'채널 문의',csdetail:'문의 상세',push:'전 채널 발송',pushnew:'발송 만들기',anomaly:'이상 열람 탐지'}
 var V={},cur='home';

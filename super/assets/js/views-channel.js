@@ -17,9 +17,17 @@ V.home=function(){
   var openTk=TICKETS.filter(function(x){return x.st!=='done'}).length;
   var openAl=ALERTS.filter(function(x){return x.st==='open'}).length;
   var review=CHALLENGES.filter(function(x){return x.st==='review'}).length;
-  var worst=CHANNELS.filter(function(c){return c.st==='run'}).slice().sort(function(a,b){return b.drop-a.drop})[0];
+  var runC=CHANNELS.filter(function(c){return c.st==='run'});
+  var worst=runC.slice().sort(function(a,b){return b.drop-a.drop})[0];
+  var rLo=Math.min.apply(null,runC.map(function(c){return c.rate})),rHi=Math.max.apply(null,runC.map(function(c){return c.rate}));
+  /* 전 채널 이번 달 — 지난달 같은 날까지와 비교 (채널 어드민 월간 현황과 같은 계산) */
+  var TD0=A.TODAY,cm=TD0.getMonth()+1,cy=TD0.getFullYear(),dd=TD0.getDate();
+  var nowActs=0,prevActs=0,nowAct=0,prevAct=0;
+  runC.forEach(function(c){var a=A.chMonth(c.id,cy,cm),b=A.chMonth(c.id,cy,cm-1,dd);
+    if(a){nowActs+=a.acts;nowAct+=a.activist}if(b){prevActs+=b.acts;prevAct+=b.activist}});
+  var gapA=nowActs-prevActs;
 
-  h.innerHTML=ph('운영 현황','2026년 8월 24일 월요일 · 전 채널 통합',
+  h.innerHTML=ph('운영 현황','2026년 8월 24일 월요일 · 전 채널 통합 · 활동 집계는 '+cm+'월 '+dd+'일까지 (채널 어드민과 같은 기준일)',
      '<button class="mb" type="button" data-go="cs">CS 큐 열기</button><button class="mb mbp" type="button" data-go="pushnew">전 채널 발송</button>')
    +kpi([['운영 채널',String(t.run),'개','전체 '+t.ch+'개 중'],
          ['전 채널 대상자',fmt(t.people),'명','앱 설치 '+fmt(t.app)+'명'],
@@ -27,16 +35,21 @@ V.home=function(){
          ['답변 대기 CS',String(openTk),'건','가장 오래된 건 15일째','cr'],
          ['이상 열람',String(openAl),'건','확인이 필요해요','cr'],
          ['챌린지 검수',String(review),'건','9월 출석 챌린지','cr']])
+   +'<div class="mc dz-card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
+     +'<div style="flex:1;min-width:280px"><div class="dz-hero">전 채널 활동이 지난달 이맘때보다 <b class="'+(gapA<0?'dn':'up')+'">'+fmt(Math.abs(gapA))+'회 '+(gapA<0?'적은':'많은')+'</b> 중</div>'
+     +'<p class="mcap" style="margin:6px 0 0">운영 중 '+runC.length+'개 채널 · '+cm+'월 1~'+dd+'일 활동자 '+fmt(nowAct)+'명 (지난달 같은 날까지 '+fmt(prevAct)+'명)'
+     +' · 7월 중순 개소한 시흥은 지난달이 짧아 늘어난 몫이 커요</p></div>'
+     +'<button class="mb mbp" type="button" data-go="compare">채널 비교 보기</button></div>'
    +'<div class="mc"><div style="padding:16px 20px 12px"><h2 class="mh">처리할 일</h2></div><div id="h-todo"></div></div>'
    +'<div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px">'
-   +'<div class="mc" style="overflow:hidden">'+chead('채널별 현황','<span class="mcap">중도포기율 높은 순</span>')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">기관</th><th>상태</th><th class="num">대상자</th><th class="num">수행률</th><th class="num" style="padding-right:20px">중도포기</th></tr></thead><tbody id="h-ch"></tbody></table></div></div>'
+   +'<div class="mc" style="overflow:hidden">'+chead('채널별 현황','<span class="mcap">월 이탈률 높은 순</span>')
+     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">기관</th><th>상태</th><th class="num">대상자</th><th class="num">월 활동률</th><th class="num" style="padding-right:20px">월 이탈률</th></tr></thead><tbody id="h-ch"></tbody></table></div></div>'
    +'<div class="mc" style="padding:20px;display:flex;flex-direction:column;gap:14px">'
      +'<h2 class="mh">기관 간 격차</h2>'
-     +'<p class="mcap" style="margin:0">같은 프로그램인데 기관별 수행률이 <b style="color:#101828">39%~71%</b>로 벌어져요. 편성이 아니라 운영 차이일 가능성이 큽니다.</p>'
+     +'<p class="mcap" style="margin:0">같은 프로그램인데 기관별 월 활동률이 <b style="color:#101828">'+rLo+'%~'+rHi+'%</b>로 벌어져요. 편성이 아니라 운영 차이일 가능성이 큽니다.</p>'
      +'<div id="h-bars" style="display:flex;flex-direction:column;gap:10px"></div>'
      +'<p class="mcap" style="margin:auto 0 0;padding-top:10px;border-top:1px solid #F2F4F7">'
-       +'<b style="color:#B42318">'+esc(worst.n)+'</b>가 중도포기 '+worst.drop+'%로 가장 높아요. '+esc(worst.note||'확인이 필요합니다.')+'</p></div></div>';
+       +'<b style="color:#B42318">'+esc(worst.n)+'</b>가 월 이탈률 '+worst.drop+'%로 가장 높아요. '+esc(worst.note||'확인이 필요합니다.')+'</p></div></div>';
 
   var slaOver=TICKETS.filter(function(x){return x.st!=='done'&&x.aged>2}).length;
   var TD=[['cr','SLA를 넘긴 CS가 '+slaOver+'건이에요','우리 기준은 영업일 2일 내 1차 회신이에요. 가장 오래된 건 15일 지났어요','CS 큐 열기','cs','mbp'],
@@ -116,7 +129,7 @@ V.channels=function(){
     var th=$('#c-th');
     th.innerHTML=sth('기관','n',cSort)+'<th>제품</th><th>지역</th>'+sth('담당자','mgr',cSort)+'<th>상태</th>'
       +sth('기수','cohort',cSort,1)+sth('대상자','people',cSort,1)+sth('앱 설치','app',cSort,1)
-      +sth('수행률','rate',cSort,1)+sth('중도포기','drop',cSort,1)+'<th style="padding-right:20px">비고</th>';
+      +sth('월 활동률','rate',cSort,1)+sth('월 이탈률','drop',cSort,1)+'<th style="padding-right:20px">비고</th>';
     bindSort(th,cSort,fill);
     var tb=$('#c-tb');tb.innerHTML='';
     $('#c-cnt').textContent=list.length;
@@ -138,6 +151,34 @@ V.channels=function(){
       tr.addEventListener('click',function(){openCh(c)});tb.appendChild(tr)})}
   fill()};
 
+/* ══════ 채널 상세 — 미니 대시보드 ══════
+   채널 어드민 '월간 현황' 의 위쪽 두 장(지난달 이맘때 · 날짜별 캘린더)을 채널 하나 단위로.
+   같은 원장·같은 부품이라 남동구는 채널 어드민 화면과 숫자가 같다 */
+function chDash(c){
+  var L=A.LEDGERS[c.id],S=L.S||(L.S=Ledger.series(L,14)),T=A.TODAY,y=T.getFullYear(),m=T.getMonth()+1,dd=T.getDate();
+  var cur=A.chMonth(c.id,y,m),pv=A.chMonth(c.id,y,m-1);
+  function cum(a,n){var o=[],x=0;for(var k=0;k<n;k++){var d=a+k;x+=d>=0&&d<=L.T?S.acts[d]:0;o.push(x)}return o}
+  var cu=cum(cur.a,cur.end),hasP=pv&&pv.b>=0&&A.chMonth(c.id,y,m-1,dd);
+  var pp=hasP?cum(Ledger.idx(L,new Date(y,m-2,1)),pv.dim):[];
+  var pdi=Math.min(dd,pp.length)-1,gap=hasP&&pdi>=0?cu[cu.length-1]-pp[pdi]:null;
+  $('#ch-cum').innerHTML='<div class="dz-hero" style="font-size:18px">'
+    +(gap==null?m+'월이 첫 달이라 비교할 지난달이 없어요'
+      :'지난달 이맘때보다 활동이 <b class="'+(gap<0?'dn':'up')+'">'+fmt(Math.abs(gap))+'회 '+(gap<0?'적은':'많은')+'</b> 중')+'</div>'
+    +'<p class="mcap" style="margin:6px 0 0">'+m+'월 활동자 '+fmt(cur.activist)+'명 · 신규 '+cur.join+' · 이탈 '+cur.lost+' · 복귀 '+cur.back
+    +(c.id==='C04'?' · 7월 13일 개소라 7월 앞쪽은 0이에요':'')+'</p><div id="ch-cumv" style="margin-top:10px"></div>';
+  if(hasP)Viz.cumLine($('#ch-cumv'),{cur:cu,prev:pp,dim:cur.dim,curName:m+'월',prevName:(m-1)+'월',unit:'회',h:150,
+    aria:m+'월 1일부터 '+dd+'일까지 누적 활동 '+fmt(cu[cu.length-1])+'회.'});
+  var days=[];for(var d=1;d<=cur.dim;d++){var i=cur.a+d-1;
+    days.push(d>cur.end?{d:d,future:1}:{d:d,v:S.dau[i],join:S.join[i],lost:S.lost[i],off:L.off[i],today:i===L.T})}
+  $('#ch-cal').innerHTML='<h2 class="mh">'+m+'월 날짜별 활동자</h2><div id="ch-calv" style="margin-top:10px"></div><p class="mcap" id="ch-calp" style="margin:10px 0 0"></p>';
+  function pick(d){var i=cur.a+d-1,w=i-28>=0?S.dau[i-28]:null;
+    $('#ch-calp').textContent=m+'월 '+d+'일 활동자 '+fmt(S.dau[i])+'명 · 활동 '+fmt(S.acts[i])+'회'
+      +(w!=null?' · 4주 전 같은 요일 대비 '+(S.dau[i]-w>=0?'+':'−')+Math.abs(S.dau[i]-w)+'명':'')+' · 신규 '+S.join[i]+' · 이탈 '+S.lost[i]}
+  Viz.calendar($('#ch-calv'),{y:y,m:m,days:days,name:'활동자',unit:'명',selected:cur.end,onPick:function(d){pick(d);
+      $$('#ch-calv .vz-day').forEach(function(b){var on=+b.dataset.d===d;b.classList.toggle('sel',on);b.parentNode.setAttribute('aria-selected',on?'true':'false')})},
+    tip:function(x){return '<div class="vz-th">'+m+'월 '+x.d+'일</div><div class="vz-tr"><b>'+fmt(x.v)+'명</b><span>활동자</span></div>'}});
+  pick(cur.end)}
+
 /* ══════ 채널 상세 ══════ */
 var curCh=null;
 function openCh(c){curCh=c;go('channel')}
@@ -147,20 +188,24 @@ V.channel=function(){
   var st=CH_ST[c.st],h=$('#v-channel');
   var mine=COHORTS.filter(function(x){return x.ch===c.id}).sort(function(a,b){return b.no-a.no});
   var tk=TICKETS.filter(function(x){return x.ch===c.id&&x.st!=='done'});
+  /* '평균 아래' 는 고정값이 아니라 지금 운영 중인 채널들의 평균과 견준다 */
+  var runR=CHANNELS.filter(function(x){return x.st==='run'&&x.rate}),avgR=Math.round(runR.reduce(function(a,x){return a+x.rate},0)/Math.max(1,runR.length));
   h.innerHTML=ph(esc(c.n),c.region+' · '+esc(c.mgr)+' '+esc(c.mgrPhone)+' · '+c.since+' 개소',
      '<button class="mb" type="button" id="ch-back">‹ 목록</button><button class="mb" type="button">담당자 변경</button><button class="mb mbp" type="button" data-go="cohorts">기수 관리</button>')
    +kpi([['상태',st[0],'',c.st==='run'?c.cohort+'기 '+c.day+'일째':'',c.st==='run'?'':'nu'],
          ['대상자',c.people?fmt(c.people):'—','명',c.app?'앱 설치 '+fmt(c.app)+'명':''],
-         ['수행률',c.rate?c.rate+'%':'—','',c.rate?(c.rate<45?'전 채널 평균 아래':'양호'):'',c.rate&&c.rate<45?'wa':''],
-         ['중도포기',c.drop?c.drop+'%':'—','','',c.drop>15?'cr':''],
+         ['월 활동률',c.rate?c.rate+'%':'—','',c.rate?(c.rate<avgR?'운영 채널 평균 '+avgR+'% 아래':'운영 채널 평균 '+avgR+'% 이상'):'',c.rate&&c.rate<avgR?'wa':''],
+         ['월 이탈률',c.drop?c.drop+'%':'—','',c.drop?'이번 달 이탈 ÷ 지난달 활동자':'',c.drop>15?'cr':''],
          ['대기 CS',String(tk.length),'건','',tk.length?'cr':'']])
    +(c.note?note('<b>비고</b> '+esc(c.note),c.st==='prep'?'in':'wa'):'')
+   +(A.LEDGERS[c.id]?'<div class="bento wide"><div class="mc dz-card" id="ch-cum"></div><div class="mc dz-card" id="ch-cal"></div></div>':'')
    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px">'
    +'<div class="mc" style="overflow:hidden">'+chead('기수 이력')
      +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">기수</th><th>기간</th><th class="num">대상자</th><th style="padding-right:20px">상태</th></tr></thead><tbody id="ch-co"></tbody></table></div></div>'
    +'<div class="mc" style="overflow:hidden">'+chead('대기 중 문의','<span class="mcap">'+tk.length+'건</span>')
      +'<div id="ch-tk"></div></div></div>';
   $('#ch-back').addEventListener('click',function(){go('channels')});
+  if(A.LEDGERS[c.id])chDash(c);
   var cob=$('#ch-co');
   mine.forEach(function(x){
     var s=CO_ST[x.st];

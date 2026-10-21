@@ -376,16 +376,9 @@ var CARRY={done:false,n:0,at:'',from:'',to:''};
    0일차 = 3기 개강일. 오늘 = 데이터 기준일. 공휴일은 주말처럼 다룬다 (추천 활동이 평일에만 편성).
    8월은 폭염·휴가철이라 조금 낮춘다 — '지난달 같은 날보다 적은 중' 이 실제로 나오는 달. */
 var D0=new Date(2026,2,3),TODAY=new Date(2026,7,21);
-var HOL26={'2026-03-02':1,'2026-05-05':1,'2026-05-25':1,'2026-06-03':1,'2026-08-17':1};
-var SEASON={2:1,3:1.02,4:0.98,5:0.95,6:0.94,7:0.88};
-function joinWeek3(u){return u<0.62?0:u<0.77?1:u<0.85?2:3+Math.floor((u-0.85)/0.15*22)}
-var LEDGER=Ledger.build({seed:7019,n:822,start:D0,end:TODAY,holidays:HOL26,
-  season:function(d){return SEASON[d.getMonth()]||1},
-  joinWeek:joinWeek3,
-  /* 기수형은 늦게 들어올수록 약하다 — 첫 주 합류자와 그 뒤 합류자의 이탈 성향을 따로 둔다 */
-  neverP:function(w){return w===0?0.19:w<3?0.33:0.38},
-  earlyP:function(w){return w===0?0.18:0.68},earlyMean:12,longMean:900,
-  force:function(i){return rnd(i*17+1)>=0.976&&rnd(i*17+2)<0.25?{early:1}:null}});
+/* 3기 설정(공휴일·계절·합류·이탈 성향)은 ledger.js 의 CARE 에 있다 — 슈퍼어드민 C01 과 같은 값 */
+var joinWeek3=Ledger.CARE.joinWeek;
+var LEDGER=Ledger.care({seed:7019,n:822,start:D0,end:TODAY,force:Ledger.dropForce(0)});
 var LT_=LEDGER.T;
 
 var PEOPLE=[],byId={};
@@ -393,28 +386,17 @@ for(var i=0;i<822;i++){(function(i){
   var r=function(k){return rnd(i*17+k)};
   var st=r(1)<0.976?'active':(r(2)<0.25?'dropped':'expired');
   /* 활동일·최근 이용·오늘 수행은 원장에서 센다. 따로 정하면 상세의 일별 기록과 어긋난다 */
-  var L=LEDGER.P[i],days=L.days,last=L.la<0?999:LT_-L.la;
-  var wd=0,mA=0,mW=0,stp=0,stc=0,streak=0,run=true,a8=Ledger.idx(LEDGER,new Date(2026,7,1));
-  for(var d=0;d<=LT_;d++){
-    if(L.steps[d]){stp+=L.steps[d];stc++}
-    if(LEDGER.off[d])continue;
-    if(L.first>=0&&d>=L.first)wd++;
-    if(d>=a8){mW++;mA+=L.acts[d]}}
-  /* 연속 출석 — 오늘(아직 안 했으면 어제)부터 평일을 거슬러 센다. 주말·공휴일은 건너뛴다 */
-  for(var d2=L.acts[LT_]?LT_:LT_-1;d2>=0&&run;d2--){if(LEDGER.off[d2])continue;if(L.acts[d2])streak++;else run=false}
+  var L=LEDGER.P[i],ps=Ledger.pstats(LEDGER,L),days=ps.days,last=ps.last;
   var p={idx:i,id:'P'+(10000+i),sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
    tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
    pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
    sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
    org:r(13)<0.145?'미배정':ORGS[Math.floor(r(12)*4)],
-   status:st,days:days,last:last,
-   /* 수행률 = 활동수 ÷ 추천수. 추천은 평일 하루 3개 */
-   rate:days===0?0:Math.min(99,Math.round(L.total/(3*Math.max(1,wd))*100)),
+   status:st,days:days,last:last,rate:ps.rate,
    app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)],
-   /* 랭킹 점수 = 600×(활동÷추천) + 400×(연속일÷추천일), 이번 달 기준 */
-   score:Math.round(600*Math.min(1,mA/(3*Math.max(1,mW)))+400*Math.min(1,streak/Math.max(1,mW))),streak:streak,
+   score:ps.score,streak:ps.streak,
    mind:days?Math.floor(Math.pow(r(19),2.5)*20*Math.min(1,days/40)):0,symp:days?Math.floor(Math.pow(r(20),3)*10):0,
-   step:stc?Math.round(stp/stc):0,todayN:L.acts[LT_],
+   step:ps.step,todayN:ps.todayN,
    installed:days>0||L.stepper||r(24)>0.55,notif:r(25)>0.03};
   p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
   p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;

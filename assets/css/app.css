@@ -553,7 +553,8 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 .vz-day.today .dn{background:#101828;color:#fff;border-radius:999px;padding:0 6px}
 .vz-day .dn{font-size:12px;color:#344054;font-weight:600;line-height:18px}
 .vz-day .dn.we{color:#475467;font-weight:500}
-.vz-day.deep .dn.we{color:#344054}   /* 가장 진한 칸에서는 회색이 대비를 못 낸다 */
+.vz-day.deep .dn,.vz-day.deep .dn.we{color:#101828}   /* 가장 진한 칸에서는 회색·보조색이 대비를 못 낸다 (보라 54% 위 #344054 = 4.16:1) */
+.vz-day.today .dn,.vz-day.today.deep .dn{color:#fff}   /* 오늘 표시는 검은 알약 위 흰 글자 — 위 규칙에 덮이면 사라진다 */
 .vz-day.today .dn.we{color:#fff}
 .vz-day .dv{font-size:15px;font-weight:700;color:#101828;letter-spacing:-0.02em;line-height:1.3}
 .vz-day .dd{display:flex;gap:4px;font-size:11.5px;font-weight:600;line-height:1.3;min-height:15px}

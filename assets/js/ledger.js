@@ -72,6 +72,39 @@ function build(opt){
             acts:acts,steps:steps,stepper:stepper})}
   return {start:start,T:T,P:P,off:off}}
 
+/* 케어센터 기수형 기본값 — 두 어드민이 같은 값을 쓴다.
+   채널 어드민의 남동구 3기와 슈퍼어드민의 남동구(C01)는 이 설정 + 같은 시드라서 822명이 한 명도 안 다르다.
+   공휴일은 주말처럼 다룬다(추천 활동이 평일에만 편성). 8월은 폭염·휴가철이라 조금 낮춘다.
+   늦게 들어올수록 약하다 — 첫 주 합류자와 그 뒤 합류자의 이탈 성향을 따로 둔다 */
+var CARE={
+  holidays:{'2026-03-02':1,'2026-05-05':1,'2026-05-25':1,'2026-06-03':1,'2026-08-17':1},
+  season:function(d){return {2:1,3:1.02,4:0.98,5:0.95,6:0.94,7:0.88}[d.getMonth()]||1},
+  joinWeek:function(u){return u<0.62?0:u<0.77?1:u<0.85?2:3+Math.floor((u-0.85)/0.15*22)},
+  neverP:function(w){return w===0?0.19:w<3?0.33:0.38},
+  earlyP:function(w){return w===0?0.18:0.68},earlyMean:12,longMean:900};
+function care(o){var c={},k;for(k in CARE)c[k]=CARE[k];for(k in o)c[k]=o[k];return build(c)}
+/* 중도포기 상태인 분은 초반 이탈형으로 — 채널·슈퍼가 같은 규칙. base 는 그 사람 시드의 시작값 */
+function dropForce(base){return function(i){return rnd((base+i)*17+1)>=0.976&&rnd((base+i)*17+2)<0.25?{early:1}:null}}
+
+/* 사람별 지표 — 참여자 목록·상세가 보여주는 값. 두 어드민이 같은 계산을 쓴다.
+     수행률   = 활동수 ÷ 추천수 (추천은 평일 하루 3개)
+     연속 출석 = 오늘(아직 안 했으면 어제)부터 평일을 거슬러 센다. 주말·공휴일은 건너뛴다
+     랭킹 점수 = 600×(활동÷추천) + 400×(연속일÷추천일), 이번 달 기준
+     일평균 걸음 = 기록한 날만 평균 */
+function pstats(L,lp){
+  var T=L.T,end=addDays(L.start,T),a=idx(L,new Date(end.getFullYear(),end.getMonth(),1));
+  var wd=0,mA=0,mW=0,stp=0,stc=0,streak=0,run=true;
+  for(var d=0;d<=T;d++){
+    if(lp.steps[d]){stp+=lp.steps[d];stc++}
+    if(L.off[d])continue;
+    if(lp.first>=0&&d>=lp.first)wd++;
+    if(d>=a){mW++;mA+=lp.acts[d]}}
+  for(var d2=lp.acts[T]?T:T-1;d2>=0&&run;d2--){if(L.off[d2])continue;if(lp.acts[d2])streak++;else run=false}
+  return {days:lp.days,last:lp.la<0?999:T-lp.la,todayN:lp.acts[T],streak:streak,
+    rate:lp.days===0?0:Math.min(99,Math.round(lp.total/(3*Math.max(1,wd))*100)),
+    score:Math.round(600*Math.min(1,mA/(3*Math.max(1,mW)))+400*Math.min(1,streak/Math.max(1,mW))),
+    step:stc?Math.round(stp/stc):0}}
+
 /* 일별 계열 — 활동자 · 활동 수 · 합류 · 이탈 · 복귀 · 걸음
    이탈은 기준일에 따라 달라지므로 기준을 받아서 센다 */
 function series(L,risk){
@@ -135,6 +168,6 @@ function curve(L,step){
     out.push({d:d,rate:starters.length?n/starters.length*100:0})}
   return {n:starters.length,pts:out}}
 
-return {rnd:rnd,build:build,series:series,activeIn:activeIn,cumActive:cumActive,stepIn:stepIn,lastAsOf:lastAsOf,
+return {rnd:rnd,build:build,CARE:CARE,care:care,dropForce:dropForce,pstats:pstats,series:series,activeIn:activeIn,cumActive:cumActive,stepIn:stepIn,lastAsOf:lastAsOf,
         retention:retention,curve:curve,idx:idx,addDays:addDays,ymd:ymd}})();
 if(typeof module!=='undefined')module.exports=Ledger;

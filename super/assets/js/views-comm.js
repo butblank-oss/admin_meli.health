@@ -104,7 +104,7 @@ V.csdetail=function(){
        +'<h2 class="mh">기관 상황</h2>'
        +(c?'<div style="display:flex;flex-direction:column;gap:9px">'
          +[['담당자',c.mgr],['기수',c.cohort?c.cohort+'기 '+c.day+'일째':'—'],['대상자',c.people?fmt(c.people)+'명':'—'],
-           ['앱 설치',c.app?fmt(c.app)+'명':'—'],['수행률',c.rate?c.rate+'%':'—'],['중도포기',c.drop?c.drop+'%':'—']]
+           ['앱 설치',c.app?fmt(c.app)+'명':'—'],['월 활동률',c.rate?c.rate+'%':'—'],['월 이탈률',c.drop?c.drop+'%':'—']]
           .map(function(r){return '<div style="display:flex;gap:10px;font-size:13px"><span style="color:#667085;width:56px;flex:none">'+r[0]+'</span><b class="mt" style="font-weight:600">'+esc(String(r[1]))+'</b></div>'}).join('')
          +'</div>':'')
        +'<button class="mb" type="button" style="margin-top:4px" id="tk-ch">채널 상세 보기</button></div>'
