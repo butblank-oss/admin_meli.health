@@ -127,11 +127,9 @@ function indTab(B){
     iPager.render($('#i-pg'))}
   fill()}
 function defTab(B){
-  var D=[['대상자 수','기수에 배정된 전원','audienceCount'],['참여자 수','해당 월 참여 상태 유지자','participantCount'],
-   ['활동자 수','해당 월 1회 이상 활동','activistCount'],['누적 중도포기','참여 상태 = 종료(T)','abandonerCount'],
-   ['수행률','추천받은 활동 중 수행 비율','활동수 ÷ 추천수'],['랭킹 점수','월 단위 총점 (최대 1000)','600×(활동÷추천) + 400×(연속일÷추천일)'],
-   ['N (오늘 수행)','오늘 수행한 활동 수','todayActivityCount'],['PIN','전화 응대용 조회번호','vocNumber'],
-   ['무활동 판정','마지막 활동 이후 경과일','7일 주의 / 14일 위험']]
+  /* 지표 정의도 손으로 적지 않는다 — 화면이 쓰는 계산(METRICS)과 같은 배열에서 그린다.
+     예전엔 여기만 따로 적은 목록이라, 활동자 정의를 바꿔도 이 표는 옛 정의를 보여줬다 */
+  var D=A.METRICS.map(function(m){return [m.n,m.d,m.f,m.use||'']})
    /* 검사 등급은 손으로 적지 않고 TESTS에서 뽑아 쓴다. 표와 실제 판정이 어긋날 수 없게 하기 위함. */
    .concat(A.TESTS.map(function(t){
      var seen={},bands=[],prev=0;
@@ -139,11 +137,11 @@ function defTab(B){
        var l=t.lv(sc)[0];
        if(l!==seen.l){if(seen.l)bands.push(seen.l+' '+prev+'–'+(sc-1));seen={l:l};prev=sc}}
      bands.push(seen.l+' '+prev+'–'+t.max);
-     return [t.n,t.items+'문항 · 0–'+t.max+'점',bands.join(' / ')]}));
+     return [t.n,t.items+'문항 · 0–'+t.max+'점',bands.join(' / '),'참여자 상세 · 오늘']}));
   B.innerHTML='<div class="gap">'
    +note('화면의 숫자가 무엇을 세는지 정의해요. 보건소 제출 수치와 대조할 때 정의부터 맞추면 차이가 사라져요.','in')
-   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">지표</th><th>세는 대상</th><th style="padding-right:20px">계산식</th></tr></thead><tbody>'
-   +D.map(function(d){return '<tr><td style="padding-left:20px;font-weight:600">'+d[0]+'</td><td style="color:#475467">'+d[1]+'</td><td class="mt" style="color:#667085;padding-right:20px;font-size:12.5px">'+d[2]+'</td></tr>'}).join('')
+   +'<div class="mc" style="overflow:hidden"><div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">지표</th><th>세는 대상</th><th>계산식</th><th style="padding-right:20px">쓰는 화면</th></tr></thead><tbody>'
+   +D.map(function(d){return '<tr><td style="padding-left:20px;font-weight:600">'+d[0]+'</td><td style="color:#475467">'+d[1]+'</td><td class="mt" style="color:#667085;font-size:12.5px">'+d[2]+'</td><td class="mcap" style="padding-right:20px">'+d[3]+'</td></tr>'}).join('')
    +'</tbody></table></div></div>'
    +note('검사 등급은 이 표와 실제 판정이 <b>같은 값에서 나와요.</b> 표만 고치고 판정이 안 바뀌는 일은 생기지 않아요.','ok')
    +note('<b>운영팀 확정 사항 (2026-08-24)</b><br>· 노력 점수는 랭킹과 별개 지표라 화면에서 제외했어요 — 수행률·연속일이 이미 노력을 반영해요.<br>· 음주(AUDIT-K)는 <b>4기부터</b> 도입해요. 기수 중간에 넣으면 참여자별 검사가 달라져 통계가 갈라져요.<br>· 터그테스트는 앱 수정이 끝날 때까지 지표에서 뺐어요.','in')+'</div>'}
@@ -393,8 +391,8 @@ V.groups=function(){
       toast(g.name+'(으)로 바꿨어요. 참여자·활동·리포트가 이 그룹 기준이에요')});
     tb.appendChild(tr)});
   h.insertAdjacentHTML('beforeend',
-    note('<b>기수형은 중간 합류에 약해요.</b> 3기 실측으로 개강 첫 주 시작자는 12주 뒤 <b>67.1%</b> 남는데 '
-     +'한 주만 늦으면 <b>22.4%</b>예요. 중간 합류가 잦은 경로당은 <b>상시형</b>이 맞아요 — 각자 등록일이 1일차라서요.','wa'))};
+    note('<b>기수형은 중간 합류에 약해요.</b> 3기 실측으로 개강 첫 주 시작자는 12주 뒤 <b>'+(A.retainAt(12,function(k){return k===0}).rate||0).toFixed(1)+'%</b> 남는데 '
+     +'한 주만 늦으면 <b>'+(A.retainAt(12,function(k){return k===1}).rate||0).toFixed(1)+'%</b>예요. 중간 합류가 잦은 경로당은 <b>상시형</b>이 맞아요 — 각자 등록일이 1일차라서요.','wa'))};
 
 /* ══════ 내 채널 정보 ══════
    화면에 흩어져 있던 하드코딩을 모은다. 잠긴 항목은 숨기지 않고 이유와 함께 보여준다. */
@@ -438,6 +436,17 @@ V.settings=function(){
        +'<button class="mb" data-k="fix" style="flex:1;height:auto;padding:10px;text-align:left;display:block">'
        +'<b>다시 판정한다</b><div class="mcap">오류 정정 · 과거까지 소급</div></button></div>'
      +'</div></div><div style="padding:0 20px 18px" id="st-pv"></div></div>'
+   /* 사업 목표 — 사업계획서에 목표가 없어 출발점 값을 넣어 두고 채널이 고친다.
+      목표 대비 % 는 활동 현황에서 이 값을 읽어 그린다 */
+   +'<div class="mc">'+chead('사업 목표')
+     +'<div class="mcap" style="padding:0 20px 10px">사업계획서에 목표값이 없어 <b>출발점으로 잡은 기본값</b>이에요. 3개월 실적을 보고 고치세요. 활동 현황에 목표 대비로 표시돼요.</div>'
+     +'<div style="padding:0 20px 18px"><div class="kvform">'
+     +A.GOALS.map(function(g){var now=M[g.k]();
+       return '<label for="st-g-'+g.k+'">'+g.n+'</label><div><div style="display:flex;gap:8px;align-items:center">'
+        +'<input class="mfld" id="st-g-'+g.k+'" type="number" min="1" max="100" value="'+CFG.goals[g.k]+'" style="width:88px"> '+g.u
+        +'<span class="mcap" style="margin-left:8px">지금 <b class="mt" style="color:#101828">'+now+g.u+'</b></span></div>'
+        +'<div class="mcap" style="margin-top:4px">'+g.d+' — '+g.why+'</div></div>'}).join('')
+     +'</div></div></div>'
    +'<div class="mc">'+chead('알림')+'<div style="padding:4px 20px 18px">'
      +'<div class="kvform"><label for="st-pf">푸시 발송 시간</label><div style="display:flex;gap:8px;align-items:center">'
        +'<input class="mfld" id="st-pf" type="number" min="0" max="23" value="'+CFG.pushFrom+'" style="width:76px" aria-label="푸시 발송 시작 시각"> 시 ~ '
@@ -493,6 +502,12 @@ V.settings=function(){
     if(!(w>0)||!(r2>w)){toast('위험 기준은 경고 기준보다 커야 해요','cr');return}
     CFG.name=$('#st-name').value;CFG.recvOrg=$('#st-recv').value;CFG.recvTitle=$('#st-recvt').value;
     CFG.sendOrg=$('#st-send').value;CFG.writer=$('#st-writer').value;CFG.docNo=$('#st-doc').value;
+    var gBad=A.GOALS.filter(function(g){var v=+$('#st-g-'+g.k).value;return !(v>=1&&v<=100)});
+    if(gBad.length){toast(gBad[0].n+' 목표는 1~100 사이로 적어주세요','cr');return}
+    var gOld=JSON.stringify(CFG.goals);
+    A.GOALS.forEach(function(g){CFG.goals[g.k]=+$('#st-g-'+g.k).value});
+    if(JSON.stringify(CFG.goals)!==gOld)addAudit('채널 설정 변경','사업 목표',
+      A.GOALS.map(function(g){return g.n+' '+CFG.goals[g.k]+g.u}).join(' · '));
     CFG.warn=w;CFG.risk=r2;CFG.pushFrom=+$('#st-pf').value;CFG.pushTo=+$('#st-pt').value;
     pushRule('2026-08-21',w,r2,kind,kind==='policy'?'운영 기준 조정':'판정 오류 정정');
     addAudit('채널 설정 변경','판정 기준 '+w+'/'+r2+'일',

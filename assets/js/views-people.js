@@ -18,21 +18,30 @@ function statusPill(p){
 /* ══════ 오늘 ══════ */
 V.today=function(){
   var h=$('#v-today');
-  /* 평일/주말 구분은 날짜에서 뽑는다 — 손으로 적으면 기수가 바뀔 때 어긋난다 */
-  var vals=[322,268,1210,1265,1188,1302,1245,336,281,1222,1276,1198,1310,1284],wk=[];
-  vals.forEach(function(_,i){var d=new Date(2026,7,8+i).getDay();if(d===0||d===6)wk.push(i)});
+  /* 최근 2주 활동량·주말 구분·지난주 대비는 전부 원장에서 센다.
+     예전엔 손으로 적은 숫자라 요일까지 틀려 있었다 (8월 21일은 금요일) */
+  var S=A.ser(),T=A.LEDGER.T,off=A.LEDGER.off,vals=[],wk=[];
+  for(var i=T-13;i<=T;i++){vals.push(S.acts[i]);if(off[i])wk.push(vals.length-1)}
+  var wdA=0,wdN=0,weA=0,weN=0;
+  for(var j=T-27;j<=T;j++){if(off[j]){weA+=S.acts[j];weN++}else{wdA+=S.acts[j];wdN++}}
+  var weRatio=wdA?Math.round(weA/weN/(wdA/wdN)*100):0,wdAvg=wdN?Math.round(wdA/wdN):0;
+  var dRecent=M.weekActive()-A.bandAsOf(T-7,'recent'),dRisk=M.inactive14()-A.bandAsOf(T-7,'risk');
+  function chg(n,unit){return n===0?'지난주와 같아요':'지난주보다 '+Math.abs(n)+unit+' '+(n>0?'늘었어요':'줄었어요')}
+  var TD_=A.TODAY,DOWK='일월화수목금토';
+  var d0=A.dAt(T-13),dm=A.dAt(T-6);
+  function md(d){return pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
   var bands=[['최근 활동','recent','#13BD7E'],[CFG.warn+'일 무활동','warn','#F79009'],
              [CFG.risk+'일+ 무활동','risk','#F04438'],['무활동','none','#D0D5DD']]
     .map(function(b){return [b[0],cnt(function(p){return band(p)===b[1]}),b[2]]});
 
   h.innerHTML=
-   ph('오늘','2026년 8월 21일 목요일 · 3기 171일째',
+   ph('오늘',TD_.getFullYear()+'년 '+(TD_.getMonth()+1)+'월 '+TD_.getDate()+'일 '+DOWK[TD_.getDay()]+'요일 · 3기 '+T+'일째',
      '<span class="mcap" style="margin-right:2px">기간</span><button class="mchip">오늘</button><button class="mchip">최근 7일</button><button class="mchip on">이번 달</button><button class="mchip">지난 달</button><button class="mb mbp" data-go="report" style="margin-left:8px">8월 리포트 만들기</button>')
    /* 숫자도 라벨도 M·bandLabel 에서 온다. 여기서 세거나 적지 않는다. */
    +kpi([['3기 대상자',fmt(M.audience()),'명','1기 230 · 2기 714'],
-         ['이번 주 활동자',fmt(M.weekActive()),'명','전주보다 6명 늘었어요','','up'],
-         ['어제 활동','1,284','회','일평균 1,350회'],
-         [bandLabel().risk,fmt(M.inactive14()),'명','지난주보다 21명 늘었어요','wa'],
+         ['이번 주 활동자',fmt(M.weekActive()),'명',chg(dRecent,'명'),'',dRecent>0?'up':dRecent<0?'down':''],
+         ['어제 활동',fmt(S.acts[T-1]),'회','최근 4주 평일 평균 '+fmt(wdAvg)+'회'],
+         [bandLabel().risk,fmt(M.inactive14()),'명',chg(dRisk,'명'),'wa'],
          ['답변 대기 상담',fmt(M.consultWaiting()),'건','가장 오래된 건 3일째','cr'],
          ['처리 안 된 신청',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
 
@@ -42,10 +51,10 @@ V.today=function(){
 
    +'<div class="bento wide">'
    +'<div class="mc" style="display:flex;flex-direction:column">'
-     +chead('최근 2주 활동','<span class="mcap">회색은 주말</span>',{ic:'chart',at:'08-21 03:00 갱신',more:'stats'})
+     +chead('최근 2주 활동','<span class="mcap">회색은 주말·공휴일</span>',{ic:'chart',at:md(TD_)+' 03:00 갱신',more:'stats'})
      +'<div style="padding:0 20px">'+area(vals,wk)
-     +'<div class="mcap mt" style="display:flex;justify-content:space-between;margin-top:8px"><span>08-08</span><span>08-14</span><span>08-21</span></div></div>'
-     +'<p class="mcap" style="margin:16px 20px 20px;font-size:13px">추천 활동이 평일에만 있어서 주말 활동량이 평일의 <b style="color:#101828">27%</b>로 떨어져요.</p></div>'
+     +'<div class="mcap mt" style="display:flex;justify-content:space-between;margin-top:8px"><span>'+md(d0)+'</span><span>'+md(dm)+'</span><span>'+md(TD_)+'</span></div></div>'
+     +'<p class="mcap" style="margin:16px 20px 20px;font-size:13px">추천 활동이 평일에만 있어서 주말 활동량이 평일의 <b style="color:#101828">'+weRatio+'%</b>로 떨어져요.</p></div>'
    +'<div class="mc" style="display:flex;flex-direction:column">'
      +chead('처리할 일',null,{ic:'todo'})+'<div id="t-todo"></div></div>'
    +'</div>'
@@ -72,14 +81,37 @@ V.today=function(){
      '<span class="mcap" style="display:block;margin-top:2px">'+t[2]+'</span>'+
      '<button class="mb mbs '+t[5]+'" data-go="'+t[4]+'" style="margin-top:9px">'+t[3]+'</button></span>';
     tb.appendChild(d)});
-  [['정*순','우울 위험','cr','GDS-SF 11점','3일','P10007'],['황*학','활동 중단','wa','14일 무활동','14일','P10011'],
-   ['이*자','불면 경계','wa','ISI-K 16점','6일','P10019'],['박*희','앱 미설치','cr','승인 후 미가입','37일','P10027']].forEach(function(a){
+  attnList().forEach(function(a){
     var tr=el('tr');
     tr.innerHTML='<td style="padding-left:20px"><span class="lnk">'+a[0]+'</span></td><td>'+pill(a[1],a[2])+' <span class="mcap" style="margin-left:4px">'+a[3]+'</span></td>'+
      '<td class="num mt" style="color:#667085">'+a[4]+'</td><td style="text-align:right;padding-right:20px"><button class="mb mbs">연락</button></td>';
     tr.querySelector('.lnk').addEventListener('click',function(){askOpen(byId[a[5]],'today')});
     tr.querySelector('.mb').addEventListener('click',function(){toast(a[0]+'님에게 연락 메모를 남겼어요','ok','실행 취소',null)});
     $('#t-attn').appendChild(tr)})};
+
+/* 먼저 연락해볼 분들 — 사유마다 가장 급한 한 분씩. 고정 명단으로 두면 데이터와 어긋난다.
+   ① 최근 검사가 우울 위험 ② 막 활동 중단 구간에 들어선 분 ③ 불면 중등도 이상 ④ 걸음만 기록되고 활동은 없는 분 */
+function attnList(){
+  var T=A.LEDGER.T,out=[],seen={};
+  function latest(p,code){var h=assessHist(p);for(var i=0;i<h.length;i++)if(h[i].test.c===code)return h[i];return null}
+  function since(dstr){return Math.round((A.TODAY-new Date(dstr+'T00:00:00'))/864e5)}
+  function ago(dstr){var n=since(dstr);return n===0?'오늘':n+'일'}
+  function pick(list,fn){for(var i=0;i<list.length;i++){var p=list[i];if(seen[p.id])continue;var r=fn(p);if(r){seen[p.id]=1;out.push(r);return}}}
+  var act=PEOPLE.filter(function(p){return p.status==='active'&&p.consent.sensitive&&!p.consent.revoked});
+  /* 검사 사유는 '가장 최근에 받은 검사' 기준으로 고른다 — 오래전 결과로 지금 연락하면 헛걸음이다 */
+  function byTest(code){return act.map(function(p){return [p,latest(p,code)]}).filter(function(x){return x[1]})
+    .sort(function(a,b){return a[1].date<b[1].date?1:-1}).map(function(x){return x[0]})}
+  pick(byTest('gds-sf'),function(p){var x=latest(p,'gds-sf');if(x.test.lv(x.score)[0]!=='위험')return null;
+    return [p.name,'우울 위험','cr','GDS-SF '+x.score+'점',ago(x.date),p.id]});
+  pick(act.filter(function(p){return p.days&&p.last>CFG.risk}).sort(function(a,b){return a.last-b.last}),function(p){
+    return [p.name,'활동 중단','wa',p.last+'일 무활동',p.last+'일',p.id]});
+  pick(byTest('isi-k'),function(p){var x=latest(p,'isi-k');if(x.score<15)return null;
+    return [p.name,'불면 '+x.test.lv(x.score)[0],'wa','ISI-K '+x.score+'점',ago(x.date),p.id]});
+  var a8=A.dIdx(new Date(A.TODAY.getFullYear(),A.TODAY.getMonth(),1));
+  pick(act,function(p){var L=A.LEDGER.P[p.idx],st=0,ac=0;for(var d=a8;d<=T;d++){if(L.steps[d])st++;if(L.acts[d])ac++}
+    if(!(st>=5&&!ac))return null;
+    return [p.name,'걸음만 기록','in','이번 달 활동 0회 · 걸음 '+st+'일',(p.last>900?'—':p.last+'일'),p.id]});
+  return out}
 
 /* ══════ 참여자 ══════ */
 /* 필터의 빈 모양은 여기 한 곳에서만 만든다.
@@ -491,7 +523,7 @@ function tabAct(p,box){
     if(dstr(d)===dstr(pdSel))b.classList.add('on');
     b.addEventListener('click',function(){pdSel=d;V.person()});g.appendChild(b)})(dn)}
   $('#am-f').innerHTML='이번 달 활동 <b class="mt" style="color:#101828">'+mD+'</b>일 · 총 <b class="mt" style="color:#101828">'+fmt(mA)+'</b>회'
-   +(p.joinW?'<div class="mcap" style="margin-top:6px">'+dstr(p.joinG)+'에 합류했어요. 그 전은 <b>미그룹 기간</b>이라 볼 수 없어요.</div>':'');
+   +(p.joinD?'<div class="mcap" style="margin-top:6px">'+dstr(p.joinG)+'에 합류했어요. 그 전은 <b>미그룹 기간</b>이라 볼 수 없어요.</div>':'');
   $('#am-p').addEventListener('click',function(){pdM.m--;if(pdM.m<1){pdM.m=12;pdM.y--}V.person()});
   $('#am-n').addEventListener('click',function(){pdM.m++;if(pdM.m>12){pdM.m=1;pdM.y++}V.person()});
   $('#am-l').addEventListener('click',function(){pdSel=lastAct(p);pdM={y:pdSel.getFullYear(),m:pdSel.getMonth()+1};V.person()});

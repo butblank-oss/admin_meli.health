@@ -31,6 +31,7 @@
 
 - 실제 서버 없이 **브라우저 안에서만 도는 프로토타입**입니다. 빌드 도구도, 백엔드도, 외부 CDN도 없습니다.
 - 참여자 822명 / 참여 신청 144건 / 챌린지 4건은 시드 기반 난수로 매번 **동일하게** 생성됩니다.
+- 활동은 **사람 × 날짜 원장**(`assets/js/ledger.js`) 하나에서 나옵니다. 화면의 모든 활동 숫자가 여기서 계산됩니다.
 - 화면에서 한 일(승인, 탈퇴, 푸시 예약, 원문 열람)은 메모리에만 남습니다. **새로고침하면 초기화**됩니다.
 - **데스크톱 전용**입니다 (`min-width: 1200px`). 기관 PC에서 쓰는 도구라 넓은 화면을 택했습니다.
 
@@ -65,7 +66,8 @@ python3 -m http.server 8000
 index.html                  화면 뼈대 + 모달 9개
 assets/css/app.css          전체 스타일 (Pretendard @font-face 포함)
 assets/fonts/*.woff2        Pretendard 400/500/700
-assets/js/core.js           유틸·공통 컴포넌트·더미 데이터·라우팅
+assets/js/ledger.js         활동 원장 — 합류→활동→이탈. 두 어드민 공용, 앱 의존 없음
+assets/js/core.js           유틸·공통 컴포넌트·더미 데이터·지표(METRICS)·라우팅
 assets/js/views-people.js   오늘 / 참여자 / 참여자 상세
 assets/js/views-program.js  활동 현황 / 상담실 / 일정 / 챌린지
 assets/js/views-report.js   푸시 / 리포트 / 신청 / 열람 기록 + 초기화

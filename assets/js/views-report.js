@@ -255,6 +255,22 @@ V.report=function(){
   function dt(head,rows){return '<table class="dt"><thead><tr>'+head.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'
     +rows.map(function(r){return '<tr>'+r.map(function(c){return '<td'+(c[1]?' style="'+c[1]+'"':'')+'>'+c[0]+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'}
   var S={};RI.forEach(function(x){S[x[0]]=x[3]});
+  /* 3·4·5장은 전부 원장 집계에서 — 대시보드와 같은 함수(monthAgg)를 부른다.
+     예전엔 손으로 적은 숫자라 화면의 활동자 수와 보고서가 달랐다 */
+  var J=A.monthAgg(2026,7),Jp=A.monthAgg(2026,6),KJ=A.monthKinds(2026,7),GD=A.testChange('gds-sf');
+  var R0=A.retainAt(12,function(k){return k===0}).rate||0,R1=A.retainAt(12,function(k){return k>=1}).rate||0;
+  function dlt(a,b,dp){var x=a-b;if(Math.abs(x)<(dp?0.005:0.5))return '—';return (x>0?'+':'')+(dp?x.toFixed(dp):fmt(Math.round(x)))}
+  var RT3=[['대상자 수',J.aud,Jp.aud],['참여자 수',J.part,Jp.part],['활동자 수',J.activist,Jp.activist],
+    ['신규 합류',J.join,Jp.join],['이탈',J.lost,Jp.lost],['누적 중도포기',J.dropped,Jp.dropped],
+    ['총 활동 수',J.acts,Jp.acts],['일평균 활동 수',Math.round(J.perDay),Math.round(Jp.perDay)]].map(function(r){
+      return [r[0],fmt(r[1]),fmt(r[2]),dlt(r[1],r[2])]})
+    .concat([['활동일당 활동 수',J.perActiveDay.toFixed(2),Jp.perActiveDay.toFixed(2),dlt(J.perActiveDay,Jp.perActiveDay,2)]]);
+  var inJ=PEOPLE.filter(function(p){return p.joinD<=J.b}),nJ=inJ.length||1;
+  function ac(b){return inJ.filter(function(p){return p.ageBand===b}).length}
+  function sc(x){return inJ.filter(function(p){return p.sex===x}).length}
+  var AGES=['60대 미만','60대','70대','80대 이상'],SEXES=['여성','남성','미상'];
+  var RT4=AGES.map(function(b,i){var n=ac(b);
+    return [[b],[fmt(n),M],[(n/nJ*100).toFixed(1)+'%',M],[SEXES[i]||''],[SEXES[i]?fmt(sc(SEXES[i])):'',M]]});
   $('#r-doc').innerHTML='<h3>2026년도 스마트 어플 두뇌운동 치매예방교실<br>월간 운영 보고 (7월)</h3>'
    +'<p class="dm">수신 인천남동구 보건소 건강관리팀장 · 발신 ㈜원메딕스인더스트리 · 작성 2026-08-05</p><div class="rule"></div>'
    +(S[1]?'<h4>1. 월별 앱 업데이트 횟수</h4>'+dt(['구분','버전','배포일','주요 내용','이용자'],[
@@ -271,18 +287,15 @@ V.report=function(){
       [['관리'],['취급자 자동 접속차단'],[pill('이행','ok')],[CFG.locked.idleMin+'분 유휴 시 차단']],
       [['관리'],['취급자 정기 교육'],[pill('수기 확인','wa')],['이수증 첨부']]])
      +'<p class="dn2">18개 중 시스템이 증빙할 수 있는 6개만 자동 판정해요.</p>':'')
-   +(S[3]?'<h4>3. 운영 현황</h4>'+dt(['지표','7월','6월','증감'],[
-      [['대상자 수'],['822',M],['822',M],['—',M]],[['참여자 수'],['735',M],['741',M],['-6',M]],
-      [['활동자 수'],['296',M],['284',M],['+12',M]],[['누적 중도포기'],['2',M],['2',M],['—',M]],
-      [['총 활동 수'],['40,512',M],['38,940',M],['+1,572',M]],[['일평균 활동 수'],['1,350',M],['1,298',M],['+52',M]],
-      [['인당 일평균 활동 수'],['4.56',M],['4.57',M],['-0.01',M]]]):'')
-   +(S[4]?'<h4>4. 참여자 현황</h4>'+dt(['연령','인원','비율','성별','인원'],[
-      [['60대'],['192',M],['26.1%',M],['여성'],['581',M]],[['70대'],['361',M],['49.1%',M],['남성'],['105',M]],
-      [['80대 이상'],['132',M],['18.0%',M],['미상'],['49',M]]])
-     +'<p class="dn2">월 접속자 429명, 1인당 월평균 접속일 10.2일. 걷기 기록자 550명, 일평균 6,355보.<br><b>참여 지속</b>: 개강 첫 주 시작자의 12주 후 잔존율 67.1%, 2주차 이후 22.4%.</p>':'')
-   +(S[5]?'<h4>5. 운영 결과</h4>'+dt(['활동 유형','수행','완료','완료율'],[
-      [['두뇌훈련'],['20,326',M],['15,650',M],['77.0%',M]],[['운동'],['16,200',M],['10,940',M],['67.5%',M]],
-      [['마음다루기'],['3,986',M],['2,620',M],['65.7%',M]]]):'')
+   +(S[3]?'<h4>3. 운영 현황</h4>'+dt(['지표','7월','6월','증감'],RT3.map(function(r){
+      return [[r[0]],[r[1],M],[r[2],M],[r[3],M]]})):'')
+   +(S[4]?'<h4>4. 참여자 현황</h4>'+dt(['연령','인원','비율','성별','인원'],RT4)
+     +'<p class="dn2">월 활동자 '+fmt(J.activist)+'명, 1인당 월평균 활동일 '+J.daysPerActivist.toFixed(1)+'일. '
+     +'걸음 기록자 '+fmt(J.stepUsers)+'명, 기록한 날 일평균 '+fmt(J.stepAvg)+'보 (걸음만 기록되고 활동은 없는 분 '+fmt(J.stepOnly)+'명).<br>'
+     +'<b>참여 지속</b>: 개강 첫 주 시작자의 12주 후 잔존율 '+R0.toFixed(1)+'%, 2주차 이후 시작자 '+R1.toFixed(1)+'%.<br>'
+     +'<b>검사 변화</b>: 노인우울(GDS-SF) 재검사 '+fmt(GD.retest)+'명 중 등급 개선 '+fmt(GD.better)+'명 · 악화 '+fmt(GD.worse)+'명.</p>':'')
+   +(S[5]?'<h4>5. 운영 결과</h4>'+dt(['활동 유형','수행','완료','완료율'],['두뇌훈련','운동','마음다루기'].map(function(k){var x=KJ[k];
+      return [[k],[fmt(x.n),M],[fmt(x.done),M],[(x.n?x.done/x.n*100:0).toFixed(1)+'%',M]]})):'')
    +(S[6]?'<h4>6. 기타 / 특이사항</h4><p class="dn2" style="border:1px dashed #EAECF0;padding:12px;border-radius:8px">직접 입력하는 영역이에요. 현장 이슈, 민원, 장애, 다음 달 계획 등을 작성하세요.</p>':'')};
 
 /* ══════ 참여 신청 ══════ */

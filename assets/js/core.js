@@ -242,6 +242,8 @@ var CFG={
   docNo:'남동보건-{YYYY}-{NNN}', form:'남동구 보건소 표준 공문',
   warn:7, risk:14,
   pushFrom:9, pushTo:18,
+  /* 사업 목표 — 사업계획서에 없어 출발점으로 잡은 값. 3개월 실적을 보고 고친다 (GOALS 참고) */
+  goals:{monthRate:50, retain12:60, retestRate:40},
   locked:{escalateDays:3, remaskSec:30, retainYears:2, idleMin:30,
           dormantDays:60, permYears:3, pwMin:10, failLock:5, lockMin:30, viewMonths:6, keepYears:3,
           contract:'2026-03-01 ~ 2026-12-31'}};
@@ -368,28 +370,50 @@ function skey(y,m,d){return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2)}
 /* 4기 이월 — 리포트에서 신청하면 쌓이고, 참여 신청에서 승인해야 참여자가 된다 */
 var CARRY={done:false,n:0,at:'',from:'',to:''};
 
+/* ═══════════ 활동 원장 (assets/js/ledger.js) ═══════════
+   0일차 = 3기 개강일. 오늘 = 데이터 기준일. 공휴일은 주말처럼 다룬다 (추천 활동이 평일에만 편성).
+   8월은 폭염·휴가철이라 조금 낮춘다 — '지난달 같은 날보다 적은 중' 이 실제로 나오는 달. */
+var D0=new Date(2026,2,3),TODAY=new Date(2026,7,21);
+var HOL26={'2026-03-02':1,'2026-05-05':1,'2026-05-25':1,'2026-06-03':1,'2026-08-17':1};
+var SEASON={2:1,3:1.02,4:0.98,5:0.95,6:0.94,7:0.88};
+function joinWeek3(u){return u<0.62?0:u<0.77?1:u<0.85?2:3+Math.floor((u-0.85)/0.15*22)}
+var LEDGER=Ledger.build({seed:7019,n:822,start:D0,end:TODAY,holidays:HOL26,
+  season:function(d){return SEASON[d.getMonth()]||1},
+  joinWeek:joinWeek3,
+  /* 기수형은 늦게 들어올수록 약하다 — 첫 주 합류자와 그 뒤 합류자의 이탈 성향을 따로 둔다 */
+  neverP:function(w){return w===0?0.19:w<3?0.33:0.38},
+  earlyP:function(w){return w===0?0.18:0.68},earlyMean:12,longMean:900,
+  force:function(i){return rnd(i*17+1)>=0.976&&rnd(i*17+2)<0.25?{early:1}:null}});
+var LT_=LEDGER.T;
+
 var PEOPLE=[],byId={};
 for(var i=0;i<822;i++){(function(i){
   var r=function(k){return rnd(i*17+k)};
   var st=r(1)<0.976?'active':(r(2)<0.25?'dropped':'expired');
-  /* 실측 분포에 맞춘다 — 무활동 198 · 최근 활동 191 · 8~14일 249 · 14일+ 무활동 184.
-     곡선 하나로는 세 구간을 동시에 못 맞춰서 구간을 직접 배정한다. */
-  var days=Math.floor(Math.pow(r(3),3.6)*170),u=r(4);
-  var last=days===0?999
-    :u<0.306?Math.floor(u/0.306*7)
-    :u<0.705?7+Math.floor((u-0.306)/0.399*7)
-    :15+Math.floor((u-0.705)/0.295*145);
+  /* 활동일·최근 이용·오늘 수행은 원장에서 센다. 따로 정하면 상세의 일별 기록과 어긋난다 */
+  var L=LEDGER.P[i],days=L.days,last=L.la<0?999:LT_-L.la;
+  var wd=0,mA=0,mW=0,stp=0,stc=0,streak=0,run=true,a8=Ledger.idx(LEDGER,new Date(2026,7,1));
+  for(var d=0;d<=LT_;d++){
+    if(L.steps[d]){stp+=L.steps[d];stc++}
+    if(LEDGER.off[d])continue;
+    if(L.first>=0&&d>=L.first)wd++;
+    if(d>=a8){mW++;mA+=L.acts[d]}}
+  /* 연속 출석 — 오늘(아직 안 했으면 어제)부터 평일을 거슬러 센다. 주말·공휴일은 건너뛴다 */
+  for(var d2=L.acts[LT_]?LT_:LT_-1;d2>=0&&run;d2--){if(LEDGER.off[d2])continue;if(L.acts[d2])streak++;else run=false}
   var p={idx:i,id:'P'+(10000+i),sur:SUR[Math.floor(r(5)*SUR.length)],mid:GIV[Math.floor(r(6)*GIV.length)],end:GIV[Math.floor(r(7)*GIV.length)],
    tail:String(1000+Math.floor(r(8)*8999)).slice(0,4),mid4:String(1000+Math.floor(r(14)*8999)).slice(0,4),
    pin:String(1000+Math.floor(r(22)*8999)).slice(0,4),birth:1930+Math.floor(Math.pow(r(9),0.8)*40),
    sex:r(10)<0.79?'여성':(r(11)<0.9?'남성':'미상'),
    org:r(13)<0.145?'미배정':ORGS[Math.floor(r(12)*4)],
-   status:st,days:days,last:last,rate:days===0?0:Math.min(99,Math.round(Math.pow(r(15),1.4)*100)),
+   status:st,days:days,last:last,
+   /* 수행률 = 활동수 ÷ 추천수. 추천은 평일 하루 3개 */
+   rate:days===0?0:Math.min(99,Math.round(L.total/(3*Math.max(1,wd))*100)),
    app:['4.0.7','4.0.6','4.0.5','4.0.3','3.4.0'][Math.floor(Math.pow(r(16),2)*5)],
-   score:Math.round(Math.pow(r(17),1.3)*1000),streak:Math.floor(Math.pow(r(18),2)*22),
-   mind:Math.floor(Math.pow(r(19),2.5)*20),symp:Math.floor(Math.pow(r(20),3)*10),
-   step:Math.floor(r(21)*11000),todayN:last===0?1+Math.floor(r(23)*4):0,
-   installed:r(24)>0.04,notif:r(25)>0.03};
+   /* 랭킹 점수 = 600×(활동÷추천) + 400×(연속일÷추천일), 이번 달 기준 */
+   score:Math.round(600*Math.min(1,mA/(3*Math.max(1,mW)))+400*Math.min(1,streak/Math.max(1,mW))),streak:streak,
+   mind:days?Math.floor(Math.pow(r(19),2.5)*20*Math.min(1,days/40)):0,symp:days?Math.floor(Math.pow(r(20),3)*10):0,
+   step:stc?Math.round(stp/stc):0,todayN:L.acts[LT_],
+   installed:days>0||L.stepper||r(24)>0.55,notif:r(25)>0.03};
   p.name=p.sur+'*'+p.end;p.full=p.sur+p.mid+p.end;
   p.phone='010-****-'+p.tail;p.phoneFull='010-'+p.mid4+'-'+p.tail;
   p.age=2026-p.birth;
@@ -402,9 +426,7 @@ for(var i=0;i<822;i++){(function(i){
     sensitive: cv<0.88?cd(0):null,
     third:     cv<0.72?cd(0):null, revoked:null};
   /* 그룹 합류일 — 이 날 이전은 미그룹 기간이라 채널이 볼 수 없다 */
-  var jw=r(28);
-  p.joinW=jw<0.60?0:jw<0.78?1:jw<0.88?2:jw<0.95?8:11;
-  p.joinG=new Date(2026,2,3+p.joinW*7);
+  p.joinW=L.w;p.joinD=L.join;p.joinG=Ledger.addDays(D0,L.join);
   p.ageBand=p.age<60?'60대 미만':p.age<70?'60대':p.age<80?'70대':'80대 이상';
 
   PEOPLE.push(p);byId[p.id]=p})(i)}
@@ -415,13 +437,95 @@ for(var i=0;i<822;i++){(function(i){
    원인은 언제나 "화면마다 따로 셌다"이다. 여기 없는 숫자는 화면에 쓰지 않는다.
    판정 기준 탭이 이 배열을 렌더하므로 정의서와 화면이 어긋날 수 없다. */
 function pCount(f){var n=0;for(var i=0;i<PEOPLE.length;i++)if(f(PEOPLE[i]))n++;return n}
+/* 일별 계열 — 이탈이 위험 기준을 따라가므로 기준이 바뀌면 다시 센다 */
+var SER=null,MAGG={};
+function ser(){if(!SER||SER.risk!==CFG.risk){SER=Ledger.series(LEDGER,CFG.risk);MAGG={}}return SER}
+function dIdx(d){return Ledger.idx(LEDGER,d)}
+function dAt(i){return Ledger.addDays(D0,i)}
+function sumR(arr,a,b){var s=0;for(var d=Math.max(0,a);d<=Math.min(LT_,b);d++)s+=arr[d];return s}
+/* 월 집계 — 월간 리포트와 대시보드가 같은 함수를 부른다. upto 를 주면 그 날짜(일)까지만 (지난달 이맘때 비교용) */
+function monthAgg(y,m,upto){
+  var key=y+'-'+m+'-'+(upto||'');ser();if(MAGG[key])return MAGG[key];
+  var last=new Date(y,m,0).getDate(),a=dIdx(new Date(y,m-1,1)),b=Math.min(LT_,dIdx(new Date(y,m-1,Math.min(upto||last,last))));
+  var S=ser(),o={y:y,m:m,a:a,b:b,days:Math.max(0,b-a+1),partial:b<dIdx(new Date(y,m-1,last))};
+  o.aud=LEDGER.P.filter(function(p){return p.join<=b}).length;
+  o.part=PEOPLE.filter(function(p){return p.joinD<=b&&p.status==='active'}).length;
+  o.dropped=PEOPLE.filter(function(p){return p.joinD<=b&&p.status==='dropped'}).length;
+  o.activist=Ledger.activeIn(LEDGER,a,b);
+  o.acts=sumR(S.acts,a,b);o.dauSum=sumR(S.dau,a,b);
+  o.join=sumR(S.join,a,b);o.lost=sumR(S.lost,a,b);o.back=sumR(S.back,a,b);
+  o.perDay=o.days?o.acts/o.days:0;o.perActiveDay=o.dauSum?o.acts/o.dauSum:0;
+  o.daysPerActivist=o.activist?o.dauSum/o.activist:0;
+  var st=Ledger.stepIn(LEDGER,a,b);o.stepUsers=st.users;o.stepAvg=st.avg;o.stepOnly=st.only;
+  o.rate=o.aud?o.activist/o.aud*100:0;
+  return (MAGG[key]=o)}
+function thisMonth(){return monthAgg(TODAY.getFullYear(),TODAY.getMonth()+1)}
+/* 활동 유형별 수행·완료 — 무엇을 했는지는 dayRec 이 만드니 활동한 날만 돌린다 */
+function monthKinds(y,m){
+  var key='k'+y+'-'+m;if(MAGG[key])return MAGG[key];
+  var a=dIdx(new Date(y,m-1,1)),b=Math.min(LT_,dIdx(new Date(y,m,0))),K={};
+  ['두뇌훈련','운동','마음다루기'].forEach(function(k){K[k]={n:0,done:0,stop:0,enter:0}});
+  PEOPLE.forEach(function(p){var L=LEDGER.P[p.idx];
+    for(var d=a;d<=b;d++)if(L.acts[d])dayRec(p,dAt(d)).acts.forEach(function(x){
+      var k=K[x.kind];k.n++;if(x.lab[0]==='완료')k.done++;else if(x.lab[0]==='중단')k.stop++;else k.enter++})});
+  return (MAGG[key]=K)}
+/* 주간 잔존 — 첫 활동 주로 묶는다. 12주 잔존 = 첫 주 시작자 중 12주차에 1회라도 활동 */
+function retention(){if(!MAGG.ret)MAGG.ret=Ledger.retention(LEDGER,24);return MAGG.ret}
+function retainAt(k,pick){var n=0,h=0;retention().forEach(function(g){if(!pick(g.key)||!g.seen[k])return;n+=g.seen[k];h+=g.hit[k]||0});
+  return {n:n,hit:h,rate:n?h/n*100:null}}
+/* 어느 날 기준 '최근 활동' / '위험 구간' 인원 — 지난주 대비를 손으로 적지 않으려고 */
+function bandAsOf(d,b){var c=0;LEDGER.P.forEach(function(p){var g=Ledger.lastAsOf(p,d);if(g<0||p.join>d)return;
+  if(b==='recent'?g<=CFG.warn:b==='risk'?g>CFG.risk:g>CFG.warn&&g<=CFG.risk)c++});return c}
+/* 지난 기수 — 같은 경과일로 맞춰 비교하려고 같은 방식으로 만든다. 코호트 화면을 열 때 한 번만.
+   1·2기는 개강 첫 주 온보딩이 없던 때라 초반 이탈이 더 크다 */
+var PAST=null;
+function pastCohorts(){
+  if(PAST)return PAST;
+  var sea=function(d){var m=d.getMonth();return m===6||m===7?0.9:m===11||m<=1?0.92:1};
+  PAST=[
+   {id:'g1',name:'1기',L:Ledger.build({seed:3101,n:230,start:new Date(2024,8,3),end:new Date(2025,1,27),season:sea,
+     joinWeek:joinWeek3,neverP:function(w){return w===0?0.24:0.4},earlyP:function(w){return w===0?0.3:0.75},earlyMean:10,longMean:500})},
+   {id:'g2',name:'2기',L:Ledger.build({seed:5101,n:714,start:new Date(2025,2,4),end:new Date(2025,11,30),season:sea,
+     joinWeek:joinWeek3,neverP:function(w){return w===0?0.21:0.36},earlyP:function(w){return w===0?0.25:0.72},earlyMean:11,longMean:650})},
+   {id:'g3',name:'3기',L:LEDGER,now:1}];
+  return PAST}
+/* 사업 목표 — 사업계획서에 목표값이 없어 출발점으로 잡은 기본값. 내 채널 정보에서 고친다 */
+var GOALS=[
+ {k:'monthRate',n:'월 활동률',u:'%',d:'이번 달 활동자 ÷ 대상자',why:'대상자 절반이 매달 한 번 이상 쓰는 수준'},
+ {k:'retain12',n:'12주 잔존율',u:'%',d:'개강 첫 주 시작자 중 12주차에도 활동한 비율',why:'12주 교육과정을 끝까지 따라오는 비율'},
+ {k:'retestRate',n:'재검사율',u:'%',d:'활동한 분 중 같은 검사를 2회 이상 받은 비율',why:'효과를 말하려면 전후 비교가 가능해야 함'}];
 var METRICS=[
  {k:'audience',n:'대상자 수',d:'그룹에 배정된 전원',f:'audienceCount',use:'오늘 · 참여자 · 리포트',
   c:function(){return PEOPLE.length}},
  {k:'participant',n:'참여자 수',d:'해당 월 참여 상태 유지자',f:'participantCount',use:'리포트',
   c:function(){return pCount(function(p){return p.status==='active'})}},
- {k:'activist',n:'활동자 수',d:'해당 월 1회 이상 활동',f:'activistCount',use:'오늘 · 활동 현황 · 리포트',
-  c:function(){return pCount(function(p){return p.days>0&&p.last<=30})}},
+ {k:'dropped',n:'누적 중도포기',d:'참여 상태 = 종료(T)',f:'abandonerCount',use:'리포트',
+  c:function(){return pCount(function(p){return p.status==='dropped'})}},
+ {k:'activist',n:'활동자 수',d:'해당 월 1일부터 오늘까지 추천 활동(두뇌훈련·운동·마음다루기) 1회 이상. 걸음만 기록된 날은 세지 않음',f:'activistCount',use:'오늘 · 활동 현황 · 리포트',
+  c:function(){return thisMonth().activist}},
+ {k:'monthJoin',n:'신규 합류',d:'이번 달 프로그램 그룹에 들어온 인원 (신청 승인일·앱 가입일이 아님)',f:'groupJoinCount',use:'활동 현황 · 리포트',
+  c:function(){return thisMonth().join}},
+ {k:'monthLost',n:'이탈',d:'활동하던 분이 이번 달 위험 기준일을 처음 넘긴 인원',f:'churnCount',use:'활동 현황 · 리포트',
+  c:function(){return thisMonth().lost}},
+ {k:'monthBack',n:'복귀',d:'이탈했다가 이번 달 다시 활동한 인원',f:'returnCount',use:'활동 현황',
+  c:function(){return thisMonth().back}},
+ {k:'monthRate',n:'월 활동률',d:'이번 달 활동자 ÷ 대상자',f:'activistCount ÷ audienceCount',use:'활동 현황 · 사업 목표',
+  c:function(){return Math.round(thisMonth().rate*10)/10}},
+ {k:'retain12',n:'12주 잔존율',d:'개강 첫 주에 첫 활동한 분 중 12주차(그 주 7일)에 1회 이상 활동한 비율',f:'retention[w0][12]',use:'활동 현황 · 코호트 · 사업 목표',
+  c:function(){var r=retainAt(12,function(k){return k===0}).rate;return r==null?0:Math.round(r*10)/10}},
+ {k:'retestRate',n:'재검사율',d:'활동한 적 있는 분 중 같은 검사를 2회 이상 받은 비율',f:'retestCount ÷ everActiveCount',use:'활동 현황 · 사업 목표',
+  c:function(){var n=0,ever=0;
+    PEOPLE.forEach(function(p){if(!p.days)return;ever++;var h=assessHist(p),c={};
+      if(h.some(function(x){c[x.test.c]=(c[x.test.c]||0)+1;return c[x.test.c]>=2}))n++});
+    return ever?Math.round(n/ever*1000)/10:0}},
+ {k:'gdsBetter',n:'우울 개선',d:'GDS-SF 2회 이상 받은 분 중 마지막 등급이 첫 등급보다 좋아진 인원 (분모 = 재검사자)',f:'gdsImprovedCount',use:'활동 현황 · 리포트',
+  c:function(){return testChange('gds-sf').better}},
+ {k:'stepUsers',n:'걸음 기록자',d:'이번 달 걸음이 하루라도 기록된 인원. 활동과 따로 센다',f:'stepUserCount',use:'활동 현황 · 리포트',
+  c:function(){return thisMonth().stepUsers}},
+ {k:'stepAvg',n:'일평균 걸음',d:'걸음이 기록된 날만 평균 (기록 안 된 날을 0보로 넣지 않음)',f:'avgStepsOnRecordedDays',use:'활동 현황 · 리포트',
+  c:function(){return thisMonth().stepAvg}},
+ {k:'stepOnly',n:'걸음만 기록',d:'이번 달 걸음은 있는데 추천 활동은 0회 — 폰은 들고 다니지만 프로그램은 안 하는 분',f:'stepOnlyCount',use:'활동 현황 · 오늘',
+  c:function(){return thisMonth().stepOnly}},
  {k:'weekActive',n:'최근 활동',d:'마지막 활동이 경고 기준일 이내',f:'weeklyActivistCount',use:'오늘 · 참여자',
   c:function(){return pCount(function(p){return band(p)==='recent'})}},
  {k:'inactive7',n:'경고 구간 무활동',d:'경고 기준 초과 ~ 위험 기준 이내',f:'inactive7Count',use:'참여자',
@@ -430,7 +534,7 @@ var METRICS=[
   c:function(){return pCount(function(p){return band(p)==='risk'})}},
  {k:'never',n:'무활동',d:'가입 후 한 번도 활동 없음',f:'neverActiveCount',use:'참여자 · 리포트',
   c:function(){return pCount(function(p){return p.days===0})}},
- {k:'todayDone',n:'오늘 수행',d:'오늘 활동을 1회 이상 한 사람',f:'todayActivistCount',use:'오늘 · 참여자',
+ {k:'todayDone',n:'오늘 수행',d:'오늘 추천 활동을 1회 이상 한 사람 (걸음 제외)',f:'todayActivistCount',use:'오늘 · 참여자',
   c:function(){return pCount(function(p){return p.todayN>0})}},
  {k:'unassigned',n:'기관 미배정',d:'담당 복지관이 지정되지 않음',f:'unassignedCount',use:'참여자',
   c:function(){return pCount(function(p){return p.org==='미배정'})}},
@@ -454,15 +558,16 @@ var METRICS=[
  {n:'PIN',d:'전화 응대용 조회번호',f:'vocNumber',use:'참여자 · 상담실'},
  {n:'무활동 판정',d:'마지막 활동 이후 경과일',f:'경고/위험 기준은 내 채널 정보에서',use:'오늘 · 참여자'}];
 var M={};METRICS.forEach(function(m){if(m.k)M[m.k]=m.c});
+/* 그룹 카드의 활동 인원도 같은 지표에서 */
+Object.defineProperty(groupById('g3'),'active',{get:function(){return M.activist()},enumerable:true});
 
 function dayRec(p,d){
   /* 그룹 합류 이전은 미그룹 기간. UI만 가리면 합계가 어긋나므로 소스에서 막는다. */
   if(p.joinG&&d<p.joinG)return {acts:[],steps:0,mind:0,symp:0,locked:1};
+  /* 그날 활동 몇 번·걸음 몇 보는 원장이 정한다. 여기서는 무엇을 했는지만 채운다 */
   var doy=Math.floor((d-new Date(2026,0,1))/864e5),s=p.idx*991+doy*7;
-  var dow=d.getDay(),wk=(dow===0||dow===6);
-  var lastD=new Date(2026,7,21);lastD.setDate(lastD.getDate()-(p.last>900?9999:p.last));
-  var lvl=p.days/170,on=d<=lastD&&rnd(s)<(wk?lvl*0.35:lvl*1.15);
-  var n=on?1+Math.floor(rnd(s+1)*(wk?2:5)):0,acts=[];
+  var di=Ledger.idx(LEDGER,d),L=LEDGER.P[p.idx],inR=di>=0&&di<=LT_;
+  var n=inR?L.acts[di]:0,on=n>0,acts=[];
   for(var k=0;k<n;k++){
     var t=rnd(s+2+k),kind=t<0.5?'두뇌훈련':t<0.85?'운동':'마음다루기';
     var ri=Math.floor(rnd(s+9+k)*ROUT.length);
@@ -473,7 +578,7 @@ function dayRec(p,d){
       score:kind==='두뇌훈련'&&lab[0]==='완료'?Math.round(100+rnd(s+50+k)*900):null,
       dur:lab[0]!=='진입만'?Math.round(40+rnd(s+60+k)*200):null})}
   acts.sort(function(a,b){return a.t<b.t?-1:1});
-  return {steps:on||rnd(s+70)<lvl?Math.round(Math.pow(rnd(s+71),0.7)*(wk?7000:11000)):0,acts:acts,
+  return {steps:inR?L.steps[di]:0,acts:acts,
     mind:on&&rnd(s+80)<0.25?1:0,symp:on&&rnd(s+81)<0.08?1:0}}
 function moveRows(a){
   var rt=ROUT[a.ri],n=rt.mv.length;
@@ -482,31 +587,60 @@ function moveRows(a){
   for(var j=0;j<done;j++)rows.push({t:hm[0]+':'+pad2((mm+j)%60),nm:rt.mv[j][0],p:'100%',z:0});
   if(a.lab[0]!=='완료'&&done<n)rows.push({t:hm[0]+':'+pad2((mm+done)%60),nm:rt.mv[done][0],p:'0',z:1});
   return {rows:rows,pct:a.lab[0]==='완료'?100:Math.round(done/n*100)}}
+/* 검사는 활동한 기간 안에서만 받는다. 3주에 한 번 꼴이 최대.
+   꾸준히 한 분일수록 점수가 조금씩 내려가게(좋아지게) 둔다 — 무작위로 두면 '개선' 이
+   늘 반반으로 나와 효과를 볼 수 없다. 개선 비율은 반드시 재검사자를 분모로 같이 보여준다. */
+var AH={};
 function assessHist(p){
-  var out=[];
-  TESTS.forEach(function(ts,ti){
-    var n=p.days===0?0:1+Math.floor(rnd(p.idx*7+ti)*Math.min(5,1+p.days/30)),prev=null;
-    for(var k=0;k<n;k++){
-      var m=3+Math.floor(k*(5.5/Math.max(1,n-1||1))),dd=3+Math.floor(rnd(p.idx+ti*9+k)*24);
-      if(m>8)m=8;if(m===8)dd=Math.min(dd,20);
-      var sc=Math.round(rnd(p.idx*3+ti*11+k)*ts.max*0.85);
-      out.push({date:'2026-'+pad2(m)+'-'+pad2(dd),time:pad2(6+Math.floor(rnd(p.idx+k)*12))+':'+pad2(Math.floor(rnd(p.idx+k+1)*60)),test:ts,score:sc,prev:prev});
-      prev=sc}});
-  out.sort(function(a,b){return a.date<b.date?1:-1});return out}
+  if(AH[p.id])return AH[p.id];
+  var out=[],L=LEDGER.P[p.idx];
+  if(L.first>=0){
+    var span=L.la-L.first,eng=Math.min(1,p.days/60);
+    TESTS.forEach(function(ts,ti){
+      var n=Math.min(1+Math.floor(span/35),1+Math.floor(rnd(p.idx*7+ti)*Math.min(5,1+p.days/30))),prev=null;
+      var sc=Math.round(Math.pow(rnd(p.idx*3+ti*11),1.15)*ts.max*0.85);
+      for(var k=0;k<n;k++){
+        if(k){sc=Math.round(sc+(rnd(p.idx*3+ti*11+k)-0.5)*ts.max*0.32-eng*ts.max*0.045);
+          sc=Math.max(0,Math.min(ts.max,sc))}
+        var at=L.first+(n>1?Math.round(span*k/(n-1)):0);
+        at=Math.min(L.la,Math.max(L.first,at+Math.floor((rnd(p.idx+ti*9+k)-0.5)*6)));
+        out.push({date:Ledger.ymd(Ledger.addDays(D0,at)),time:pad2(6+Math.floor(rnd(p.idx+k)*12))+':'+pad2(Math.floor(rnd(p.idx+k+1)*60)),test:ts,score:sc,prev:prev});
+        prev=sc}})}
+  out.sort(function(a,b){return a.date<b.date?1:-1});
+  return (AH[p.id]=out)}
+/* 등급 순위 — 앞쪽일수록 좋다. TESTS 의 lv 함수에서 뽑으므로 구간을 따로 적지 않는다 */
+function lvRank(ts,score){var a=[];for(var s=0;s<=ts.max;s++){var l=ts.lv(s)[0];if(a.indexOf(l)<0)a.push(l)}return a.indexOf(ts.lv(score)[0])}
+/* 검사별 변화 — 2회 이상 받은 분 중 첫 등급 대비 마지막 등급 */
+function testChange(code){
+  var o={retest:0,better:0,worse:0,same:0,tested:0};
+  PEOPLE.forEach(function(p){
+    var h=assessHist(p).filter(function(x){return x.test.c===code});
+    if(!h.length)return;o.tested++;if(h.length<2)return;o.retest++;
+    var f=lvRank(h[h.length-1].test,h[h.length-1].score),l=lvRank(h[0].test,h[0].score);
+    if(l<f)o.better++;else if(l>f)o.worse++;else o.same++});
+  return o}
 
 var QUESTS=[
- {id:'q1',n:'7월 출석 챌린지',type:'출석',ty:'attendance',s:'2026-07-01',e:'2026-07-31',crit:15,per:2,part:296,succ:66,st:'진행 중',days:31,m:7},
- {id:'q2',n:'7월 걷기 챌린지',type:'걷기',ty:'step',s:'2026-07-01',e:'2026-07-31',crit:20,per:3000,part:550,succ:171,st:'진행 중',days:31,m:7},
- {id:'q3',n:'6월 출석 챌린지',type:'출석',ty:'attendance',s:'2026-06-01',e:'2026-06-30',crit:14,per:2,part:284,succ:71,st:'완료',days:30,m:6},
- {id:'q4',n:'8월 걷기 챌린지',type:'걷기',ty:'step',s:'2026-08-01',e:'2026-08-31',crit:20,per:3000,part:0,succ:0,st:'예정',days:31,m:8}];
+ {id:'q1',n:'7월 출석 챌린지',type:'출석',ty:'attendance',s:'2026-07-01',e:'2026-07-31',crit:15,per:2,st:'완료',days:31,m:7},
+ {id:'q2',n:'7월 걷기 챌린지',type:'걷기',ty:'step',s:'2026-07-01',e:'2026-07-31',crit:20,per:3000,st:'완료',days:31,m:7},
+ {id:'q3',n:'6월 출석 챌린지',type:'출석',ty:'attendance',s:'2026-06-01',e:'2026-06-30',crit:14,per:2,st:'완료',days:30,m:6},
+ {id:'q4',n:'8월 걷기 챌린지',type:'걷기',ty:'step',s:'2026-08-01',e:'2026-08-31',crit:20,per:3000,st:'진행 중',days:31,m:8}];
+/* 하루 활동 수·걸음은 원장에서 바로 읽는다. 활동 내용까지 만드는 dayRec 을 챌린지 집계에 쓰면 느리다 */
 function achieve(p,q){
-  var days=[],done=0;
+  var days=[],done=0,L=LEDGER.P[p.idx];
   for(var d=1;d<=q.days;d++){
-    var dt=new Date(2026,q.m-1,d),wk=(dt.getDay()===0||dt.getDay()===6),rec=dayRec(p,dt),hit;
-    if(q.ty==='attendance')hit=!wk&&rec.acts.length>=q.per;else hit=rec.steps>=q.per;
-    var s=hit?'hit':(q.ty==='attendance'&&wk)?'out':(rec.acts.length||rec.steps)?'miss':'none';
-    if(hit)done++;days.push({d:d,st:s,steps:rec.steps,n:rec.acts.length})}
+    var dt=new Date(2026,q.m-1,d),di=Ledger.idx(LEDGER,dt),inR=di>=0&&di<=LT_&&dt>=p.joinG;
+    var wk=LEDGER.off[di]||dt.getDay()===0||dt.getDay()===6,n=inR?L.acts[di]:0,st=inR?L.steps[di]:0,hit;
+    if(q.ty==='attendance')hit=!wk&&n>=q.per;else hit=st>=q.per;
+    var s=di>LT_?'none':hit?'hit':(q.ty==='attendance'&&wk)?'out':(n||st)?'miss':'none';
+    if(hit)done++;days.push({d:d,st:s,steps:st,n:n})}
   return {days:days,done:done}}
+/* 참여 = 기간 중 한 번이라도 기록(출석형은 활동, 걷기형은 걸음). 성공 = 달성일이 기준 이상 */
+QUESTS.forEach(function(q){var part=0,succ=0;
+  PEOPLE.forEach(function(p){var a=achieve(p,q);
+    if(a.days.some(function(x){return q.ty==='attendance'?x.n>0:x.steps>0}))part++;
+    if(a.done>=q.crit)succ++});
+  q.part=part;q.succ=succ});
 
 var ADDR=['만수동','구월동','논현동','만월동','간석동','서창동','장수동'];
 var APPS=[];
@@ -743,5 +877,7 @@ return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kp
  ROLES:ROLES,SITES_OWN:SITES_OWN,OPERATORS:OPERATORS,SENS_OPS:SENS_OPS,meOp:meOp,canSens:canSens,expireAudit:expireAudit,siteOwner:siteOwner,opChannel:opChannel,
  assignments:assignments,ownedBy:ownedBy,subsAt:subsAt,ownerOf:ownerOf,canEditSched:canEditSched,
  SCHED:SCHED,skey:skey,CARRY:CARRY,PERMLOG:PERMLOG,addPermLog:addPermLog,
- SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox};
+ SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox,
+ LEDGER:LEDGER,D0:D0,TODAY:TODAY,ser:ser,dIdx:dIdx,dAt:dAt,sumR:sumR,monthAgg:monthAgg,thisMonth:thisMonth,monthKinds:monthKinds,
+ retention:retention,retainAt:retainAt,bandAsOf:bandAsOf,testChange:testChange,lvRank:lvRank,GOALS:GOALS,pastCohorts:pastCohorts};
 })();
