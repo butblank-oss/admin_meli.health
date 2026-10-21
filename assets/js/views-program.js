@@ -9,34 +9,22 @@ var $=A.$,$$=A.$$,el=A.el,esc=A.esc,fmt=A.fmt,pad2=A.pad2,rnd=A.rnd,pill=A.pill,
     CFG=A.CFG,pCount=A.pCount,M=A.M,METRICS=A.METRICS,band=A.band,bandLabel=A.bandLabel,ownerOf=A.ownerOf,siteOwner=A.siteOwner,groupById=A.groupById,getGroup=A.getGroup,putGroup=A.putGroup,GROUPS=A.GROUPS,KIND=A.KIND,SCOPE=A.SCOPE,SITES=A.SITES,groupTree=A.groupTree,groupDepth=A.groupDepth,ROLES=A.ROLES,SITES_OWN=A.SITES_OWN,OPERATORS=A.OPERATORS,assignments=A.assignments,ownedBy=A.ownedBy,subsAt=A.subsAt,opChannel=A.opChannel,canEditSched=A.canEditSched,SCHED=A.SCHED,skey=A.skey,CARRY=A.CARRY,PERMLOG=A.PERMLOG,addPermLog=A.addPermLog,modalBox=A.modalBox,CH_SELF=A.CH_SELF,ruleAt=A.ruleAt,pushRule=A.pushRule,RULEVER=A.RULEVER;
 
 /* ══════ 활동 현황 ══════ */
-var sTab='ret';
+var sTab='sum';
 V.stats=function(){
   var h=$('#v-stats');
-  h.innerHTML=ph('활동 현황','기수 전체의 참여와 이탈을 봅니다.','<select class="mfld" aria-label="조회 월"><option>2026년 7월</option><option>2026년 6월</option></select>')
-   +'<div class="mc" style="overflow:hidden"><div class="tabs" id="s-tabs"></div><div id="s-b" style="padding:20px"></div></div>';
+  h.innerHTML=ph('활동 현황','이번 달이 지난달 이맘때보다 나은지, 어느 날·어느 기관에서 무슨 일이 있었는지 봅니다.','')
+   +'<div class="mc" style="overflow:hidden"><div class="tabs" id="s-tabs"></div><div id="s-b" style="padding:20px"></div></div>'
+   /* 월간 현황은 카드 여러 장이라 탭 카드 안에 넣지 않는다 — 카드 속 카드가 된다 */
+   +'<div id="s-dash"></div>';
   var tb=$('#s-tabs');
-  [['sum','종합'],['ret','참여 지속'],['pat','활동 패턴'],['cont','콘텐츠'],['ind','개인별'],['def','판정 기준']].forEach(function(x){
+  [['sum','월간 현황'],['ret','참여 지속'],['pat','활동 패턴'],['cont','콘텐츠'],['ind','개인별'],['def','판정 기준']].forEach(function(x){
     var b=el('button','tab',x[1]);b.setAttribute('aria-selected',sTab===x[0]?'true':'false');
     b.addEventListener('click',function(){sTab=x[0];V.stats()});tb.appendChild(b)});
   A.bindTabs(tb);
   var B=$('#s-b');
-  if(sTab==='sum')sumTab(B);else if(sTab==='ret')retTab(B);else if(sTab==='pat')patTab(B);
+  B.style.display=sTab==='sum'?'none':'';
+  if(sTab==='sum')A.dashMonth($('#s-dash'));else if(sTab==='ret')retTab(B);else if(sTab==='pat')patTab(B);
   else if(sTab==='cont')contTab(B);else if(sTab==='ind')indTab(B);else defTab(B)};
-function sumTab(B){
-  var ORG=[['남동구보건소',341,148],['만수노인문화센터',198,71],['남동구노인복지관',164,58],['만월종합사회복지관',86,31],['미배정',119,19]];
-  B.innerHTML='<div class="gap">'
-   +kpi([['대상자','822',''],['참여자','735','','▼ 6'],['활동자','296','','▲ 12','','up'],['누적 중도포기','2',''],
-         ['총 활동 수','40,512','','▲ 1,572','','up'],['인당 일평균','4.56','회']])
-   +'<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">'
-   +'<div class="mc" style="overflow:hidden">'+chead('기관별 참여')
-     +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">기관</th><th class="num">대상</th><th class="num">활동</th><th class="num">활동률</th><th style="width:120px;padding-right:20px"></th></tr></thead><tbody>'
-     +ORG.map(function(o){var r=o[2]/o[1]*100;
-       return '<tr><td style="padding-left:20px">'+o[0]+'</td><td class="num mt">'+o[1]+'</td><td class="num mt">'+o[2]+'</td><td class="num mt">'+r.toFixed(1)+'%</td>'
-       +'<td style="padding-right:20px"><span class="bar"><i class="'+(r>40?'':r>30?'w':'c')+'" style="width:'+r+'%"></i></span></td></tr>'}).join('')
-     +'</tbody></table></div></div>'
-   +'<div class="mc" style="padding:20px">'+'<span class="mh">참여 강도 분포</span><div style="display:flex;flex-direction:column;gap:11px;margin-top:16px">'
-     +brow('0일 (한 번도)',72,'198명','c')+brow('1–4일',100,'275명','c')+brow('5–19일',41,'112명','w')+brow('20–59일',21,'58명')+brow('60일 이상',33,'92명')
-     +'</div><p class="mcap" style="margin:24px 0 0;font-size:13px"><b style="color:#101828">473명(64%)이 4일 이하로 하고 멈췄어요.</b> 반대로 92명은 60일 넘게 계속하고 있어요.</p></div></div></div>'}
 function retTab(B){
   var COH=[['개강 첫 주','3/3~','140명',[76.4,78.6,75.7,67.1,67.1]],['2주차','3/10~','58명',[48.3,41.4,27.6,24.1,22.4]],
    ['8주차','4/21~','30명',[33.3,30.0,26.7,26.7,13.3]],['9주차','4/28~','22명',[63.6,45.5,59.1,45.5,22.7]]];

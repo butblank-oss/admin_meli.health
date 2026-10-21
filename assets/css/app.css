@@ -612,3 +612,41 @@ h1.ttl:focus,h1.ttl:focus-visible,#main:focus,#main:focus-visible{outline:none}
 .vz-dt i.p{border-radius:0 4px 4px 0}
 .vz-dt i.n{border-radius:4px 0 0 4px}
 .vz-dvl{position:absolute;top:50%;transform:translateY(-50%);font-size:12.5px;font-weight:600;color:#344054;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ═══ 활동 현황 · 월간 대시보드 (views-dash.js) ═══ */
+#s-dash{margin-top:16px}
+.dz-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dz-card{padding:20px}
+.dz-hero{font-size:21px;font-weight:700;letter-spacing:-0.03em;color:#101828;line-height:1.35}
+.dz-hero b.dn{color:#B42318}
+.dz-hero b.up{color:#175CD3}
+.dz-num{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #F2F4F7}
+.dz-num>span:first-child{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+.dz-nn{font-size:13.5px;font-weight:600;color:#344054}
+.dz-nv{font-size:13px;color:#475467;white-space:nowrap}
+.dz-nv b{font-size:20px;font-weight:700;color:#101828;letter-spacing:-0.02em;margin-right:1px}
+.dz-d{font-size:12.5px;font-weight:600;margin-left:4px;color:#475467;font-variant-numeric:tabular-nums}
+.dz-d.g{color:#067647}
+.dz-d.b{color:#B42318}
+.dz-proj{margin-top:12px;padding:12px 14px;border-radius:8px;background:#F9FAFB;font-size:13.5px;color:#344054}
+.dz-op1{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:8px;background:#FFFAEB;color:#B54708;font-size:12.5px;line-height:1.55}
+.dz-op1 svg{flex:none;margin-top:2px}
+.dz-dstat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.dz-dstat>div{background:#F9FAFB;border-radius:8px;padding:9px 11px;display:flex;flex-direction:column;gap:2px}
+.dz-dstat b{font-size:15px;color:#101828}
+.dz-sec{margin-top:14px;padding-top:12px;border-top:1px solid #F2F4F7}
+.dz-sec h3{margin:0;font-size:13.5px;font-weight:600;color:#344054}
+.dz-sec h3 b{color:#101828;margin-left:2px}
+.dz-names{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.dz-goals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:14px}
+.dz-gh{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:600;color:#344054}
+.dz-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 20px 16px}
+.dz-big{background:#F9FAFB;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:#475467}
+.dz-big b{font-size:26px;font-weight:700;color:#101828;letter-spacing:-0.03em}
+.dz-stack{display:flex;gap:2px;height:12px}
+.dz-stack i{display:block;height:100%;border-radius:2px;min-width:0}
+.dz-stack i:first-child{border-radius:4px 2px 2px 4px}
+.dz-stack i:last-child{border-radius:2px 4px 4px 2px}
+button.lnk{background:none;border:none;padding:0;font:inherit;font-weight:600;color:#077A50;cursor:pointer}
+@media (max-width:900px){.dz-goals,.dz-out{grid-template-columns:1fr}}
+.dz-ob{color:#101828 !important;text-align:left}
