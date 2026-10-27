@@ -101,7 +101,10 @@ function openBlock(p){
   if(!A.meAcct().sens)return ['민감정보 열람 권한이 없어요',
     A.meAcct().n+' 님 좌석에는 건강정보 열람이 열려 있지 않아요. 계정·권한에서 좌석별로 열어요.'];
   return null}
-function askOpen(p){
+/* from = 상세에서 '‹ 목록' 을 누르면 돌아갈 화면 (참여자 찾기 · 코호트 …) */
+var backTo='people';
+function askOpen(p,from){
+  backTo=from||'people';
   var blk=openBlock(p);
   if(blk){var bb=el('div');
     bb.innerHTML='<p style="font-size:14px;font-weight:700;margin:0 0 6px">'+blk[0]+'</p>'
@@ -181,9 +184,10 @@ V.person=function(){
          ['최근 이용',p.last>900?'—':p.last===0?'오늘':p.last+'일 전',''],['앱 버전',p.app,'']])
    +consentCard(p)
    +note('활동 내역·검사 이력 원본은 <b>담당 채널 어드민의 참여자 상세</b>에 있어요. 어느 좌석이든 원문 열람 범위는 전 채널 공통 <b>최근 6개월</b>입니다(채널 관리 → 보안 기준).','nu');
-  $('#sp-b').addEventListener('click',function(){go('people')});
+  $('#sp-b').addEventListener('click',function(){go(backTo)});
   $('#sp-ch').addEventListener('click',function(){if(c&&A.openCh)A.openCh(c)});
   if($('#sp-hide'))$('#sp-hide').addEventListener('click',function(){
     pdRev=false;A.endView(revRow);revRow=null;V.person();toast('원문을 가렸어요')});
-  if($('#sp-show'))$('#sp-show').addEventListener('click',function(){askOpen(p)})};
+  if($('#sp-show'))$('#sp-show').addEventListener('click',function(){askOpen(p,backTo)})};
+A.askOpen=askOpen;
 })(Sup);

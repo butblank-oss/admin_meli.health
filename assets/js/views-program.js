@@ -25,7 +25,7 @@ V.stats=function(){
   B.style.display=sTab==='sum'?'none':'';
   if(sTab==='sum')A.dashMonth($('#s-dash'));else if(sTab==='pat')patTab(B);
   else if(sTab==='cont')contTab(B);else if(sTab==='ind')indTab(B);else defTab(B)};
-/* 참여 지속(잔존)은 '코호트' 메뉴로 옮겼다 — views-cohort.js */
+/* 참여 지속(잔존)은 슈퍼어드민 '코호트' 로 옮겼다 — super/assets/js/views-cohort.js */
 function patTab(B){
   var DOW=[['월',29236],['화',31459],['수',31034],['목',29428],['금',31926],['토',9111],['일',7533]];
   var HR=[7410,3200,1800,1500,4200,10629,17261,16409,14222,14067,10575,7131,7066,8339,6584,5585,6109,6161,4809,5548,5110,4100,3200,2400];
@@ -117,6 +117,17 @@ var ROOMS=[{n:'황*학',st:'unans',t:'3일',last:'걸음 수가 안 올라가요
  {n:'최*옥',st:'open',t:'2시간',last:'감사합니다 잘 쓰고 있어요',mine:1,msgs:[['me','오늘부터 29일까지 활동 7일 이상 하신 분께 선물을 드려요!','오전 8:57','08-13'],['them','감사합니다 잘 쓰고 있어요','오전 11:20','08-14']]},
  {n:'김*자',st:'open',t:'1일',last:'네 알겠습니다',mine:1,msgs:[['them','비밀번호를 잊어버렸어요','오전 7:30','08-12'],['me','앱에서 전화번호로 다시 로그인하시면 돼요.','오전 9:10','08-12'],['them','네 알겠습니다','오전 6:55','08-13']]},
  {n:'박*수',st:'empty',t:'—',last:'',mine:1,msgs:[]}];
+/* 방마다 실제 참여자를 붙인다 — 예전엔 어느 방에서 '참여자 상세 열기' 를 눌러도 같은 사람(PEOPLE[11])이 열렸고
+   오른쪽 패널의 연락처·기관도 고정 글자였다. 이름이 같은 분 중 건강정보 동의가 있는 분을 고르고, 없으면 그런 분을 대신 쓴다 */
+(function(){var used={},pool=PEOPLE.filter(function(p){return p.consent.sensitive&&!p.consent.revoked&&p.status==='active'});
+  ROOMS.forEach(function(r,i){
+    var p=pool.filter(function(x){return x.name===r.n&&!used[x.id]})[0]||pool.filter(function(x){return !used[x.id]})[i*37%200];
+    used[p.id]=1;r.pid=p.id;r.n=p.name})})();
+/* 상태 — 종료가 없으면 끝난 상담도 전부 '진행' 으로 남아 무엇이 남았는지 안 보인다 */
+var RST={unans:['미답변','cr'],open:['진행','ok'],ops:['운영팀','in'],empty:['대화 없음','nu'],done:['종료','nu']};
+/* 목록의 방 6개는 625개 중 일부라, 칩 숫자 = 보이는 방 + 안 보이는 방(고정분). 상태를 바꾸면 칩도 같이 움직인다 */
+var ROFF={unans:2,open:10,ops:3,empty:221,done:36};
+function rcount(st){return ROOMS.filter(function(r){return r.st===st}).length+(ROFF[st]||0)}
 var cScope='MINE',cFilter=[],cRoom=null,cMob='list';
 /* 좁은 화면에선 목록과 대화를 같이 쌓지 않고 한 번에 하나만 보여준다 —
    keep 없이 부르면(메뉴 이동·필터 변경) 목록으로 되돌아온다 */
@@ -124,9 +135,9 @@ V.consult=function(keep){
   if(!keep)cMob='list';
   var h=$('#v-consult');
   h.innerHTML=ph('상담실','참여자 한 명당 방이 하나씩 자동으로 만들어져요.','<button class="mb mbp" id="c-bc">단체 공지 보내기</button>')
-   +kpi([['답변을 기다려요','4','건','가장 오래된 건 3일째','cr'],['내 상담실','621','개','전체 625개 중'],
-         ['운영팀이 맡은 방','4','개',''],['이번 달 응답','28','건','평균 5.2시간 안에 답했어요','','up']])
-   +note('상담방은 참여자 한 명당 하나씩 자동으로 만들어져요(현재 625개). 이 중 <b>222개는 아직 대화가 없어요.</b> 개별 문의는 드물고 실제로는 단체 공지함으로 쓰이고 있어요.','in')
+   +kpi([['답변을 기다려요',String(rcount('unans')),'건','가장 오래된 건 3일째','cr'],['내 상담실','621','개','전체 625개 중'],
+         ['운영팀이 맡은 방',String(rcount('ops')),'개',''],['이번 달 종료',String(rcount('done')),'건','평균 5.2시간 안에 첫 답변','','up']])
+   +note('상담방은 참여자 한 명당 하나씩 자동으로 만들어져요(현재 625개). 이 중 <b>'+rcount('empty')+'개는 아직 대화가 없어요.</b> 개별 문의는 드물고 실제로는 단체 공지함으로 쓰이고 있어요.','in')
    +'<div class="mc" style="overflow:hidden"><div class="row" style="padding:16px 20px" id="c-f"></div>'
    +'<div class="chat'+(cMob==='thread'?' thr-on':'')+'"><div class="rooms" id="c-rooms"></div>'
    +'<div class="thr"><button class="cback" id="c-back" type="button">'
@@ -144,19 +155,22 @@ V.consult=function(keep){
     var b=el('button','mchip'+(cScope===x[1]?' on':''),x[0]+' <span class="c mt">'+x[2]+'</span>');
     b.addEventListener('click',function(){cScope=x[1];cRoom=null;V.consult()});f.appendChild(b)});
   f.appendChild(el('span','sep'));
-  [['미답변','unans',2],['진행 중','open',12],['운영팀 담당','ops',4],['대화 없음','empty',222]].forEach(function(x){
-    var b=el('button','mchip'+(cFilter.indexOf(x[1])>=0?' on':''),x[0]+' <span class="c mt">'+x[2]+'</span>');
+  [['미답변','unans'],['진행 중','open'],['운영팀 담당','ops'],['종료','done'],['대화 없음','empty']].forEach(function(x){
+    var b=el('button','mchip'+(cFilter.indexOf(x[1])>=0?' on':''),x[0]+' <span class="c mt">'+rcount(x[1])+'</span>');
+    b.setAttribute('aria-pressed',cFilter.indexOf(x[1])>=0?'true':'false');
     b.addEventListener('click',function(){var i=cFilter.indexOf(x[1]);if(i>=0)cFilter.splice(i,1);else cFilter.push(x[1]);V.consult()});f.appendChild(b)});
   var list=ROOMS.filter(function(r){
     if(cScope==='MINE'&&!r.mine)return false;
-    if(cFilter.length&&cFilter.indexOf(r.st)<0)return false;return true});
+    if(cFilter.length&&cFilter.indexOf(r.st)<0)return false;return true})
+  /* 끝난 상담은 아래로 — 위에는 손댈 방만 */
+    .sort(function(a,b){return (a.st==='done'?1:0)-(b.st==='done'?1:0)});
   var rl=$('#c-rooms');rl.innerHTML='';
   if(!list.length){rl.innerHTML=emptyBox('해당하는 상담실이 없어요','');$('#c-back-n').textContent='목록';thread(null);return}
   if(!cRoom||list.indexOf(cRoom)<0)cRoom=list[0];
   list.forEach(function(r){
-    var b=el('button','room');
-    var pl=r.st==='unans'?pill('미답변','cr'):r.st==='ops'?pill('운영팀','in'):r.st==='empty'?pill('대화 없음','nu'):pill('진행','ok');
-    b.innerHTML='<span class="r1">'+r.n+' '+pl+'<span class="t">'+r.t+'</span></span><span class="r2">'+(r.last||'아직 대화가 없어요')+'</span>';
+    var b=el('button','room'+(r.st==='done'?' done':''));
+    var s=RST[r.st];
+    b.innerHTML='<span class="r1">'+esc(r.n)+' '+pill(s[0],s[1])+'<span class="t">'+r.t+'</span></span><span class="r2">'+esc(r.last||'아직 대화가 없어요')+'</span>';
     b.setAttribute('aria-selected',cRoom===r?'true':'false');
     b.setAttribute('role','option');b.type='button';
     b.addEventListener('click',function(){cRoom=r;cMob='thread';V.consult(1);window.scrollTo(0,0)});
@@ -167,30 +181,93 @@ V.consult=function(keep){
 function thread(r){
   var m=$('#c-msgs'),c=$('#c-comp'),p=$('#c-pn');
   if(!r){m.innerHTML='';c.innerHTML='';p.innerHTML='';return}
+  var P=byId[r.pid];
   m.innerHTML='';
   if(!r.msgs.length)m.innerHTML=emptyBox('아직 대화가 없어요','참여자가 가입할 때 자동으로 만들어진 방이에요');
   else{var day='';r.msgs.forEach(function(x){
     if(x[3]!==day){day=x[3];m.appendChild(el('span','mday','2026년 '+day.replace('-','월 ')+'일'))}
     m.appendChild(el('div','msg '+(x[0]==='me'?'me':'them'),esc(x[1])+'<div class="mt2">'+x[2]+'</div>'))})}
-  if(r.mine){c.className='comp';c.innerHTML='<textarea placeholder="답변을 입력하고 Enter로 보내요"></textarea><button class="mb mbp" style="height:40px" id="c-send">보내기</button>';
+  if(r.st==='done'&&r.closed)m.appendChild(el('div','mend','<b>상담을 종료했어요</b> · '+esc(r.closed.why)+'<br><span>'+esc(r.closed.at)+' · '+esc(r.closed.by)
+    +(r.closed.memo?' · '+esc(r.closed.memo):'')+'</span><span>참여자가 다시 말을 걸면 자동으로 다시 열려요</span>'));
+  if(r.mine){c.className='comp';c.innerHTML='<textarea placeholder="답변을 입력하고 Enter로 보내요" aria-label="답변 입력"></textarea><button class="mb mbp" style="height:40px" id="c-send">보내기</button>';
     $('#c-send').addEventListener('click',function(){
       var ta=c.querySelector('textarea');if(!ta.value.trim())return;
-      r.msgs.push(['me',ta.value.trim(),'오후 2:30','08-21']);r.last=ta.value.trim();r.st='open';r.t='방금';
-      ta.value='';V.consult();toast('답변을 보냈어요','ok')})}
+      r.msgs.push(['me',ta.value.trim(),'오후 2:30','08-21']);r.last=ta.value.trim();r.st='open';r.t='방금';delete r.closed;
+      ta.value='';V.consult(1);toast('답변을 보냈어요','ok')})}
   else{c.className='';c.innerHTML='<div style="padding:14px;background:#F9FAFB;border-top:1px solid #EAECF0;display:flex;gap:10px;align-items:center">'
     +'<span class="mcap">이 상담실은 <b style="color:#475467">원메딕스 운영팀</b>이 담당하고 있어 답변할 수 없어요.</span>'
     +'<button class="mb mbs" style="margin-left:auto;flex:none" id="c-take">담당 가져오기</button></div>';
-    $('#c-take').addEventListener('click',function(){r.mine=1;r.st='open';V.consult();toast('담당을 가져왔어요','ok','되돌리기',function(){r.mine=0;r.st='ops';V.consult()})})}
-  p.innerHTML='<div><div class="mcap" style="margin-bottom:8px">참여자</div><div style="font-size:15px;font-weight:700">'+r.n+'</div>'
-   +'<div class="mt mcap" style="margin-top:3px">010-****-2727</div><div class="mcap">만수노인문화센터 · 14일 무활동</div>'
-   +'<button class="mb mbs" style="margin-top:10px" id="c-op">참여자 상세 열기</button></div>'
+    $('#c-take').addEventListener('click',function(){r.mine=1;r.st='open';V.consult(1);toast('담당을 가져왔어요','ok','되돌리기',function(){r.mine=0;r.st='ops';V.consult(1)})})}
+  var BL=band(P)==='none'?'활동 기록 없음':band(P)==='recent'?'최근 활동 · '+(P.last===0?'오늘':P.last+'일 전'):bandLabel()[band(P)]+' · '+P.last+'일째';
+  p.innerHTML='<div><div class="mcap" style="margin-bottom:8px">참여자</div><div style="font-size:15px;font-weight:700">'+esc(P.name)+'</div>'
+   +'<div class="mt mcap" style="margin-top:3px">'+P.phone+' · PIN '+P.pin+'</div><div class="mcap">'+esc(P.org)+' · '+BL+'</div>'
+   +'<button class="mb mbs" style="margin-top:10px" id="c-op">참여자 정보 보기</button>'
+   +'<p class="mcap" style="margin:6px 0 0;font-size:12px">사유를 적으면 이 화면 위에 열려요</p></div>'
    +'<div style="border-top:1px solid #F2F4F7;padding-top:14px"><div class="mcap" style="margin-bottom:6px">담당</div>'
    +'<div style="font-size:13.5px;font-weight:600">'+(r.mine?'김주무 (채널)':'이운영 (원메딕스)')+'</div>'
-   +'<button class="mb mbs" style="margin-top:9px;width:100%" id="c-mv">'+(r.mine?'운영팀으로 이관':'담당 가져오기')+'</button></div>'
+   +(r.mine&&r.st!=='empty'?'<button class="mb mbs" style="margin-top:9px;width:100%" id="c-end">'+(r.st==='done'?'상담 다시 열기':'상담 종료')+'</button>':'')
+   +'<button class="mb mbs" style="margin-top:6px;width:100%" id="c-mv">'+(r.mine?'운영팀으로 이관':'담당 가져오기')+'</button></div>'
    +note('<b>영업일 3일</b> 넘게 답변이 없으면 운영팀에 자동으로 알림이 가요. 주말·공휴일은 세지 않아요.','nu');
-  $('#c-op').addEventListener('click',function(){A.askOpen(PEOPLE[11],'consult')});
-  $('#c-mv').addEventListener('click',function(){var was=r.mine;r.mine=r.mine?0:1;r.st=r.mine?'open':'ops';V.consult();
-    toast(was?'운영팀으로 이관했어요':'담당을 가져왔어요','ok','되돌리기',function(){r.mine=was;r.st=was?'open':'ops';V.consult()})})}
+  $('#c-op').addEventListener('click',function(){A.askOpen(P,'consult',peek)});
+  if($('#c-end'))$('#c-end').addEventListener('click',function(){r.st==='done'?reopen(r):endRoom(r)});
+  $('#c-mv').addEventListener('click',function(){var was=r.mine,ws=r.st;r.mine=r.mine?0:1;r.st=r.mine?'open':'ops';V.consult(1);
+    toast(was?'운영팀으로 이관했어요':'담당을 가져왔어요','ok','되돌리기',function(){r.mine=was;r.st=ws;V.consult(1)})})}
+
+/* 상담 종료 — 끝난 상담이 '진행' 으로 계속 남으면 무엇이 남았는지 안 보인다.
+   사유를 남기고, 참여자가 다시 말을 걸면 자동으로 다시 열린다 */
+function endRoom(r){
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:13px';
+  b.innerHTML='<p class="mcap" style="margin:0"><b style="color:#101828">'+esc(r.n)+'</b>님과의 상담을 종료해요. 종료해도 대화는 지워지지 않아요.</p>'
+   +'<div><label class="flab" for="ce-why">종료 사유 <span style="color:#B42318" aria-hidden="true">*</span><span class="sr">(필수)</span></label>'
+   +'<select class="mfld" id="ce-why" style="width:100%"><option value="">사유를 고르세요</option>'
+   +['문의 해결','안내 완료','참여자 응답 없음','다른 창구로 연결','기타'].map(function(x){return '<option>'+x+'</option>'}).join('')+'</select></div>'
+   +'<div><label class="flab" for="ce-memo">메모 <span class="mcap">선택</span></label>'
+   +'<textarea class="mfld" id="ce-memo" style="width:100%;height:60px;padding:9px 11px" placeholder="다음 담당자가 알아야 할 것"></textarea></div>'
+   +'<p id="ce-err" class="mcap" role="alert" style="margin:0;color:#B42318;display:none">종료 사유를 골라주세요</p>';
+  var m=A.modalBox('상담 종료',b,420),f=m.querySelector('.mfoot');
+  f.innerHTML='<button class="mb" type="button" data-close>취소</button>';
+  var ok=el('button','mb mbp','종료');ok.type='button';f.appendChild(ok);
+  ok.addEventListener('click',function(){
+    var why=$('#ce-why').value;if(!why){$('#ce-err').style.display='block';$('#ce-why').focus();return}
+    var prev=r.st,d=new Date();
+    r.closed={why:why,memo:$('#ce-memo').value.trim(),by:A.meOp().name,at:'08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes())};
+    r.st='done';closeAll();V.consult(1);
+    toast(r.n+'님 상담을 종료했어요','ok','되돌리기',function(){r.st=prev;delete r.closed;V.consult(1)})})}
+function reopen(r){r.st='open';delete r.closed;V.consult(1);toast('상담을 다시 열었어요','ok')}
+
+/* 참여자 정보 보기 — 상담실을 떠나지 않고 팝업으로.
+   예전엔 상세 화면으로 넘어가 상담으로 돌아오기 어려웠다. 문지기(동의·권한·사유)와 기록은 상세와 같고,
+   팝업을 닫는 순간 원문이 다시 가려지고 열람이 끝난 것으로 기록된다 */
+function peek(p,why,row){
+  var L=A.LEDGER.P[p.idx],T=A.LEDGER.T,days=[];
+  for(var d=T-13;d<=T;d++)days.push({d:A.dAt(d),n:L.acts[d],off:A.LEDGER.off[d]});
+  var H=A.assessHist(p),latest={};H.forEach(function(x){if(!latest[x.test.c])latest[x.test.c]=x});
+  var BL=band(p)==='none'?'활동 기록 없음':band(p)==='recent'?'최근 활동':bandLabel()[band(p)];
+  var b=el('div');b.className='pk';
+  b.innerHTML='<div class="pk-ban">원문을 보는 중 · 사유 <b>'+esc(why)+'</b> — 창을 닫으면 다시 가려지고 기록에 남아요</div>'
+   +'<div class="pk-id"><b>'+esc(p.full)+'</b><span class="mt">'+p.phoneFull+'</span>'
+   +'<span class="mcap">'+p.birth+'년생 · 만 '+p.age+'세 · '+p.sex+' · PIN '+p.pin+' · '+esc(p.org)+'</span></div>'
+   +'<div class="pk-kpi">'
+     +[['상태',BL],['최근 이용',p.last>900?'—':p.last===0?'오늘':p.last+'일 전'],['누적 활동일',p.days+'일'],['수행률',p.days?p.rate+'%':'—']]
+      .map(function(x){return '<div><span class="mcap">'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join('')+'</div>'
+   +'<div><span class="flab">최근 2주 활동</span><div class="pk-days" role="list">'
+     +days.map(function(x){var lab=(x.d.getMonth()+1)+'/'+x.d.getDate();
+       return '<span role="listitem" class="'+(x.n?'on':'')+(x.off?' off':'')+'" title="'+lab+' 활동 '+x.n+'회"><i>'+(x.n||'')+'</i><em>'+x.d.getDate()+'</em>'
+        +'<span class="sr">'+lab+' 활동 '+x.n+'회</span></span>'}).join('')+'</div></div>'
+   +'<div><span class="flab">최근 검사</span>'
+     +(Object.keys(latest).length?'<div class="pk-tests">'+A.TESTS.map(function(t){var x=latest[t.c];if(!x)return '';var lv=t.lv(x.score);
+       return '<div><span>'+t.n+'</span><span class="mcap mt">'+x.date+'</span><b class="mt">'+x.score+'점</b>'+pill(lv[0],lv[1])+'</div>'}).join('')+'</div>'
+      :'<p class="mcap" style="margin:4px 0 0">받은 검사가 없어요</p>')+'</div>';
+  var m=A.modalBox(p.name+'님 정보',b,520),f=m.querySelector('.mfoot');
+  f.innerHTML='<button class="mb" type="button" data-close>닫기</button>';
+  var full=el('button','mb mbp','전체 상세로 이동');full.type='button';f.appendChild(full);
+  var done=false;
+  function end(){if(done)return;done=true;mo.disconnect();A.expireAudit(row)}
+  /* 닫기·Esc·바깥 누르기·자동 로그아웃 — 어떤 길로 닫혀도 열람을 끝낸다 */
+  var mo=new MutationObserver(function(){if(!m.classList.contains('on'))end()});
+  mo.observe(m,{attributes:true,attributeFilter:['class']});
+  /* 같은 열람을 상세로 이어간다 — 사유를 두 번 묻지 않고, 기록 줄도 하나로. 상세를 나갈 때 끝난다 */
+  full.addEventListener('click',function(){done=true;mo.disconnect();closeAll();A.openRevealed(p,'consult',why,row)})}
 
 /* ══════ 프로그램 일정 ══════ */
 var pcM={y:2026,m:8};
@@ -452,7 +529,7 @@ V.settings=function(){
     var nr=pCount(function(p){return p.days>0&&p.last>r2});
     var na=pCount(function(p){return p.days>0&&p.last<=w});
     $('#st-pv').innerHTML=note('이 기준으로 바꾸면 — 최근 활동 <b>'+fmt(na)+'명</b> · '
-      +w+'일 무활동 <b>'+fmt(nw)+'명</b> · '+r2+'일+ 무활동 <b>'+fmt(nr)+'명</b>'
+      +A.gapLabel(w)+' <b>'+fmt(nw)+'명</b> · '+A.gapLabel(r2)+' <b>'+fmt(nr)+'명</b>'
       +(kind==='policy'
         ? '<br><b>과거 판정은 그대로 둬요.</b> 이미 제출한 리포트 숫자가 바뀌지 않아요.'
         : '<br><b>과거까지 다시 판정해요.</b> 이미 제출한 리포트의 숫자가 바뀝니다 — 오류 정정일 때만 고르세요.'),
@@ -470,6 +547,7 @@ V.settings=function(){
     if(gBad.length){toast(gBad[0].n+' 목표는 1~100 사이로 적어주세요','cr');return}
     var gOld=JSON.stringify(CFG.goals);
     A.GOALS.forEach(function(g){CFG.goals[g.k]=+$('#st-g-'+g.k).value});
+    if(JSON.stringify(CFG.goals)!==gOld){var gd=new Date();CFG.goalsSet='2026-08-21 '+pad2(gd.getHours())+':'+pad2(gd.getMinutes())+' · '+A.meOp().name}
     if(JSON.stringify(CFG.goals)!==gOld)addAudit('채널 설정 변경','사업 목표',
       A.GOALS.map(function(g){return g.n+' '+CFG.goals[g.k]+g.u}).join(' · '));
     CFG.warn=w;CFG.risk=r2;CFG.pushFrom=+$('#st-pf').value;CFG.pushTo=+$('#st-pt').value;

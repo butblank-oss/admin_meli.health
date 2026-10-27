@@ -807,18 +807,23 @@ function auIntegrity(B){
 function gsRun(q){
   var box=$('#gs-res');if(!box)return;
   q=(q||'').trim();
-  if(q.length<2){box.classList.remove('on');box.innerHTML='';return}
+  if(!q.length){box.classList.remove('on');box.innerHTML='';return}
   var low=q.toLowerCase();
-  var ppl=PEOPLE.filter(function(p){
-    return p.pin.indexOf(q)===0||p.tail.indexOf(q)===0||p.name.indexOf(q)>=0||p.full.indexOf(q)>=0}).slice(0,6);
+  /* 한 글자면 성으로 찾는다 — 예전엔 두 글자부터라 '김' 만 치면 아무것도 안 떠서 고장처럼 보였다 */
+  var all=PEOPLE.filter(function(p){
+    if(q.length===1&&!/[0-9]/.test(q))return p.sur===q;
+    return p.pin.indexOf(q)===0||p.tail.indexOf(q)===0||p.name.indexOf(q)>=0||p.full.indexOf(q)>=0});
+  var ppl=all.slice(0,6);
+  /* 메뉴 이름으로도 간다 — '상담', '리포트' 를 치면 그 화면으로 */
+  var menus=[];A.NAV.forEach(function(g){g[1].forEach(function(it){if(it[1].indexOf(q)>=0)menus.push(it)})});menus=menus.slice(0,4);
   var grp=GROUPS.filter(function(g){return !g.ghost&&g.ch===CH_SELF&&g.name.toLowerCase().indexOf(low)>=0}).slice(0,3);
   box.innerHTML='';
-  if(!ppl.length&&!grp.length){
+  if(!ppl.length&&!grp.length&&!menus.length){
     box.innerHTML='<div class="ge">‘'+esc(q)+'’으로 찾은 게 없어요<br>'
       +'<span class="mcap">이름 · PIN · 전화 뒷자리로 찾을 수 있어요</span></div>';
     box.classList.add('on');return}
   if(ppl.length){
-    box.appendChild(el('div','gh','참여자 '+ppl.length));
+    box.appendChild(el('div','gh','참여자 '+fmt(all.length)+(all.length>ppl.length?' · 위 '+ppl.length+'명만 보여요':'')));
     ppl.forEach(function(p){
       var b=el('button');b.type='button';
       b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(p.name)+'</span>'
@@ -826,7 +831,16 @@ function gsRun(q){
         +pill(p.status==='active'?'참여 중':p.status==='dropped'?'중도포기':'만료',
               p.status==='active'?'nu':p.status==='dropped'?'cr':'wa');
       b.addEventListener('click',function(){gsClose();A.askOpen(p,'people')});
-      box.appendChild(b)})}
+      box.appendChild(b)});
+    if(all.length>ppl.length){var mb=el('button','gall');mb.type='button';
+      mb.innerHTML='<span class="gn" style="color:#077A50">참여자 목록에서 '+fmt(all.length)+'명 모두 보기 →</span>';
+      mb.addEventListener('click',function(){var qq=q;gsClose();A.setPeopleQuery(qq);go('people')});
+      box.appendChild(mb)}}
+  if(menus.length){
+    box.appendChild(el('div','gh','메뉴'));
+    menus.forEach(function(it){var b=el('button');b.type='button';
+      b.innerHTML='<span style="flex:1;min-width:0"><span class="gn">'+esc(it[1])+'</span><span class="gm">화면으로 이동</span></span>';
+      b.addEventListener('click',function(){gsClose();go(it[0])});box.appendChild(b)})}
   if(grp.length){
     box.appendChild(el('div','gh','프로그램 그룹 '+grp.length));
     grp.forEach(function(g){

@@ -23,12 +23,12 @@
     <button class="mb top-hide" data-modal="m-channel" style="background:rgba(255,255,255,.08);border-color:transparent;box-shadow:none;color:#EAECF0;font-weight:500">인천 남동구 치매안심센터<span class="mt" style="font-size:12.5px;color:#A9B2C0">3기 · 171일째</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
     <div id="gs-wrap" style="margin-left:auto;position:relative;margin-right:4px">
       <input id="gs" placeholder="이름 · PIN · 전화 뒷자리" autocomplete="off" aria-label="전역 검색">
-      <div id="gs-res" role="listbox"></div>
+      <div id="gs-res" role="region" aria-label="검색 결과" aria-live="polite"></div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <button class="mb top-hide" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">도움말</button>
-      <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px">3</span></button>
-      <button class="mb" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;padding-left:6px"><span style="width:24px;height:24px;border-radius:999px;background:#13BD7E;color:#043528;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center">김</span>김주무<svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
+      <button class="mb top-hide" id="tb-help" type="button" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">도움말</button>
+      <button class="mb" id="tb-noti" type="button" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;font-weight:500">알림<span class="mt" id="tb-noti-n" style="font-size:12px;font-weight:700;color:#fff;background:#B42318;padding:1px 6px;border-radius:6px"></span><span class="sr" id="tb-noti-sr"></span></button>
+      <button class="mb" id="tb-me" type="button" style="background:transparent;border-color:transparent;box-shadow:none;color:#D0D5DD;padding-left:6px"><span aria-hidden="true" style="width:24px;height:24px;border-radius:999px;background:#13BD7E;color:#043528;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center">김</span>김주무<span class="sr"> 내 계정</span><svg width="12" height="12" viewBox="0 0 18 18" fill="none" stroke="#98A2B3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7 9 11.5 13.5 7"/></svg></button>
     </div>
   </div>
 
@@ -46,7 +46,6 @@
       <section class="pane" data-pane="people"><div id="v-people" class="gap"></div></section>
       <section class="pane" data-pane="person"><div id="v-person" class="gap"></div></section>
       <section class="pane" data-pane="stats"><div id="v-stats" class="gap"></div></section>
-      <section class="pane" data-pane="cohort"><div id="v-cohort" class="gap"></div></section>
       <section class="pane" data-pane="consult"><div id="v-consult" class="gap"></div></section>
       <section class="pane" data-pane="sched"><div id="v-sched" class="gap"></div></section>
       <section class="pane" data-pane="quest"><div id="v-quest" class="gap"></div></section>
@@ -155,7 +154,7 @@
 <script src="assets/js/views-people.js"></script>
 <script src="assets/js/views-program.js"></script>
 <script src="assets/js/views-dash.js"></script>
-<script src="assets/js/views-cohort.js"></script>
 <script src="assets/js/views-report.js"></script>
+<script src="assets/js/topbar.js"></script>
 </body>
 </html>

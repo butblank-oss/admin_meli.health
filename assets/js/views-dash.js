@@ -87,7 +87,7 @@ function dash(B){
      +'<p class="mcap" style="margin:6px 0 0">'+who+' · 누적 활동 수 '+fmt(cur[upto-1])+'회'
        +(hasPrev?' · '+plabel+' 같은 날까지 '+fmt(prv[Math.min(upto,prv.length)-1])+'회':'')+'</p>'
      +'<div id="dz-cum" style="margin-top:12px"></div></div>'
-   +'<div class="mc dz-card"><h2 class="mh">'+label+' 숫자</h2>'
+   +'<div class="mc dz-card"><h2 class="mh">'+label+' 현황 숫자로 보기</h2>'
      +'<p class="mcap" style="margin:4px 0 10px">'+(hasPrev?'괄호는 '+plabel+' '+(upto===C.dim?'전체':'같은 날까지')+' 대비':'개강 첫 달')+'</p>'
      +numRow('활동자',C.activist,'명',P&&P.activist,'추천 활동 1회 이상 (걸음 제외)',true)
      +numRow('신규 합류',C.join,'명',P&&P.join,'그룹에 들어온 인원',true)
@@ -108,22 +108,16 @@ function dash(B){
    +'<div class="mc dz-card" id="dz-day"></div></div>'
 
    /* 3 — 사업 목표 */
-   +'<div class="mc dz-card"><div class="row" style="align-items:baseline"><h2 class="mh">사업 목표</h2>'
-     +'<span class="mcap">출발점으로 잡은 값이에요 · <button type="button" class="lnk" data-go="settings">내 채널 정보에서 바꾸기</button></span></div>'
+   +'<div class="mc dz-card"><div class="row" style="align-items:center"><h2 class="mh">사업 목표</h2>'
+     +'<span class="mcap">'+(CFG.goalsSet?'마지막 수정 '+esc(CFG.goalsSet):'아직 직접 정하지 않아 출발점 값이 들어 있어요')+'</span>'
+     +'<button type="button" class="mb mbs" id="dz-goal-ed" style="margin-left:auto">목표 정하기</button></div>'
      +'<div class="dz-goals">'+goals.map(function(g){
        return '<div><div class="dz-gh"><span>'+g.n+'</span>'+(g.ok==null?'':pill(g.ok?'달성':'미달',g.ok?'ok':'wa'))+'</div>'
          +Viz.range({min:0,max:100,v:g.v,goal:g.goal,goalLabel:'목표',minLabel:'',maxLabel:'',vLabel:g.vl,unit:'%',fill:1,
             fmt:function(x){return (Math.round(x*10)/10).toString()}})
          +'<p class="mcap" style="margin:6px 0 0">'+g.d+'</p></div>'}).join('')+'</div></div>'
 
-   /* 4 — 기관별 | 순증감 (기관 전체일 때만) */
-   +(st.org?'':'<div class="bento" style="grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)">'
-     +'<div class="mc" style="overflow:hidden">'+chead('기관별 활동률','<span class="mcap">줄을 누르면 그 기관만 봐요</span>')
-       +'<div class="scroll"><table class="mtb"><thead><tr><th style="padding-left:20px">기관</th><th class="num">대상</th><th class="num">활동자</th>'
-       +'<th class="num">활동률</th><th>최근 6주</th><th class="num" style="padding-right:20px">평균 대비</th></tr></thead><tbody id="dz-org-tb"></tbody></table></div></div>'
-     +'<div class="mc dz-card"><h2 class="mh">기관별 순증감</h2>'
-       +'<p class="mcap" style="margin:4px 0 0">'+label+' 신규 합류 + 복귀 − 이탈</p><div id="dz-div"></div></div></div>')
-
+   /* 기관별 활동률·순증감 카드는 2026-10-27 덜어냈다 — 기관은 위 필터로 골라 본다 */
    /* 5 — 3기 누적 성과 */
    +'<div class="mc" style="overflow:hidden">'+chead('3기 누적 성과','<span class="mcap">개강일부터 '+(isNow?'오늘':label+' 말')+'까지 · '+who+'</span>')
      +'<div id="dz-out"></div></div>'
@@ -149,33 +143,39 @@ function dash(B){
     legendExtra:'<span style="margin-left:auto"><b style="color:#175CD3">+n</b> 신규 합류 · <b style="color:#B42318">−n</b> 이탈</span>'});
   dayPanel(L,C);
 
-  /* 기관별 */
-  if(!st.org){
-    var all=sub(''),allRate=C.rate,rows=ORGS.map(function(o){var Lo=sub(o),c=agg(Lo,st.y,st.m);
-      var wk=[];for(var w=5;w>=0;w--){var e=Math.min(LEDGER.T,C.b)-w*7,s=e-6,au=Lo.P.filter(function(p){return p.join<=e}).length;
-        wk.push(au?Ledger.activeIn(Lo,s,e)/au*100:0)}
-      return {o:o,c:c,wk:wk}});
-    var tb=$('#dz-org-tb');
-    rows.forEach(function(r){var dlt=r.c.rate-allRate,tr=el('tr','clk');
-      /* 표의 행을 통째로 버튼으로 만들면 표 구조가 사라진다 — 기관명만 버튼, 행 클릭은 마우스용 덤 */
-      tr.innerHTML='<td style="padding-left:20px"><button type="button" class="lnk dz-ob">'+esc(r.o)+'<span class="sr"> — 이 기관만 보기</span></button></td><td class="num mt">'+fmt(r.c.aud)+'</td>'
-       +'<td class="num mt">'+fmt(r.c.activist)+'</td><td class="num mt" style="font-weight:700">'+r.c.rate.toFixed(1)+'%</td>'
-       +'<td>'+Viz.spark(r.wk,{aria:r.o+' 최근 6주 주간 활동률 '+Math.round(r.wk[0])+'%에서 '+Math.round(r.wk[5])+'%'})+'</td>'
-       +'<td class="num mt" style="padding-right:20px;color:'+(dlt<-3?'#B42318':'#475467')+';font-weight:'+(dlt<-3?700:500)+'">'
-       +(Math.abs(dlt)<0.05?'—':(dlt>0?'+':'−')+Math.abs(dlt).toFixed(1)+'%p')+'</td>';
-      function pick(){st.org=r.o;st.day=null;V.stats()}
-      tr.addEventListener('click',pick);
-      tb.appendChild(tr)});
-    Viz.divBars($('#dz-div'),{unit:'명',posName:'늘어남',negName:'줄어듦',rows:rows.map(function(r){
-      return {label:r.o,v:r.c.join+r.c.back-r.c.lost,note:'신규 '+r.c.join+' · 복귀 '+r.c.back+' · 이탈 '+r.c.lost}})})}
-
   outcome(L,C,isNow);
+  $('#dz-goal-ed').addEventListener('click',editGoals);
 
   /* 필터 */
   $('#dz-pm').addEventListener('click',function(){var p=prevYM(st.y,st.m);st.y=p.y;st.m=p.m;st.day=null;V.stats()});
   $('#dz-nm').addEventListener('click',function(){var p=nextYM(st.y,st.m);st.y=p.y;st.m=p.m;st.day=null;V.stats()});
   if($('#dz-now'))$('#dz-now').addEventListener('click',function(){st.y=A.TODAY.getFullYear();st.m=A.TODAY.getMonth()+1;st.day=null;V.stats()});
   $('#dz-org').addEventListener('change',function(){st.org=this.value;st.day=null;V.stats()})}
+
+/* 사업 목표 정하기 — 대시보드에서 바로. 내 채널 정보의 같은 값(CFG.goals)을 고친다.
+   사업계획서에 목표가 없어 출발점 값을 넣어 두었고, 지금 실적을 옆에 보여줘 감으로 정하지 않게 한다 */
+function editGoals(){
+  var now=goalVals(sub(''),agg(sub(''),st.y,st.m),null);
+  var b=el('div');b.style.cssText='display:flex;flex-direction:column;gap:14px';
+  b.innerHTML='<p class="mcap" style="margin:0">채널 전체 기준이에요. 정하면 월간 현황·월간 리포트에 목표 대비로 표시되고, 바꾼 기록이 남아요.</p>'
+   +A.GOALS.map(function(g,i){var cur=now[i];
+     return '<div><label class="flab" for="gl-'+g.k+'">'+g.n+'</label>'
+       +'<div style="display:flex;gap:8px;align-items:center"><input class="mfld" id="gl-'+g.k+'" type="number" min="1" max="100" step="1" value="'+CFG.goals[g.k]+'" style="width:96px" aria-describedby="gl-'+g.k+'-d"> %'
+       +'<span class="mcap" style="margin-left:8px">지금 <b style="color:#101828">'+(Math.round(cur.v*10)/10)+'%</b></span></div>'
+       +'<p class="mcap" id="gl-'+g.k+'-d" style="margin:4px 0 0">'+g.d+' — '+g.why+'</p></div>'}).join('')
+   +'<p id="gl-err" class="mcap" style="margin:0;color:#B42318;display:none" role="alert"></p>';
+  var m=A.modalBox('사업 목표 정하기',b,460),f=m.querySelector('.mfoot');
+  f.innerHTML='<button class="mb" type="button" data-close>취소</button>';
+  var ok=el('button','mb mbp','저장');ok.type='button';f.appendChild(ok);
+  ok.addEventListener('click',function(){
+    var bad=A.GOALS.filter(function(g){var v=+$('#gl-'+g.k).value;return !(v>=1&&v<=100)});
+    if(bad.length){var e=$('#gl-err');e.textContent=bad[0].n+' 목표는 1~100 사이 숫자로 적어주세요';e.style.display='block';$('#gl-'+bad[0].k).focus();return}
+    var before=JSON.stringify(CFG.goals);
+    A.GOALS.forEach(function(g){CFG.goals[g.k]=Math.round(+$('#gl-'+g.k).value)});
+    if(JSON.stringify(CFG.goals)!==before){
+      var d=new Date();CFG.goalsSet='2026-08-21 '+pad2(d.getHours())+':'+pad2(d.getMinutes())+' · '+A.meOp().name;
+      A.addAudit('채널 설정 변경','사업 목표',A.GOALS.map(function(g){return g.n+' '+CFG.goals[g.k]+'%'}).join(' · '))}
+    A.closeAll();V.stats();A.toast('사업 목표를 저장했어요','ok')})}
 
 function numRow(n,v,u,pv,d,upGood){
   var dl=pv==null?'':(v===pv?'<span class="dz-d">(같음)</span>'

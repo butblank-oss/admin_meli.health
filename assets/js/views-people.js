@@ -30,8 +30,8 @@ V.today=function(){
   var TD_=A.TODAY,DOWK='일월화수목금토';
   var d0=A.dAt(T-13),dm=A.dAt(T-6);
   function md(d){return pad2(d.getMonth()+1)+'-'+pad2(d.getDate())}
-  var bands=[['최근 활동','recent','#13BD7E'],[CFG.warn+'일 무활동','warn','#F79009'],
-             [CFG.risk+'일+ 무활동','risk','#F04438'],['무활동','none','#D0D5DD']]
+  var BL=bandLabel(),bands=[['최근 활동','recent','#13BD7E'],[BL.warn,'warn','#F79009'],
+             [BL.risk,'risk','#F04438'],['무활동','none','#D0D5DD']]
     .map(function(b){return [b[0],cnt(function(p){return band(p)===b[1]}),b[2]]});
 
   h.innerHTML=
@@ -43,7 +43,7 @@ V.today=function(){
          ['어제 활동',fmt(S.acts[T-1]),'회','최근 4주 평일 평균 '+fmt(wdAvg)+'회'],
          [bandLabel().risk,fmt(M.inactive14()),'명',chg(dRisk,'명'),'wa'],
          ['답변 대기 상담',fmt(M.consultWaiting()),'건','가장 오래된 건 3일째','cr'],
-         ['처리 안 된 신청',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
+         ['승인 대기 중',fmt(M.applyPending()),'건','가장 오래된 건 42일째','cr']])
 
    +shortcuts([['todo','신청 승인','apply',fmt(M.applyPending())],['chat','상담 답변','consult',fmt(M.consultWaiting())],
      ['bell','알림 보내기','push',''],['cal','일정','sched',''],
@@ -104,7 +104,7 @@ function attnList(){
   pick(byTest('gds-sf'),function(p){var x=latest(p,'gds-sf');if(x.test.lv(x.score)[0]!=='위험')return null;
     return [p.name,'우울 위험','cr','GDS-SF '+x.score+'점',ago(x.date),p.id]});
   pick(act.filter(function(p){return p.days&&p.last>CFG.risk}).sort(function(a,b){return a.last-b.last}),function(p){
-    return [p.name,'활동 중단','wa',p.last+'일 무활동',p.last+'일',p.id]});
+    return [p.name,'활동 중단','wa',p.last+'일째 활동없음',p.last+'일',p.id]});
   pick(byTest('isi-k'),function(p){var x=latest(p,'isi-k');if(x.score<15)return null;
     return [p.name,'불면 '+x.test.lv(x.score)[0],'wa','ISI-K '+x.score+'점',ago(x.date),p.id]});
   var a8=A.dIdx(new Date(A.TODAY.getFullYear(),A.TODAY.getMonth(),1));
@@ -199,6 +199,8 @@ V.people=function(keep){
     tb.appendChild(tr)});
   pPager.render($('#p-pg'));
   renderBulk()};
+/* 상단 검색의 '모두 보기' 가 검색어를 들고 들어온다 */
+A.setPeopleQuery=function(q){pq=q||'';pf=pfBlank();pPager.page=1};
 function toggleChip(v){
   var t=v.slice(0,v.indexOf(':')),val=v.slice(v.indexOf(':')+1),arr=pf[t]||pf.act;
   var i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else arr.push(val);
@@ -276,7 +278,9 @@ function openBlock(p){
   if(!canSens())return ['민감정보 열람 권한이 없어요',
     meOp().name+' 님 좌석에는 건강정보 열람이 열려 있지 않아요. 우리 채널 운영자에서 주관리자가 열어줄 수 있어요.'];
   return null}
-function askOpen(p,from){
+/* then 을 주면 상세 화면으로 가지 않고 then(p, 사유, 기록 줄) 을 부른다 — 상담실 팝업처럼.
+   문지기(동의·권한·사유)와 기록은 똑같이 지난다. 닫을 때 기록 줄을 expireAudit 으로 끝낸다 */
+function askOpen(p,from,then){
   var blk=openBlock(p);
   if(blk){var bb=el('div');
     bb.innerHTML='<p style="font-size:14px;font-weight:700;margin:0 0 6px">'+blk[0]+'</p>'
@@ -308,7 +312,10 @@ function askOpen(p,from){
   ok.addEventListener('click',function(){
     var v=$('#rv-r').value,et=$('#rv-e')?$('#rv-e').value.trim():'';
     if(!v||!$('#rv-ok2').checked||(v==='ETC'&&et.length<5)){err.style.display='block';return}
-    pdRev=true;pdReason=$('#rv-r').selectedOptions[0].text;
+    var why=$('#rv-r').selectedOptions[0].text;
+    if(then){var row=addAudit('상세 열람','1건',why+' · '+(A.TITLES[from]||from)+'에서 미리보기',[p.name+'('+p.pin+')']);
+      closeAll();then(p,why,row);return}
+    pdRev=true;pdReason=why;
     revRow=addAudit('상세 열람','1건',pdReason,[p.name+'('+p.pin+')']);
     closeAll();openPerson(p,from)});
   f.appendChild(ok)}
@@ -449,6 +456,8 @@ function tabCmp(p,box){
 
 function openPerson(p,from){cP=p;backTo=from||'people';pdTab='act';pdSel=null;pdM=null;go('person')}
 A.openPerson=openPerson;
+/* 다른 화면(상담실 팝업)에서 이미 사유를 받고 연 열람을 상세로 이어받는다 */
+A.openRevealed=function(p,from,why,row){pdRev=true;pdReason=why;revRow=row;openPerson(p,from)};
 V.person=function(){
   var p=cP,h=$('#v-person');if(!p)return;
   h.innerHTML=ph(pdRev?p.full:p.name,

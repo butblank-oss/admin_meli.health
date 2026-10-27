@@ -275,7 +275,9 @@ function pushRule(from,warn,risk,kind,memo){
 /* 무활동 구간 — 키는 고정, 라벨은 현재 기준을 따라간다 */
 function band(p){return p.days===0?'none':p.last<=CFG.warn?'recent':p.last<=CFG.risk?'warn':'risk'}
 function bandLabel(){return {none:'무활동',recent:'최근 활동',
-  warn:CFG.warn+'일 무활동',risk:CFG.risk+'일+ 무활동'}}
+  warn:gapLabel(CFG.warn),risk:gapLabel(CFG.risk)}}
+/* 기준일 → 화면 말. 7의 배수면 주 단위로 읽는다 ('14일+ 무활동' 보다 '2주 이상 활동없음' 이 바로 읽힌다) */
+function gapLabel(n){return (n%7===0?n/7+'주':n+'일')+' 이상 활동없음'}
 
 /* ═══════════ 프로그램 그룹 ═══════════
    기수·상시반·코호트가 전부 이것의 인스턴스다. 계층으로 쪼개진다.
@@ -377,7 +379,6 @@ var CARRY={done:false,n:0,at:'',from:'',to:''};
    8월은 폭염·휴가철이라 조금 낮춘다 — '지난달 같은 날보다 적은 중' 이 실제로 나오는 달. */
 var D0=new Date(2026,2,3),TODAY=new Date(2026,7,21);
 /* 3기 설정(공휴일·계절·합류·이탈 성향)은 ledger.js 의 CARE 에 있다 — 슈퍼어드민 C01 과 같은 값 */
-var joinWeek3=Ledger.CARE.joinWeek;
 var LEDGER=Ledger.care({seed:7019,n:822,start:D0,end:TODAY,force:Ledger.dropForce(0)});
 var LT_=LEDGER.T;
 
@@ -460,19 +461,7 @@ function retainAt(k,pick){var n=0,h=0;retention().forEach(function(g){if(!pick(g
 /* 어느 날 기준 '최근 활동' / '위험 구간' 인원 — 지난주 대비를 손으로 적지 않으려고 */
 function bandAsOf(d,b){var c=0;LEDGER.P.forEach(function(p){var g=Ledger.lastAsOf(p,d);if(g<0||p.join>d)return;
   if(b==='recent'?g<=CFG.warn:b==='risk'?g>CFG.risk:g>CFG.warn&&g<=CFG.risk)c++});return c}
-/* 지난 기수 — 같은 경과일로 맞춰 비교하려고 같은 방식으로 만든다. 코호트 화면을 열 때 한 번만.
-   1·2기는 개강 첫 주 온보딩이 없던 때라 초반 이탈이 더 크다 */
-var PAST=null;
-function pastCohorts(){
-  if(PAST)return PAST;
-  var sea=function(d){var m=d.getMonth();return m===6||m===7?0.9:m===11||m<=1?0.92:1};
-  PAST=[
-   {id:'g1',name:'1기',L:Ledger.build({seed:3101,n:230,start:new Date(2024,8,3),end:new Date(2025,1,27),season:sea,
-     joinWeek:joinWeek3,neverP:function(w){return w===0?0.24:0.4},earlyP:function(w){return w===0?0.3:0.75},earlyMean:10,longMean:500})},
-   {id:'g2',name:'2기',L:Ledger.build({seed:5101,n:714,start:new Date(2025,2,4),end:new Date(2025,11,30),season:sea,
-     joinWeek:joinWeek3,neverP:function(w){return w===0?0.21:0.36},earlyP:function(w){return w===0?0.25:0.72},earlyMean:11,longMean:650})},
-   {id:'g3',name:'3기',L:LEDGER,now:1}];
-  return PAST}
+/* 지난 기수(1·2기) 원장은 코호트 화면과 함께 슈퍼어드민으로 옮겼다 (super/assets/js/views-cohort.js) */
 /* 사업 목표 — 사업계획서에 목표값이 없어 출발점으로 잡은 기본값. 내 채널 정보에서 고친다 */
 var GOALS=[
  {k:'monthRate',n:'월 활동률',u:'%',d:'이번 달 활동자 ÷ 대상자',why:'대상자 절반이 매달 한 번 이상 쓰는 수준'},
@@ -530,7 +519,7 @@ var METRICS=[
   c:function(){return GROUPS.filter(function(g){return !g.owner&&!g.ghost&&g.st!=='종료'}).length}},
  {k:'noOwnerSite',n:'담당자 없는 기관',d:'기관 담당자가 지정되지 않음',f:'ownerlessSiteCount',use:'운영자',
   c:function(){var n=0;for(var k in SITES_OWN)if(k!=='미배정'&&!SITES_OWN[k].owner)n++;return n}},
- {k:'applyPending',n:'처리 안 된 신청',d:'승인·거절·보류 어느 것도 아닌 신청',f:'pendingApplyCount',use:'오늘 · 참여 신청',
+ {k:'applyPending',n:'승인 대기 중',d:'승인·거절·보류 어느 것도 아닌 신청',f:'pendingApplyCount',use:'오늘 · 참여 신청',
   c:function(){return 111}},
  {k:'approvedNoApp',n:'승인 후 앱 미설치',d:'승인됐지만 앱에 가입하지 않음',f:'approvedNotJoinedCount',use:'오늘 · 참여 신청',
   c:function(){return 37}},
@@ -643,11 +632,11 @@ for(var j=0;j<144;j++){(function(i){
    [9]는 월간 점검 확인 여부. 민감정보 처리 시스템이라 2년 보관. */
 var AUDIT=[
  ['2026-08-21 14:22','김주무','남동구 치매안심센터',0,'상세 열람','1건','미활동자 안부 연락','218.***.***.42',['안*순(5716)'],0],
- ['2026-08-21 09:10','김주무','남동구 치매안심센터',0,'명단 내려받기','184건','7월 보고자료 작성','218.***.***.42',['14일+ 무활동 184명'],0],
+ ['2026-08-21 09:10','김주무','남동구 치매안심센터',0,'명단 내려받기','184건','7월 보고자료 작성','218.***.***.42',['2주 이상 활동없음 184명'],0],
  ['2026-08-20 16:47','이운영','원메딕스 운영팀',1,'상세 열람','1건','앱 오류 문의 회신','121.***.***.8',['황*학(2727)'],1],
  ['2026-08-20 11:02','김주무','남동구 치매안심센터',0,'상세 열람','3건','우울 위험군 안부 확인','218.***.***.42',['정*순(5716)','이*자(3341)','최*옥(4413)'],1],
  ['2026-08-19 10:31','김주무','남동구 치매안심센터',0,'리포트 생성','7월분','보건소 제출','218.***.***.42',['집계값만 · 개별 식별 없음'],1],
- ['2026-08-19 08:12','김주무','남동구 치매안심센터',0,'푸시 발송','147명','무활동 어르신 안내','218.***.***.42',['14일+ 무활동 147명'],1],
+ ['2026-08-19 08:12','김주무','남동구 치매안심센터',0,'푸시 발송','147명','무활동 어르신 안내','218.***.***.42',['2주 이상 활동없음 147명'],1],
  ['2026-08-18 15:55','김주무','남동구 치매안심센터',0,'신청자 명단 열람','111건','승인 검토','218.***.***.42',['대기 신청자 111명'],1],
  ['2026-08-15 09:40','김주무','남동구 치매안심센터',0,'탈퇴 처리','3건','연락 두절','218.***.***.42',['한*순(1180)','노*식(3341)','강*례(8827)'],1]];
 function addAudit(act,tgt,reason,subjects){
@@ -736,12 +725,12 @@ function modalBox(title,body,maxw){
    예: /mng/meliDashboard/summary 와 /adm/meliDashboard/summary 는 모양이 같고
        채널 쪽은 자기 소속분만 담겨 온다. 화면은 한 벌로 끝난다. */
 var AXIS={own:['소유','cr'],op:['운영','ok'],view:['조회','nu']};
-var NAV=[['운영',[['today','오늘','cr:3'],['people','소속 참여자','n:822'],['stats','활동 현황',''],['cohort','코호트',''],['consult','상담실','cr:4']]],
+var NAV=[['운영',[['today','오늘','cr:3'],['people','소속 참여자','n:822'],['stats','활동 현황',''],['consult','상담실','cr:4']]],
  ['프로그램',[['groups','소속 프로그램 그룹',''],['sched','프로그램 일정',''],['quest','챌린지','ro']]],
  ['알림',[['push','푸시 메시지','n:예약 4']]],
  ['기록과 보고',[['report','월간 리포트',''],['apply','참여 신청','cr:111'],['audit','열람 기록','']]],
  ['채널',[['chops','우리 채널 운영자',''],['settings','내 채널 정보',''],['cx','운영팀 문의','']]]];
-var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',stats:'활동 현황',cohort:'코호트',consult:'상담실',
+var TITLES={today:'오늘',people:'소속 참여자',person:'참여자 상세',stats:'활동 현황',consult:'상담실',
  groups:'소속 프로그램 그룹',sched:'프로그램 일정',quest:'챌린지',questdetail:'챌린지 상세',
  push:'푸시 메시지',pushnew:'메시지 만들기',report:'월간 리포트',apply:'참여 신청',audit:'열람 기록',
  chops:'우리 채널 운영자',settings:'내 채널 정보',cx:'운영팀 문의'}
@@ -749,7 +738,7 @@ var V={},cur='today';
 /* 아래 탭바는 넷만 고정한다. 더 넣으면 가로로 밀려 현재 위치가 화면 밖으로 나간다. */
 var MTAB=[['today','오늘','home'],['apply','참여 신청','todo'],
           ['people','참여자','user'],['consult','상담실','chat']];
-var NAVICO={today:'home',people:'user',stats:'chart',cohort:'pie',consult:'chat',groups:'pie',sched:'cal',
+var NAVICO={today:'home',people:'user',stats:'chart',consult:'chat',groups:'pie',sched:'cal',
  quest:'flag',push:'bell',report:'doc',apply:'todo',audit:'list',chops:'user',settings:'lock',cx:'chat'};
 function navItem(k){var r=null;
   NAV.forEach(function(g){g[1].forEach(function(it){if(it[0]===k)r=it})});return r}
@@ -842,6 +831,8 @@ function go(p){
     b.classList.toggle('on',on);
     if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   if(V[p])V[p]();
+  /* 알림 배지는 화면을 옮길 때마다 다시 센다 — 상담에 답하면 알림도 줄어야 한다 */
+  if(window.App&&App.paintNoti)App.paintNoti();
   window.scrollTo(0,0);
   /* 화면이 통째로 바뀌므로 제목으로 포커스를 옮겨 스크린리더가 새 화면을 읽게 한다 */
   var t=$('.pane.on h1.ttl');
@@ -861,7 +852,7 @@ return {$:$,$$:$$,el:el,esc:esc,fmt:fmt,pad2:pad2,rnd:rnd,pill:pill,note:note,kp
  ROLES:ROLES,SITES_OWN:SITES_OWN,OPERATORS:OPERATORS,SENS_OPS:SENS_OPS,meOp:meOp,canSens:canSens,expireAudit:expireAudit,siteOwner:siteOwner,opChannel:opChannel,
  assignments:assignments,ownedBy:ownedBy,subsAt:subsAt,ownerOf:ownerOf,canEditSched:canEditSched,
  SCHED:SCHED,skey:skey,CARRY:CARRY,PERMLOG:PERMLOG,addPermLog:addPermLog,
- SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox,
+ SESS:SESS,sessReset:sessReset,sessStart:sessStart,modalBox:modalBox,NAV:NAV,TITLES:TITLES,
  LEDGER:LEDGER,D0:D0,TODAY:TODAY,ser:ser,dIdx:dIdx,dAt:dAt,sumR:sumR,monthAgg:monthAgg,thisMonth:thisMonth,monthKinds:monthKinds,
- retention:retention,retainAt:retainAt,bandAsOf:bandAsOf,testChange:testChange,lvRank:lvRank,GOALS:GOALS,pastCohorts:pastCohorts};
+ gapLabel:gapLabel,retention:retention,retainAt:retainAt,bandAsOf:bandAsOf,testChange:testChange,lvRank:lvRank,GOALS:GOALS};
 })();
